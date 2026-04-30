@@ -84,13 +84,14 @@ def create_views():
     con.execute(f"""
         CREATE VIEW v_wage_dynamics AS
         SELECT
-            CAST(period AS INTEGER) AS year,
+            TRY_CAST(period AS INTEGER) AS year,
             AVG(CASE WHEN indicator = 'avg_wage_rub' THEN value END)              AS avg_wage_rub,
             AVG(CASE WHEN indicator = '{all_orgs_indicator}' THEN value END)      AS real_wage_idx
         FROM rosstat_macro
         WHERE source_file IN ('tab1-zpl_01-2026.xlsx', 'tab5-zpl_2025.xlsx')
           AND TRY_CAST(period AS INTEGER) BETWEEN 2000 AND 2030
         GROUP BY period
+        HAVING TRY_CAST(period AS INTEGER) IS NOT NULL
         ORDER BY year
     """)
 

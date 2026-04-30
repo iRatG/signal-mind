@@ -26,3 +26,23 @@ def chat(messages: list[dict], model: str = "deepseek-chat", temperature: float 
         temperature=temperature,
     )
     return resp.choices[0].message.content.strip()
+
+
+def chat_with_usage(
+    messages: list[dict],
+    model: str = "deepseek-chat",
+    temperature: float = 0.3,
+) -> tuple[str, dict]:
+    """Same as chat() but returns (text, usage_dict) with token counts."""
+    client = get_client()
+    resp = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=temperature,
+    )
+    usage = {
+        "prompt_tokens":     resp.usage.prompt_tokens     if resp.usage else 0,
+        "completion_tokens": resp.usage.completion_tokens if resp.usage else 0,
+        "total_tokens":      resp.usage.total_tokens      if resp.usage else 0,
+    }
+    return resp.choices[0].message.content.strip(), usage

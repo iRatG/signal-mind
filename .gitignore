@@ -21,3 +21,6 @@ statistic/
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Code local settings (contains personal data)
+.claude/

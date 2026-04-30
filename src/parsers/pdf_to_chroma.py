@@ -11,8 +11,8 @@ CHROMA_DIR = Path(__file__).parents[2] / "db" / "chroma"
 
 MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 COLLECTION_NAME = "regulatory_docs"
-CHUNK_SIZE = 500      # chars per chunk
-CHUNK_OVERLAP = 100
+CHUNK_SIZE = 900      # chars per chunk — large enough for financial sentences
+CHUNK_OVERLAP = 200
 
 
 PDF_META = {

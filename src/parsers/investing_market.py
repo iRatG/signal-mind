@@ -8,12 +8,19 @@ from src.db.init_db import get_connection
 MOEX_DIR = Path(__file__).parents[2] / "statistic" / "moex"
 
 INSTRUMENT_MAP = {
-    "Прошлые данные - USD_RUB.csv": "USD_RUB",
-    "Прошлые данные - EUR_RUB.csv": "EUR_RUB",
-    "Прошлые данные - US 500 Cash.csv": "SP500",
-    "Прошлые данные - Фьючерс на золото.csv": "GOLD",
-    "Прошлые данные - Фьючерс на нефть Brent.csv": "BRENT",
-    "Прошлые данные - Фьючерс на индекс USD.csv": "DXY",
+    "Прошлые данные - USD_RUB.csv":                          "USD_RUB",
+    "Прошлые данные - EUR_RUB.csv":                          "EUR_RUB",
+    "Прошлые данные - US 500 Cash.csv":                      "SP500",
+    "Прошлые данные - Фьючерс на золото.csv":                "GOLD",
+    "Прошлые данные - Фьючерс на нефть Brent.csv":           "BRENT",
+    "Прошлые данные - Фьючерс на индекс USD.csv":            "DXY",
+    "Прошлые данные - MSCI World.csv":                       "MSCI_WORLD",
+    "Прошлые данные - Dow Jones South Africa.csv":           "DJ_SOUTH_AFRICA",
+    "Прошлые данные - FTSE China 50 Price Return Local.csv": "FTSE_CHINA_50",
+    "Прошлые данные - MSCI India Net USD.csv":               "MSCI_INDIA",
+    "История котировок фьючерса Китай H-Shares.csv":         "CHINA_H_SHARES",
+    "Прошлые данные - TR_CC CRB Aluminum.csv":               "ALUMINUM",
+    "Прошлые данные - Фьючерс на серебро.csv":               "SILVER",
 }
 
 
