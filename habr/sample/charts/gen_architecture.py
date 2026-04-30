@@ -1,171 +1,172 @@
-"""Architecture diagram: data sources → databases → agent → output.
-RAG = ChromaDB (PDFs only). News = SQLite → news_daily in DuckDB (SQL, not RAG).
-"""
+"""Conceptual architecture diagram — big labels, no details."""
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+import matplotlib.patheffects as pe
 
 BG     = '#0d1117'
-BG2    = '#161b22'
-BORDER = '#30363d'
 BLUE   = '#4f8ef7'
 GREEN  = '#6ee7b7'
 AMBER  = '#f59e0b'
-RED    = '#f87171'
 PURPLE = '#a78bfa'
 TEAL   = '#2dd4bf'
-DIM    = '#6b7280'
+RED    = '#f87171'
+DIM    = '#4b5563'
 TEXT   = '#e2e8f0'
 ACCENT = '#58a6ff'
 
-fig, ax = plt.subplots(figsize=(15, 10))
+fig, ax = plt.subplots(figsize=(13, 10))
 fig.patch.set_facecolor(BG)
 ax.set_facecolor(BG)
-ax.set_xlim(0, 15)
+ax.set_xlim(0, 13)
 ax.set_ylim(0, 10)
 ax.axis('off')
 
-def box(x, y, w, h, color, alpha=0.15, border=None, lw=1.2, radius=0.2):
-    b = border or color
+def box(x, y, w, h, col, alpha=0.18, lw=1.6, radius=0.3):
     r = FancyBboxPatch((x, y), w, h,
         boxstyle=f"round,pad=0,rounding_size={radius}",
-        facecolor=color, alpha=alpha, edgecolor=b, linewidth=lw)
+        facecolor=col, alpha=alpha, edgecolor=col, linewidth=lw)
     ax.add_patch(r)
 
-def txt(x, y, s, size=9, color=TEXT, bold=False, ha='center', va='center', alpha=1.0):
-    ax.text(x, y, s, fontsize=size, color=color, ha=ha, va=va,
-            fontweight='bold' if bold else 'normal', alpha=alpha)
+def label(x, y, top, bot=None, col=TEXT, top_size=13, bot_size=9):
+    ax.text(x, y + (0.18 if bot else 0), top,
+            fontsize=top_size, color=col, ha='center', va='center',
+            fontweight='bold')
+    if bot:
+        ax.text(x, y - 0.22, bot,
+                fontsize=bot_size, color=col, ha='center', va='center',
+                alpha=0.65)
 
-def arr(x1, y1, x2, y2, color=DIM, lw=1.3, alpha=0.65):
+def arr(x1, y1, x2, y2, col=DIM, lw=2.0, alpha=0.7):
     ax.annotate('', xy=(x2, y2), xytext=(x1, y1),
-        arrowprops=dict(arrowstyle='->', color=color, lw=lw, alpha=alpha,
-                        connectionstyle='arc3,rad=0.0'))
+        arrowprops=dict(arrowstyle='->', color=col, lw=lw,
+                        alpha=alpha, connectionstyle='arc3,rad=0.0',
+                        mutation_scale=16))
 
-# ─── section header ───────────────────────────────────────────────
-def section(y, label):
-    ax.axhline(y + 0.02, color=BORDER, lw=0.6, alpha=0.5, xmin=0.02, xmax=0.98)
-    txt(7.5, y + 0.22, label, 7.5, DIM, alpha=0.75)
+def dim_line(y):
+    ax.axhline(y, color=DIM, lw=0.5, alpha=0.3, xmin=0.03, xmax=0.97)
 
-# ══════════════════════════════════════════════════════════════════
-# ROW 1  —  источники данных
-# ══════════════════════════════════════════════════════════════════
-section(9.05, 'ИСТОЧНИКИ ДАННЫХ')
+# ═══════════════════════════════════════════════════════════
+# ROW 1 — источники (4 блока)
+# ═══════════════════════════════════════════════════════════
+ax.text(6.5, 9.7, 'Д А Н Н Ы Е', fontsize=9, color=DIM,
+        ha='center', va='center', alpha=0.8, fontweight='bold')
 
 src = [
-    # x     y     w    h    col     title               sub
-    (0.2,  8.25, 2.1, 0.7, BLUE,  'MOEX',             '15 индексов · 2016–2026'),
-    (2.5,  8.25, 2.1, 0.7, BLUE,  'ЦБ РФ',            'ставка · USD/RUB'),
-    (4.8,  8.25, 2.1, 0.7, BLUE,  'Росстат + Global', 'макро · Brent · SP500…'),
-    (7.2,  8.25, 2.8, 0.7, AMBER, 'HuggingFace News', '2.52M статей · 9.93 GB'),
-    (10.2, 8.25, 4.6, 0.7, PURPLE,'PDF-отчётность',
-     'ЦБ · Сбер · Яндекс · Норникель · Газпром · Райфф'),
+    (0.2,  8.55, 2.8, 0.95, BLUE,   'БИРЖА',     'MOEX · ЦБ · Росстат'),
+    (3.25, 8.55, 2.8, 0.95, BLUE,   'МИРОВЫЕ',   'Brent · SP500 · Gold…'),
+    (6.3,  8.55, 2.8, 0.95, AMBER,  'НОВОСТИ',   '2.5M статей · SQLite'),
+    (9.35, 8.55, 3.45,0.95, PURPLE, 'ЗНАНИЯ',    'PDF · Сбер · ЦБ · Яндекс…'),
 ]
-for x, y, w, h, col, title, sub in src:
-    box(x, y, w, h, col, alpha=0.13, border=col)
-    cx = x + w/2
-    txt(cx, y + h*0.67, title, 8.5, col, bold=True)
-    txt(cx, y + h*0.28, sub,   7.0, TEXT, alpha=0.65)
+for x, y, w, h, col, top, bot in src:
+    box(x, y, w, h, col, alpha=0.15)
+    label(x + w/2, y + h/2, top, bot, col, top_size=13, bot_size=8)
 
-# ══════════════════════════════════════════════════════════════════
-# Arrows: sources → databases
-# ══════════════════════════════════════════════════════════════════
-# MOEX + CBR + Rosstat/Global → DuckDB  (синие)
-for sx in [1.25, 3.55, 5.85]:
-    arr(sx, 8.25, 3.0, 7.3, BLUE, lw=0.9, alpha=0.45)
+# ═══════════════════════════════════════════════════════════
+# Arrows: sources → storage
+# ═══════════════════════════════════════════════════════════
+arr(1.6,  8.55, 2.3,  7.45, BLUE,  lw=1.5, alpha=0.5)
+arr(4.65, 8.55, 2.9,  7.45, BLUE,  lw=1.5, alpha=0.5)
+arr(7.7,  8.55, 7.3,  7.45, AMBER, lw=1.5, alpha=0.55)
+arr(11.1, 8.55, 11.1, 7.45, PURPLE,lw=1.5, alpha=0.55)
 
-# HF News → SQLite  (янтарный)
-arr(8.6, 8.25, 8.6, 7.3, AMBER, lw=1.1, alpha=0.55)
+# ═══════════════════════════════════════════════════════════
+# ROW 2 — хранилища (3 блока)
+# ═══════════════════════════════════════════════════════════
+dim_line(8.3)
+ax.text(6.5, 8.2, 'ХРАНИЛИЩА', fontsize=8, color=DIM,
+        ha='center', va='center', alpha=0.8)
 
-# PDFs → ChromaDB  (фиолетовый)
-arr(12.5, 8.25, 12.5, 7.3, PURPLE, lw=1.1, alpha=0.55)
+stores = [
+    (0.2,  6.55, 4.6, 0.95, BLUE,   'DuckDB',    'числа · SQL · 40мс'),
+    (5.1,  6.55, 3.8, 0.95, AMBER,  'SQLite',    'новости · только чтение'),
+    (9.15, 6.55, 3.65,0.95, PURPLE, 'ChromaDB',  'RAG · PDF · 65мс'),
+]
+for x, y, w, h, col, top, bot in stores:
+    box(x, y, w, h, col, alpha=0.2, lw=1.8)
+    label(x + w/2, y + h/2, top, bot, col, top_size=14, bot_size=8.5)
 
-# ══════════════════════════════════════════════════════════════════
-# ROW 2  —  хранилища
-# ══════════════════════════════════════════════════════════════════
-section(7.7, 'ХРАНИЛИЩА')
+# news_daily arrow  (SQLite → DuckDB pre-compute)
+ax.annotate('', xy=(3.5, 7.03), xytext=(5.5, 7.03),
+    arrowprops=dict(arrowstyle='->', color=AMBER, lw=1.2,
+                    alpha=0.55, connectionstyle='arc3,rad=-0.3'))
+ax.text(4.5, 7.38, 'news_daily', fontsize=7.5, color=AMBER,
+        ha='center', alpha=0.65, style='italic')
 
-# DuckDB
-box(0.2, 6.45, 5.6, 1.0, BLUE, alpha=0.17, border=BLUE)
-txt(3.0, 7.18, 'DuckDB', 11, BLUE, bold=True)
-txt(3.0, 6.82, 'MOEX · ЦБ РФ · Росстат · Brent/SP500/Gold · news_daily', 7.5, TEXT, alpha=0.75)
-txt(3.0, 6.58, 'SQL · 40 мс · аналитика без сервера', 7.0, DIM, alpha=0.65)
+# ═══════════════════════════════════════════════════════════
+# Arrows: storage → agent
+# ═══════════════════════════════════════════════════════════
+arr(2.5,  6.55, 4.8,  5.45, BLUE,   lw=1.8, alpha=0.65)
+arr(7.0,  6.55, 6.6,  5.45, AMBER,  lw=1.4, alpha=0.5)
+arr(11.0, 6.55, 8.2,  5.45, PURPLE, lw=1.8, alpha=0.65)
 
-# SQLite
-box(6.1,  6.45, 4.8, 1.0, AMBER, alpha=0.17, border=AMBER)
-txt(8.5,  7.18, 'SQLite  hf_news.db', 11, AMBER, bold=True)
-txt(8.5,  6.82, '2 520 591 статья · 9.93 GB · только чтение', 7.5, TEXT, alpha=0.75)
-txt(8.5,  6.58, 'pre-computed → news_daily в DuckDB', 7.0, DIM, alpha=0.65)
+ax.text(7.5, 6.1, 'RAG', fontsize=9, color=PURPLE,
+        ha='center', alpha=0.8, fontweight='bold')
 
-# ChromaDB
-box(11.1, 6.45, 3.7, 1.0, PURPLE, alpha=0.17, border=PURPLE)
-txt(12.95, 7.18, 'ChromaDB  RAG', 11, PURPLE, bold=True)
-txt(12.95, 6.82, '17 492 чанков · MiniLM-L12-v2', 7.5, TEXT, alpha=0.75)
-txt(12.95, 6.58, 'ЦБ · Сбер · Яндекс · Норникель…', 7.0, DIM, alpha=0.65)
+# ═══════════════════════════════════════════════════════════
+# ROW 3 — УРОБОРОС агент  (центральный, крупный)
+# ═══════════════════════════════════════════════════════════
+dim_line(6.3)
+ax.text(6.5, 6.2, 'АГЕНТ', fontsize=8, color=DIM,
+        ha='center', va='center', alpha=0.8)
 
-# ══════════════════════════════════════════════════════════════════
-# Arrows: databases → agent   (с подписями)
-# ══════════════════════════════════════════════════════════════════
-arr(3.0,  6.45, 5.3, 5.3, BLUE,   lw=1.4, alpha=0.65)
-arr(8.5,  6.45, 7.5, 5.3, AMBER,  lw=1.4, alpha=0.65)
-arr(12.95,6.45, 9.7, 5.3, PURPLE, lw=1.4, alpha=0.65)
+box(2.0, 3.9, 9.0, 1.55, GREEN, alpha=0.14, lw=2.2, radius=0.35)
+ax.text(6.5, 5.08, 'УРОБОРОС', fontsize=20, color=GREEN,
+        ha='center', va='center', fontweight='bold')
+ax.text(6.5, 4.52, 'гипотеза  →  SQL  →  данные  →  оценка  →  новая гипотеза',
+        fontsize=10, color=TEXT, ha='center', va='center', alpha=0.8)
+ax.text(6.5, 4.12, 'DeepSeek API  ·  лаги 0–90д  ·  22 темы',
+        fontsize=8.5, color=DIM, ha='center', va='center', alpha=0.75)
 
-txt(3.7,  5.95, 'SQL · 40мс', 7.5, BLUE,   alpha=0.7)
-txt(7.4,  5.85, 'news_daily\n25мс · SQL', 7.0, AMBER,  alpha=0.7)
-# RAG label — справа
-box(10.5, 5.55, 2.2, 0.55, PURPLE, alpha=0.13, border=PURPLE, lw=1.0, radius=0.12)
-txt(11.6, 5.82, 'RAG · 65мс', 8, PURPLE, bold=False, alpha=0.9)
-txt(11.6, 5.65, 'семантический поиск', 6.5, PURPLE, alpha=0.65)
-arr(11.6, 5.55, 9.7, 5.3, PURPLE, lw=1.0, alpha=0.5)
+# SQL self-repair badge
+box(9.3, 4.05, 1.55, 0.75, RED, alpha=0.2, lw=1.3, radius=0.15)
+ax.text(10.08, 4.43, 'REPAIR', fontsize=9, color=RED,
+        ha='center', va='center', fontweight='bold')
+ax.text(10.08, 4.18, '22/0', fontsize=8, color=RED,
+        ha='center', va='center', alpha=0.8)
 
-# ══════════════════════════════════════════════════════════════════
-# ROW 3  —  Ouroboros агент
-# ══════════════════════════════════════════════════════════════════
-section(5.6, 'OUROBOROS АГЕНТ')
+# Cycle arrow (self-loop on agent) — показывает петлю Уробороса
+theta = [i * 3.14159 / 30 for i in range(0, 31)]
+import math
+cx, cy, rx, ry = 6.5, 4.72, 1.2, 0.35
+xs = [cx + rx * math.cos(t) for t in theta]
+ys = [cy + ry * math.sin(t) + 0.55 for t in theta]
+ax.plot(xs[:25], ys[:25], color=GREEN, lw=1.2, alpha=0.3, linestyle='--')
 
-box(3.0, 4.0, 9.0, 1.35, GREEN, alpha=0.12, border=GREEN, lw=1.6, radius=0.28)
-txt(7.5, 5.02, 'OUROBOROS АГЕНТ', 14, GREEN, bold=True)
-txt(7.5, 4.62, 'гипотеза  →  SQL  →  DuckDB  →  оценка  →  новая гипотеза', 9, TEXT, alpha=0.85)
-txt(7.5, 4.25, 'DeepSeek API  ·  LAG_SWEEP [0, 7, 14, 30, 60, 90]  ·  22 темы  ·  RANDOM_JUMP 25%', 7.5, DIM, alpha=0.7)
-
-# SQL self-repair — малый бейдж внутри
-box(9.6, 4.15, 2.2, 0.72, RED, alpha=0.18, border=RED, radius=0.12)
-txt(10.7, 4.56, 'SQL self-repair', 8, RED, bold=True)
-txt(10.7, 4.3,  '8 типов · 22 события · 0 ошибок', 6.5, RED, alpha=0.8)
-
-# ══════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════
 # Arrows: agent → outputs
-# ══════════════════════════════════════════════════════════════════
-arr(5.0, 4.0, 3.0, 2.95, GREEN, lw=1.3, alpha=0.6)
-arr(7.5, 4.0, 7.5, 2.95, GREEN, lw=1.3, alpha=0.6)
-arr(10.0,4.0, 12.0,2.95, GREEN, lw=1.3, alpha=0.6)
+# ═══════════════════════════════════════════════════════════
+arr(4.2,  3.9,  2.7,  2.85, GREEN, lw=1.6, alpha=0.6)
+arr(6.5,  3.9,  6.5,  2.85, GREEN, lw=1.6, alpha=0.6)
+arr(8.8,  3.9,  10.3, 2.85, GREEN, lw=1.6, alpha=0.6)
 
-# ══════════════════════════════════════════════════════════════════
-# ROW 4  —  выходные данные
-# ══════════════════════════════════════════════════════════════════
-section(3.2, 'ВЫХОДНЫЕ ДАННЫЕ')
+# ═══════════════════════════════════════════════════════════
+# ROW 4 — результаты
+# ═══════════════════════════════════════════════════════════
+dim_line(3.7)
+ax.text(6.5, 3.58, 'РЕЗУЛЬТАТЫ', fontsize=8, color=DIM,
+        ha='center', va='center', alpha=0.8)
 
 outs = [
-    (0.5,  1.5, 4.5, 1.3, AMBER,  'signals.jsonl',   'лог всех сигналов сессии'),
-    (5.25, 1.5, 4.5, 1.3, TEAL,   'knowledge.md',    'подтверждённые паттерны'),
-    (10.0, 1.5, 4.5, 1.3, PURPLE, 'experiments.db',  'fine-tuning датасет\n1 953 строки · Datasets A/B/C'),
+    (0.5,  1.7,  3.8, 1.1, AMBER,  'СИГНАЛЫ',   'signals.jsonl'),
+    (4.6,  1.7,  3.8, 1.1, TEAL,   'ПАМЯТЬ',    'knowledge.md'),
+    (8.7,  1.7,  3.8, 1.1, PURPLE, 'ДАТАСЕТ',   'experiments.db\n1 953 строки'),
 ]
-for x, y, w, h, col, title, sub in outs:
-    box(x, y, w, h, col, alpha=0.15, border=col)
-    cx = x + w/2
-    txt(cx, y + h*0.7, title, 10, col, bold=True)
-    txt(cx, y + h*0.32, sub,  7.5, TEXT, alpha=0.72)
+for x, y, w, h, col, top, bot in outs:
+    box(x, y, w, h, col, alpha=0.18, lw=1.8)
+    label(x + w/2, y + h/2, top, bot, col, top_size=14, bot_size=8.5)
 
-# ══════════════════════════════════════════════════════════════════
-# Title + footer
-# ══════════════════════════════════════════════════════════════════
-txt(7.5, 0.9, 'Signal Mind — архитектура системы', 12, ACCENT, bold=True, alpha=0.95)
-txt(7.5, 0.55,
-    'Python · DuckDB · SQLite (новости) · ChromaDB RAG (PDF) · DeepSeek API',
-    8, DIM, alpha=0.7)
+# ═══════════════════════════════════════════════════════════
+# Footer
+# ═══════════════════════════════════════════════════════════
+ax.text(6.5, 1.0, 'Signal Mind — архитектура системы',
+        fontsize=10, color=ACCENT, ha='center', fontweight='bold', alpha=0.9)
+ax.text(6.5, 0.62, 'Python · DuckDB · SQLite · ChromaDB RAG · DeepSeek',
+        fontsize=8, color=DIM, ha='center', alpha=0.65)
 
-plt.tight_layout(pad=0.2)
-out = 'habr/sample/charts/architecture.png'
-plt.savefig(out, dpi=150, bbox_inches='tight', facecolor=BG)
+plt.tight_layout(pad=0.1)
+plt.savefig('habr/sample/charts/architecture.png',
+            dpi=150, bbox_inches='tight', facecolor=BG)
 plt.close()
-print(f'Saved: {out}')
+print('Done: habr/sample/charts/architecture.png')
