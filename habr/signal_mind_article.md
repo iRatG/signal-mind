@@ -334,7 +334,7 @@ Brent ↑
 
 ### Данные в динамике
 
-![Brent и MOEXFN 2022–2025](sample/charts/chart1_main.png)
+![Brent и MOEXFN 2022–2025](https://raw.githubusercontent.com/iRatG/signal-mind/master/habr/sample/charts/chart1_main.png)
 
 *Синяя — Brent, зелёная пунктирная — MOEXFN. В 2022 году нефть на пике ($117),
 MOEXFN на минимуме (5355). Когда нефть начала снижаться в 2023 — MOEXFN пошёл вверх.
@@ -359,7 +359,7 @@ SELECT ROUND(CORR(brent, moexfn_finance), 4), COUNT(*) FROM t;
 
 Ключевое наблюдение — |r| **монотонно растёт** с увеличением лага:
 
-![Корреляция по лагам](sample/charts/chart2_lags.png)
+![Корреляция по лагам](https://raw.githubusercontent.com/iRatG/signal-mind/master/habr/sample/charts/chart2_lags.png)
 
 *Если бы корреляция была случайной — она была бы максимальной при lag=0 и убывала.
 Монотонный рост — признак реальной структурной задержки.*
@@ -381,7 +381,7 @@ SELECT ROUND(CORR(brent, moexfn_finance), 4), COUNT(*) FROM t;
 
 Зато режимный анализ даёт более ясную картину:
 
-![Режимный анализ](sample/charts/chart6_regime.png)
+![Режимный анализ](https://raw.githubusercontent.com/iRatG/signal-mind/master/habr/sample/charts/chart6_regime.png)
 
 *При сильном рубле (USD/RUB < 80): r = −0.851. При ставке ≥ 16%: r ≈ −0.10.
 Ключевая ставка — доминирующий фактор при текущем режиме монетарной политики.*
