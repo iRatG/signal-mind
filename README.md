@@ -1,67 +1,221 @@
-# Signal Mind
+# Signal Mind — AI-агент для поиска слабых рыночных сигналов
 
-A system for detecting weak market signals from financial, macroeconomic, and regulatory data using a cyclical AI agent.
+> Система, которая сама генерирует гипотезы, проверяет их на данных, учится на ошибках
+> и накапливает знания между сессиями. Девять часов автономной работы, $5.76 за всё.
 
-## Concept
+---
 
-**Signal → Evidence → Opportunity → Action**
+## 1. Подход
 
-The agent continuously scans structured and unstructured data sources, generates hypotheses, verifies them against data, and accumulates patterns that indicate emerging business opportunities.
+Финансовые рынки реагируют на информацию с **задержкой**. Новость о росте нефти сегодня
+может отразиться на финансовом секторе через 90 дней — через цепочку причинно-следственных
+связей, которую человек не успевает отследить вручную.
 
-## Architecture
+Центральная формула проекта:
 
 ```
-Data Layer          →  Signal Layer        →  Agent Layer
-──────────────────     ──────────────────     ──────────────────
-MOEX indices           Weak signal detect     Hypothesis gen
-CBR rates / key rate   Evidence linking       SQL verification
-Rosstat macro          Pattern storage        Ouroboros cycle
-Regulatory PDFs        Signal Score 0-100     Signal Brief
-Financial news
+слабый сигнал → доказательства на данных → бизнес-возможность → проверочное действие
 ```
 
-## Data Sources
+Агент перебирает **тысячи комбинаций** источников, временных лагов и рыночных режимов.
+Каждую итерацию он пишет SQL, выполняет его на живой DuckDB, оценивает результат
+и передаёт знания следующей итерации. Это не pipeline — это цикл.
 
-- **MOEX** — index time series (IMOEX, MOEXFN, MOEXOG, etc.)
-- **CBR** — forex rates, key rate history
-- **Rosstat** — macroeconomic statistics
-- **Regulatory PDFs** — CBR reports (KGO, MFI, pension funds)
-- **News** — Russian financial news corpus
+---
 
-## Tech Stack
+## 2. Архитектура
 
-| Component | Technology |
-|---|---|
-| Numerical / time-series DB | DuckDB |
-| Text / vector DB | ChromaDB |
-| Embeddings | paraphrase-multilingual-MiniLM-L12-v2 |
-| LLM | DeepSeek API (primary), Claude API (backup) |
-| Language | Python 3.11 |
+### Три вложенные петли обучения
 
-## Project Structure
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Петля 3: cross-session learning                            │
+│  experiments.db → датасет для fine-tuning DeepSeek         │
+│                                                             │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  Петля 2: Ouroboros — per-session                    │  │
+│  │  гипотеза → SQL → данные → оценка → новая гипотеза  │  │
+│  │                                                      │  │
+│  │  ┌────────────────────────────────────────────────┐  │  │
+│  │  │  Петля 1: SQL self-repair — per-iteration      │  │  │
+│  │  │  ошибка → классификация (8 типов) → fix        │  │  │
+│  │  └────────────────────────────────────────────────┘  │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Источники данных
+
+| Источник | Содержимое | Объём |
+|----------|-----------|-------|
+| MOEX | 15 индексов 2016–2026 (IMOEX, MOEXFN, MOEXOG...) | 38 000+ строк |
+| ЦБ РФ | Ключевая ставка 2014–2026, USD/RUB 2003–2026 | 5 600+ строк |
+| Росстат | Зарплаты, реальный индекс, демография, жильё | 15 503 строки |
+| Глобальные рынки | SP500, GOLD, BRENT, DXY, MSCI_INDIA, FTSE_CHINA_50... | 13 инструментов |
+| HuggingFace News | financial-news-multisource, 24 источника | **2.52M статей / 9.93 GB** |
+| ChromaDB RAG | PDF ЦБ РФ + корпоративная отчётность | **17 492 чанка** |
+
+### Технологический стек
+
+| Слой | Технология |
+|------|-----------|
+| Числовые данные | **DuckDB** — аналитика в файле, 40 мс на запрос |
+| Новости | **SQLite** — 9.93 GB, только чтение |
+| Векторный поиск | **ChromaDB** + MiniLM-L12-v2 |
+| LLM | **DeepSeek API** (`deepseek-chat`) |
+| Язык | Python 3.12 |
+
+### Структура проекта
 
 ```
 signal_mind/
-├── src/
-│   ├── parsers/       # data ingestion scripts
-│   ├── db/            # DuckDB + ChromaDB loaders
-│   └── agent/         # hypothesis engine, ouroboros loop
-├── notebooks/         # exploration and analysis
-├── db/                # database files (not in git)
-├── statistic/         # raw data files (not in git)
-├── context/           # project documentation
-└── idea/              # concept documents
+├── src/agent/          # Ouroboros loop + все модули агента
+│   ├── agent.py        # главный цикл, LAG_SWEEP, TOPIC_POOL
+│   ├── hypothesis.py   # generate → execute_with_repair → evaluate
+│   ├── sql_repair.py   # self-repair loop, 8 типов ошибок
+│   ├── rag.py          # ChromaDB: regulatory + corp поиск
+│   ├── memory.py       # 3-уровневая память
+│   ├── watchdog.py     # автоперезапуск при падении
+│   └── experiments.py  # fine-tuning dataset
+├── src/parsers/        # загрузка данных (MOEX, ЦБ, Росстат, PDF)
+├── analytics/          # HTML-отчёт, signal_scan, verify_signals
+├── habr/               # статьи и разборы сигналов
+└── db/                 # базы данных (не в git, тяжёлые)
 ```
 
-## Phases
+---
 
-- **Phase 0** — Environment setup ✓
-- **Phase 1** — Data loading (MOEX, CBR, Rosstat, PDFs, news)
-- **Phase 2** — Data linking and analytical views
-- **Phase 3** — First agent (hypothesis → SQL → evaluation)
-- **Phase 4** — Ouroboros cycle (recursive verification)
-- **Phase 5** — Signal Score + Signal Brief output
+## 3. Выводы: что нашли
 
-## Status
+После 9-часового марафона и независимой верификации — шесть сильных реальных сигналов:
 
-`Phase 1 — data ingestion in progress`
+| Сигнал | r | Лаг | n | Механизм |
+|--------|---|-----|---|----------|
+| USD/RUB → MOEXFN | **+0.758** | 14 дней | 990 | Девальвация → переоценка рублёвых активов |
+| Brent → MOEXFN | **−0.702** | 90 дней | 799 | Нефть ↑ → рубль ↑ → ставка ↓ → маржа банков ↓ |
+| KEY_RATE → MOEXFN | +0.651 | 0 дней | 992 | Банки зарабатывают на высокой марже |
+| MSCI_INDIA → MOEXFN | +0.631 | 0 дней | 986 | Глобальный аппетит к EM |
+| SP500 → MOEXFN | +0.593 | 7 дней | 987 | Глобальный риск-аппетит с лагом |
+| Banking news → MOEXFN | +0.549 | 14 дней | 383 | Только при ставке < 15% |
+
+**Главная аналитическая находка** — сигналы **режимозависимы**: один и тот же фактор
+работает с разным знаком в зависимости от уровня ключевой ставки и курса рубля.
+
+---
+
+## 4. Ошибка, которую мы нашли сами
+
+После марафона confirmed rate был 67.7% — слишком высокий, чтобы быть правдой.
+Независимая верификация вскрыла системный баг:
+
+```sql
+-- Агент писал вот так (НЕПРАВИЛЬНО):
+SELECT imoex_close AS ftse_china_50   -- ← подмена колонки
+FROM v_market_context
+
+-- Надо было:
+FROM market_data WHERE instrument = 'FTSE_CHINA_50'
+```
+
+Агент переименовывал `imoex_close` в `ftse_china_50` и мерял корреляцию
+двух российских индексов — конечно, r ≈ 0.88. ~60% «подтверждённых» сигналов
+были тавтологией.
+
+**Реальный confirmed rate: ~15–25%.**
+
+Исправление задокументировано в `db/forbidden_patterns.md` (паттерн #8 — «instrument aliasing»)
+и встроено в `src/agent/schema.py` в виде явных предупреждений для LLM.
+
+> Датасет `experiments.db` теперь содержит и правильные, и неправильные примеры —
+> это ценнее, чем датасет только с идеальными ответами.
+
+---
+
+## 5. Кейс: нефть предсказывает банки в минус через 90 дней
+
+Самый нетривиальный сигнал: **обратная** корреляция Brent с MOEXFN, лаг 90 дней.
+
+```sql
+WITH t AS (
+    SELECT d.close AS brent, s.moexfn_finance
+    FROM market_data d
+    JOIN v_moex_sectors s
+        ON s.trade_date = d.trade_date + INTERVAL 90 DAYS
+    WHERE d.instrument = 'BRENT'
+      AND d.trade_date BETWEEN '2022-01-01' AND '2025-12-31'
+      AND d.close IS NOT NULL AND s.moexfn_finance IS NOT NULL
+)
+SELECT ROUND(CORR(brent, moexfn_finance), 4), COUNT(*) FROM t;
+-- correlation = -0.7021 | n = 799
+```
+
+![Brent и MOEXFN 2022–2025](habr/sample/charts/chart1_main.png)
+
+**Почему нефть ↑ = банки ↓ через квартал:**
+нефть растёт → рубль укрепляется → инфляция снижается → ЦБ снижает ставку
+→ банковская маржа сжимается → MOEXFN падает.
+
+Корреляция по лагам монотонно усиливается — признак структурной зависимости, не шума:
+
+![Корреляция по лагам](habr/sample/charts/chart2_lags.png)
+
+**Важный нюанс:** сигнал нестабилен — он работает в режиме сильного рубля (r = −0.85)
+и практически исчезает при ставке ЦБ ≥ 16%.
+
+![Режимный анализ](habr/sample/charts/chart6_regime.png)
+
+Полный разбор с SQL, временными рядами и хронологией событий:
+[`habr/sample/brent_moexfn_investigation.md`](habr/sample/brent_moexfn_investigation.md)
+
+---
+
+## 6. Итог и следующие шаги
+
+### Марафон 30 апреля 2026 (9 часов, автономно)
+
+| Метрика | Результат |
+|---------|----------|
+| Итераций | **1 943** |
+| Токенов | **409.8M** |
+| Стоимость | **$5.76** |
+| Avg время/итерацию | 14.4 с |
+| SQL repair надёжность | **100%** (22/22) |
+| Перезапусков watchdog | **0** |
+| Датасет для fine-tuning | **1 953 строки** |
+
+### Дорожная карта
+
+| Фаза | Статус |
+|------|--------|
+| Phase 1–4: Данные (DuckDB, ChromaDB, HF News 2.52M статей) | ✅ |
+| Phase 5: Ouroboros агент (SQL + RAG + новости) | ✅ |
+| Phase 5.5: Lag sweep, telemetry, watchdog | ✅ |
+| Phase 5.6: Analytics report (HTML + Chart.js, 8 графиков) | ✅ |
+| Phase 6: Верификация + aliasing bug + чистый скан 618 комбинаций | ✅ |
+| Phase 7: Второй марафон с исправленным агентом | 🔜 |
+| Phase 8: Fine-tuning DeepSeek на experiments.db (1953 строки) | 🔜 |
+| Phase 9: Режимный классификатор (автоопределение состояния рынка) | 🔜 |
+
+---
+
+## Запуск
+
+```bash
+# Установка зависимостей
+python -m venv .venv
+.venv/Scripts/pip install -r requirements.txt
+
+# Одна сессия (N итераций)
+.venv/Scripts/python -m src.agent.agent 10
+
+# Марафон с автоперезапуском (секунды)
+.venv/Scripts/python -m src.agent.watchdog 32400   # 9 часов
+
+# Аналитический отчёт
+.venv/Scripts/python -m analytics.generate_report
+# → analytics/report.html
+```
+
+---
+
+*Python · DuckDB · ChromaDB · DeepSeek API · 2.52M новостей · MOEX · ЦБ РФ · Росстат*
