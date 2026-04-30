@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Mind — Ночь тишины: отчёт марафона</title>
+<style>
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --border: #30363d;
+    --text: #c9d1d9; --dim: #8b949e;
+    --blue: #58a6ff; --green: #3fb950; --amber: #d29922; --red: #f85149;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text);
+         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         font-size: 15px; line-height: 1.6; }
+
+  .hero {
+    background: #161b22; border-bottom: 1px solid var(--border);
+    padding: 32px 40px;
+  }
+  .hero h1 { font-size: 22px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+  .hero p  { color: var(--dim); font-size: 13px; }
+
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 36px;
+  }
+  .kpi {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 18px 14px; text-align: center;
+  }
+  .kpi .val { font-size: 22px; font-weight: 700; color: var(--blue); line-height: 1.1; }
+  .kpi .val.green { color: var(--green); }
+  .kpi .val.amber { color: var(--amber); }
+  .kpi .lbl { font-size: 11px; color: var(--dim); margin-top: 5px;
+               text-transform: uppercase; letter-spacing: .04em; }
+
+  .section { margin-bottom: 36px; }
+  .section-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--blue); border-bottom: 1px solid #21262d;
+    padding-bottom: 6px; margin-bottom: 20px;
+  }
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+  }
+  .card img { width: 100%; border-radius: 6px; display: block; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 12px; color: var(--dim);
+       border-bottom: 1px solid var(--border); font-size: 11px;
+       text-transform: uppercase; letter-spacing: .04em; }
+  td { padding: 8px 12px; border-bottom: 1px solid #21262d; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #1c2128; }
+  code { background: #21262d; padding: 2px 6px; border-radius: 4px;
+         font-size: 12px; color: #79c0ff; font-family: 'Fira Code', monospace; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .badge-green { background: #1a3a2a; color: var(--green); }
+  .badge-red   { background: #3a1a1a; color: var(--red); }
+  .badge-amber { background: #3a2a0a; color: var(--amber); }
+
+  .note {
+    background: rgba(210,153,34,.06); border: 1px solid rgba(210,153,34,.25);
+    border-left: 4px solid var(--amber); border-radius: 8px;
+    padding: 14px 18px; font-size: 13px; color: var(--text); margin-top: 20px;
+  }
+  .note strong { color: var(--amber); }
+
+  @media (max-width: 700px) {
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Signal Mind — Ночь тишины</h1>
+  <p>Автономный марафон Уроборос &nbsp;·&nbsp; 30 апреля 2026, 01:01–10:01 &nbsp;·&nbsp;
+     1 943 итерации &nbsp;·&nbsp; 9 часов &nbsp;·&nbsp; $5.76</p>
+</div>
+
+<div class="wrap">
+
+  <!-- KPI -->
+  <div class="section">
+    <div class="section-title">Ключевые метрики</div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="val">1 943</div><div class="lbl">Итераций</div></div>
+      <div class="kpi"><div class="val">409M</div><div class="lbl">Токенов</div></div>
+      <div class="kpi"><div class="val green">$5.76</div><div class="lbl">Стоимость</div></div>
+      <div class="kpi"><div class="val amber">14.4с</div><div class="lbl">Сред. итерация</div></div>
+      <div class="kpi"><div class="val green">22/0</div><div class="lbl">SQL repair / ошибок</div></div>
+      <div class="kpi"><div class="val green">0</div><div class="lbl">Перезапусков</div></div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="section">
+    <div class="section-title">Итоги по блокам из 50 итераций</div>
+    <div class="card">
+      <img src="https://raw.githubusercontent.com/iRatG/signal-mind/master/analytics/marathon_charts/chart1_outcomes.png"
+           alt="Outcomes по итерациям">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Скользящий confirmed rate (окно 30 итераций)</div>
+    <div class="card">
+      <img src="https://raw.githubusercontent.com/iRatG/signal-mind/master/analytics/marathon_charts/chart2_rolling.png"
+           alt="Rolling confirmation rate">
+    </div>
+    <div class="note">
+      <strong>Важно:</strong> Заявленный confirmed rate 67.7% оказался завышен из-за
+      ошибки instrument aliasing (~60% «подтверждений» были тавтологией).
+      Реальный confirmed rate: <strong>~15–25%</strong>. Ошибка задокументирована
+      в <code>forbidden_patterns.md</code> и исправлена в <code>schema.py</code>.
+    </div>
+  </div>
+
+  <!-- SQL Repair -->
+  <div class="section">
+    <div class="section-title">SQL self-repair — типы ошибок</div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Тип ошибки</th><th>Кол-во</th><th>Статус</th></tr></thead>
+        <tbody>
+          <tr><td><code>binder</code></td><td>20</td>
+              <td><span class="badge badge-green">исправлено</span></td></tr>
+          <tr><td><code>schema_column</code></td><td>5</td>
+              <td><span class="badge badge-green">исправлено</span></td></tr>
+          <tr><td><code>type_arithmetic</code></td><td>1</td>
+              <td><span class="badge badge-green">исправлено</span></td></tr>
+          <tr><td><strong>Итого</strong></td><td><strong>26</strong></td>
+              <td><span class="badge badge-green">0 неудач</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Top signals -->
+  <div class="section">
+    <div class="section-title">Верифицированные сигналы (после исправления)</div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Сигнал</th><th>r</th><th>Лаг</th><th>n</th><th>Механизм</th></tr></thead>
+        <tbody>
+          <tr><td>USD/RUB → MOEXFN</td><td><strong>+0.758</strong></td>
+              <td>14д</td><td>990</td>
+              <td>Девальвация → переоценка рублёвых активов</td></tr>
+          <tr><td>Brent → MOEXFN</td><td><strong>−0.702</strong></td>
+              <td>90д</td><td>799</td>
+              <td>Нефть → рубль → ставка → маржа банков</td></tr>
+          <tr><td>KEY_RATE → MOEXFN</td><td>+0.651</td>
+              <td>0д</td><td>992</td>
+              <td>Банки зарабатывают на высокой марже</td></tr>
+          <tr><td>MSCI_INDIA → MOEXFN</td><td>+0.631</td>
+              <td>0д</td><td>986</td>
+              <td>Глобальный аппетит к EM</td></tr>
+          <tr><td>SP500 → MOEXFN</td><td>+0.593</td>
+              <td>7д</td><td>987</td>
+              <td>Риск-аппетит с недельным лагом</td></tr>
+          <tr><td>Banking news → MOEXFN</td><td>+0.549</td>
+              <td>14д</td><td>383</td>
+              <td>Только при ставке &lt; 15%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="section">
+    <div class="section-title">Архитектура — три петли обучения</div>
+    <div class="grid2">
+      <div class="card">
+        <table>
+          <thead><tr><th>Петля</th><th>Горизонт</th><th>Что делает</th></tr></thead>
+          <tbody>
+            <tr><td>1 — SQL repair</td><td>per-iteration</td>
+                <td>8 типов ошибок → авто-исправление</td></tr>
+            <tr><td>2 — Ouroboros</td><td>per-session</td>
+                <td>гипотеза → SQL → оценка → новая гипотеза</td></tr>
+            <tr><td>3 — experiments.db</td><td>cross-session</td>
+                <td>датасет fine-tuning (1 953 строки)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Слой</th><th>Технология</th><th>Объём</th></tr></thead>
+          <tbody>
+            <tr><td>Числа</td><td><code>DuckDB</code></td><td>60 000+ строк</td></tr>
+            <tr><td>Новости</td><td><code>SQLite</code></td><td>2.52M статей</td></tr>
+            <tr><td>Векторный</td><td><code>ChromaDB</code></td><td>17 492 чанка</td></tr>
+            <tr><td>LLM</td><td><code>DeepSeek</code></td><td>$0.014/1M токенов</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

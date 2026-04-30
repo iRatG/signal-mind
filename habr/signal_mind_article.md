@@ -403,7 +403,7 @@ Phase 9 — это тот самый качественный скачок. На
 | Открыть | Что внутри |
 |---------|-----------|
 | [📊 Разбор сигнала Brent→MOEXFN](https://htmlpreview.github.io/?https://github.com/iRatG/signal-mind/blob/master/habr/sample/brent_moexfn_investigation.html) | SQL, 6 интерактивных графиков, режимный анализ |
-| [📈 Отчёт ночи тишины](https://htmlpreview.github.io/?https://github.com/iRatG/signal-mind/blob/master/analytics/report.html) | 8 графиков — телеметрия 9-часового запуска |
+| [📈 Отчёт ночи тишины](https://htmlpreview.github.io/?https://github.com/iRatG/signal-mind/blob/master/analytics/report_static.html) | KPI, графики, таблица сигналов, архитектура |
 
 ```bash
 # Попробовать самому — 10 итераций
