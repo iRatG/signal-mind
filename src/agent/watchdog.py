@@ -37,14 +37,33 @@ def start_agent(remaining_seconds: int) -> subprocess.Popen:
         str(max(remaining_seconds, 60)),
     ]
     log(f"Starting agent | remaining={remaining_seconds}s | cmd={' '.join(cmd)}")
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
     proc = subprocess.Popen(
         cmd,
         stdout=open(AGENT_LOG, "a", encoding="utf-8"),
         stderr=subprocess.STDOUT,
         cwd=str(Path(__file__).parents[2]),
+        env=env,
     )
     log(f"Agent PID={proc.pid}")
     return proc
+
+
+def run_revizor():
+    """Run Revizor audit after marathon completes. Output appended to AGENT_LOG."""
+    python = Path(__file__).parents[2] / ".venv" / "Scripts" / "python.exe"
+    log("Starting Revizor audit...")
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    proc = subprocess.run(
+        [str(python), "-m", "src.agent.revizor"],
+        stdout=open(AGENT_LOG, "a", encoding="utf-8"),
+        stderr=subprocess.STDOUT,
+        cwd=str(Path(__file__).parents[2]),
+        env=env,
+    )
+    log(f"Revizor done (exit={proc.returncode})")
 
 
 def main():
@@ -95,6 +114,7 @@ def main():
         time.sleep(CHECK_INTERVAL)
 
     log(f"Watchdog done. Total agent runs={run_count}.")
+    run_revizor()
 
 
 if __name__ == "__main__":
