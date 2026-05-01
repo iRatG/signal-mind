@@ -7,6 +7,7 @@ Three nested learning loops:
 """
 import json
 import random
+import re
 import time
 import uuid
 import hashlib
@@ -69,13 +70,31 @@ TOPIC_POOL = [
 ]
 
 
+BLACKLIST_PATH = LOG_DIR / "convergence_blacklist.json"
+CONVERGENCE_SESSION_LIMIT = 3   # force jump after this many repeats within a session
+
+
+def _load_blacklist() -> set[str]:
+    """Load cross-session convergence blacklist written by Revizor."""
+    try:
+        data = json.loads(BLACKLIST_PATH.read_text(encoding="utf-8"))
+        return set(data.get("blacklist", []))
+    except Exception:
+        return set()
+
+
+def _fingerprint(text: str) -> str:
+    """Normalize hypothesis hint to a stable fingerprint for convergence detection."""
+    return re.sub(r"\d+", "N", (text or "")[:55].lower().strip())
+
+
 def _principles_version(principles: str) -> str:
     return hashlib.md5(principles.encode()).hexdigest()[:8]
 
 
 def _safe(text: str, width: int = 120) -> str:
     text = str(text)[:width]
-    return text.encode("cp1251", errors="replace").decode("cp1251")
+    return text.encode("utf-8", errors="replace").decode("utf-8")
 
 
 def save_signal(result: dict):
@@ -134,6 +153,11 @@ def run(iterations: int = 3, start_hint: str = "", max_seconds: int = 0):
     session_signals: list[dict] = []
     context = start_hint
 
+    blacklist      = _load_blacklist()
+    topic_counter: dict[str, int] = {}
+    if blacklist:
+        print(f"[blacklist] Loaded {len(blacklist)} cross-session convergence patterns")
+
     for i in range(1, iterations + 1):
         if max_seconds and (time.time() - t_start) >= max_seconds:
             print(f"\n[time limit] {max_seconds}s reached after {i-1} iterations — stopping gracefully.")
@@ -144,6 +168,21 @@ def run(iterations: int = 3, start_hint: str = "", max_seconds: int = 0):
         elapsed  = int(time.time() - t_start)
         print(f"\n--- Iteration {i}/{iterations}{lag_tag}  (+{elapsed}s) ---")
 
+        # Anti-convergence: block repeated and blacklisted hypothesis fingerprints
+        fp = _fingerprint(context)
+        if fp:
+            if fp in blacklist:
+                topic   = random.choice(TOPIC_POOL)
+                context = topic
+                print(f"  [blacklist] Skipping known convergence trap → {_safe(topic[:80])}")
+            else:
+                topic_counter[fp] = topic_counter.get(fp, 0) + 1
+                if topic_counter[fp] >= CONVERGENCE_SESSION_LIMIT:
+                    topic   = random.choice(TOPIC_POOL)
+                    context = topic
+                    topic_counter.pop(fp, None)
+                    print(f"  [anti-conv] {CONVERGENCE_SESSION_LIMIT}x repeat → {_safe(topic[:80])}")
+
         # --- LOOP 1: execute with SQL self-repair ---
         try:
             result, attempts, tel = run_hypothesis_cycle(
@@ -153,7 +192,8 @@ def run(iterations: int = 3, start_hint: str = "", max_seconds: int = 0):
                 lag_days=lag_days,
             )
         except Exception as e:
-            print(f"  Fatal error: {e}")
+            safe_err = str(e).encode("utf-8", errors="replace").decode("utf-8")
+            print(f"  Fatal error: {safe_err}")
             continue
 
         sql_ok        = attempts[-1][1] is None
@@ -193,6 +233,11 @@ def run(iterations: int = 3, start_hint: str = "", max_seconds: int = 0):
             )
             print(f"  [patterns] SQL saved to sql_patterns.md")
 
+        # Track generated hypothesis fingerprint for convergence detection
+        hyp_fp = _fingerprint(result.get("hypothesis", ""))
+        if hyp_fp:
+            topic_counter[hyp_fp] = topic_counter.get(hyp_fp, 0) + 1
+
         metrics.record(result, sql_error=sql_error_flag)
         session_signals.append(result)
 
@@ -212,10 +257,14 @@ def run(iterations: int = 3, start_hint: str = "", max_seconds: int = 0):
             context = topic
             print(f"  [topic] {_safe(topic[:80])}")
         else:
-            # Ouroboros chain: follow next_hypothesis
-            # But with RANDOM_JUMP_PROB, jump to a random topic for diversity
-            if random.random() < RANDOM_JUMP_PROB:
-                topic = random.choice(TOPIC_POOL)
+            # Check if generated hypothesis itself is a convergence trap
+            if hyp_fp and (hyp_fp in blacklist or topic_counter.get(hyp_fp, 0) >= CONVERGENCE_SESSION_LIMIT):
+                topic   = random.choice(TOPIC_POOL)
+                context = topic
+                reason  = "blacklist" if hyp_fp in blacklist else f"{topic_counter[hyp_fp]}x repeat"
+                print(f"  [anti-conv/{reason}] Forcing next jump → {_safe(topic[:80])}")
+            elif random.random() < RANDOM_JUMP_PROB:
+                topic   = random.choice(TOPIC_POOL)
                 context = topic
                 print(f"  [random jump] {_safe(topic[:80])}")
             else:
@@ -256,6 +305,8 @@ def run(iterations: int = 3, start_hint: str = "", max_seconds: int = 0):
 
 if __name__ == "__main__":
     import sys
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     n       = int(sys.argv[1]) if len(sys.argv) > 1 else 3
     hint    = sys.argv[2] if len(sys.argv) > 2 else ""
     max_sec = int(sys.argv[3]) if len(sys.argv) > 3 else 0

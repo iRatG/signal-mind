@@ -1,8 +1,8 @@
 """Hypothesis generator + SQL verifier with self-repair loop."""
-import re
 import json
-
+import re
 import time
+from pathlib import Path
 
 from src.agent.llm import chat, chat_with_usage
 from src.agent.schema import get_schema
@@ -11,6 +11,36 @@ from src.agent.rag import get_context as rag_get_context
 from src.agent.news_retriever import get_news_context
 from src.agent.telemetry import IterationTelemetry, _ms
 from src.db.init_db import get_connection
+
+
+_REGIME_PATH = Path(__file__).parents[2] / "db" / "current_regime.json"
+
+# Mirrors revizor.py constants — used for pre-execution aliasing check
+_FOREIGN_INSTRUMENTS = [
+    "ftse_china_50", "dxy", "msci_india", "msci_world",
+    "dj_south_africa", "china_h_shares", "silver", "sp500", "aluminum",
+]
+_CONTEXT_COLUMNS = [
+    "imoex_close", "usd_rub", "eur_rub", "brent_usd", "gold_usd", "key_rate_pct",
+]
+
+
+def _load_regime() -> dict:
+    """Return current market regime from db/current_regime.json (written by Revizor)."""
+    try:
+        return json.loads(_REGIME_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {"key_rate": 21.0, "usd_rub": 85.0, "updated": "unknown"}
+
+
+def _check_aliasing(sql: str) -> list[str]:
+    """Detect v_market_context column aliased as foreign instrument name."""
+    bugs = []
+    for inst in _FOREIGN_INSTRUMENTS:
+        for col in _CONTEXT_COLUMNS:
+            if re.search(rf"\b{re.escape(col)}\s+AS\s+{re.escape(inst)}\b", sql, re.IGNORECASE):
+                bugs.append(f"{col} AS {inst}")
+    return bugs
 
 
 SYSTEM_PROMPT = """You are a quantitative analyst for a Russian financial signal detection system.
@@ -138,11 +168,22 @@ def evaluate_result(hypothesis: dict, cols: list, rows: list) -> dict:
     rag_ctx = rag_get_context(hypothesis.get("hypothesis", ""), top_k=3)
     rag_block = f"\nDocument context for signal narrative:\n{rag_ctx}\n\n" if rag_ctx else ""
 
+    # Inject current market regime so evaluator can reject inactive-regime signals
+    regime = _load_regime()
+    regime_block = (
+        f"\n⚠️ CURRENT MARKET REGIME ({str(regime.get('updated', ''))[:10]}):\n"
+        f"  key_rate = {regime['key_rate']}% (HIGH RATE regime — above 15%)\n"
+        f"  USD/RUB ≈ {regime['usd_rub']}\n"
+        "  RULE: If this signal is ONLY valid when key_rate < 15% or USD/RUB < 75 "
+        "— set confirmed=false. Signals must hold in the CURRENT regime to be actionable.\n\n"
+    )
+
     prompt = (
         f"Hypothesis: {hypothesis['hypothesis']}\n"
         f"Expected signal: {hypothesis['expected_signal']}\n\n"
         f"SQL result:\n{data_str}\n\n"
         f"{rag_block}"
+        f"{regime_block}"
         "Evaluate this hypothesis. Follow these rules STRICTLY:\n\n"
         "CONFIRMED (true): data supports the DIRECTION, even if magnitude differs.\n"
         "  Example: expected r<-0.5, found r=-0.3 with n=700 → confirmed=true, score=55.\n\n"
@@ -219,6 +260,26 @@ def run_hypothesis_cycle(
     tel.ctx_schema_chars   = tel_seed.get("ctx_schema_chars", 0)
     tel.ctx_principles_chars = tel_seed.get("ctx_principles_chars", 0)
     tel.ctx_knowledge_chars  = tel_seed.get("ctx_knowledge_chars", 0)
+
+    # Pre-execution aliasing validator — catch v_market_context.X AS <foreign> before DuckDB sees it
+    aliasing_bugs = _check_aliasing(hyp.get("sql", ""))
+    if aliasing_bugs:
+        print(f"  [pre-validator] Aliasing detected: {aliasing_bugs} — regenerating...")
+        warn = (
+            f"\n\n⚠️ Aliasing bug in previous attempt: {aliasing_bugs}. "
+            "MANDATORY: use FROM market_data WHERE instrument='X' for foreign instruments."
+        )
+        hyp2 = generate_hypothesis(
+            hypothesis_hint + warn, principles=principles, knowledge=knowledge, lag_days=lag_days
+        )
+        tel_seed2 = hyp2.pop("_tel", {})
+        hyp = hyp2
+        # overwrite telemetry with regenerated call's data
+        tel.t_rag_ms           = tel_seed2.get("t_rag_ms", tel.t_rag_ms)
+        tel.t_news_ms          = tel_seed2.get("t_news_ms", tel.t_news_ms)
+        tel.t_llm_gen_ms       = tel_seed2.get("t_llm_gen_ms", tel.t_llm_gen_ms)
+        tel.tok_gen_in        += tel_seed2.get("tok_gen_in", 0)
+        tel.tok_gen_out       += tel_seed2.get("tok_gen_out", 0)
 
     print("  Executing SQL (with repair)...")
     _t_sql = time.time()
