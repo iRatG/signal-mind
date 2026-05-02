@@ -587,6 +587,18 @@ def apply_fixes(result: AuditResult):
                 f.write(block)
             print(f"[revizor] Appended {len(new_weak)} recurring WEAK_R pattern(s) to forbidden_patterns.md", flush=True)
 
+    # 5. Re-index Obsidian vault → ChromaDB methodology (Loop 4)
+    try:
+        from src.parsers.obsidian_indexer import index_vault
+        stats = index_vault()
+        print(
+            f"[revizor] Vault re-indexed → {stats.get('chunks', 0)} chunks "
+            f"in ChromaDB:methodology",
+            flush=True,
+        )
+    except Exception as e:
+        print(f"[revizor] Vault re-index skipped: {e}", flush=True)
+
 
 # ── entry point ────────────────────────────────────────────────────────────
 

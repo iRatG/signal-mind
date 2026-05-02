@@ -7,7 +7,7 @@ from pathlib import Path
 from src.agent.llm import chat, chat_with_usage
 from src.agent.schema import get_schema
 from src.agent.sql_repair import execute_with_repair, load_forbidden_patterns, load_sql_patterns
-from src.agent.rag import get_context as rag_get_context
+from src.agent.rag import get_context as rag_get_context, get_methodology_context
 from src.agent.news_retriever import get_news_context
 from src.agent.telemetry import IterationTelemetry, _ms
 from src.db.init_db import get_connection
@@ -103,16 +103,26 @@ def generate_hypothesis(
     tel_news_ms = _ms(_t_news)
     news_block = f"\n{news_ctx}\n" if news_ctx else ""
 
+    # Layer 4: Methodology RAG — vault knowledge (Loop 4)
+    # Retrieves: known signals, open attacks, deprecated approaches, untested scope gaps
+    method_query = f"{context} lag={lag_days}d signal correlation" if context else \
+                   "full scope instruments indices untested signals"
+    method_ctx = get_methodology_context(method_query, top_k=4)
+    method_block = f"\n{method_ctx}\n" if method_ctx else ""
+
     prompt = (
         f"Given this database schema:\n{schema}\n"
         f"{principles_block}"
         f"{knowledge_block}"
         f"{forbidden_block}"
         f"{patterns_block}"
+        f"{method_block}"
         f"{rag_block}"
         f"{news_block}"
         f"{lag_block}"
         "Generate ONE specific, testable financial hypothesis about Russian markets or macroeconomics.\n"
+        "IMPORTANT: Prefer hypotheses about instruments/indices NOT YET TESTED (see Methodology context above).\n"
+        "If methodology context shows a signal is already confirmed — do NOT repeat it, explore new territory.\n"
         "Focus on: correlations, regime changes, sector divergences, rate impacts, wage/inflation dynamics.\n"
         "The hypothesis must be falsifiable by a single SQL query returning numeric results.\n\n"
         "Respond with JSON only:\n"
@@ -133,18 +143,20 @@ def generate_hypothesis(
     tel_llm_ms = _ms(_t_llm)
 
     _tel_seed = {
-        "t_rag_ms":            tel_rag_ms,
-        "t_news_ms":           tel_news_ms,
-        "t_llm_gen_ms":        tel_llm_ms,
-        "tok_gen_in":          usage["prompt_tokens"],
-        "tok_gen_out":         usage["completion_tokens"],
-        "ctx_rag_chars":       len(rag_ctx),
-        "ctx_rag_fragments":   rag_ctx.count("\n\n") if rag_ctx else 0,
-        "ctx_news_chars":      len(news_ctx),
-        "ctx_news_articles":   news_ctx.count("\n\n") if news_ctx else 0,
-        "ctx_schema_chars":    len(get_schema()),
-        "ctx_principles_chars":len(principles),
-        "ctx_knowledge_chars": len(knowledge),
+        "t_rag_ms":              tel_rag_ms,
+        "t_news_ms":             tel_news_ms,
+        "t_llm_gen_ms":          tel_llm_ms,
+        "tok_gen_in":            usage["prompt_tokens"],
+        "tok_gen_out":           usage["completion_tokens"],
+        "ctx_rag_chars":         len(rag_ctx),
+        "ctx_rag_fragments":     rag_ctx.count("\n\n") if rag_ctx else 0,
+        "ctx_news_chars":        len(news_ctx),
+        "ctx_news_articles":     news_ctx.count("\n\n") if news_ctx else 0,
+        "ctx_method_chars":      len(method_ctx),
+        "ctx_method_fragments":  method_ctx.count("\n\n") if method_ctx else 0,
+        "ctx_schema_chars":      len(get_schema()),
+        "ctx_principles_chars":  len(principles),
+        "ctx_knowledge_chars":   len(knowledge),
     }
 
     match = re.search(r"\{.*\}", response, re.DOTALL)
@@ -169,6 +181,20 @@ def evaluate_result(hypothesis: dict, cols: list, rows: list) -> dict:
     rag_ctx = rag_get_context(hypothesis.get("hypothesis", ""), top_k=3)
     rag_block = f"\nDocument context for signal narrative:\n{rag_ctx}\n\n" if rag_ctx else ""
 
+    # Layer 4: Methodology attacks — warn about open vulnerabilities before scoring
+    attack_ctx = get_methodology_context(
+        hypothesis.get("hypothesis", "") + " attack weakness overfitting",
+        top_k=2,
+    )
+    attack_block = ""
+    if attack_ctx:
+        attack_block = (
+            f"\n⚠️ OPEN METHODOLOGICAL ATTACKS (from vault):\n{attack_ctx}\n"
+            "RULE: If attacks above are severity=critical and status=open — "
+            "lower your confidence score by 10-15 points. Do NOT reject valid data, "
+            "but acknowledge the methodological risk in 'reasoning'.\n\n"
+        )
+
     # Inject current market regime so evaluator can reject inactive-regime signals
     regime = _load_regime()
     regime_block = (
@@ -184,6 +210,7 @@ def evaluate_result(hypothesis: dict, cols: list, rows: list) -> dict:
         f"Expected signal: {hypothesis['expected_signal']}\n\n"
         f"SQL result:\n{data_str}\n\n"
         f"{rag_block}"
+        f"{attack_block}"
         f"{regime_block}"
         "Evaluate this hypothesis. Follow these rules STRICTLY:\n\n"
         "CONFIRMED (true): data supports the DIRECTION, even if magnitude differs.\n"
@@ -258,6 +285,8 @@ def run_hypothesis_cycle(
     tel.ctx_rag_fragments  = tel_seed.get("ctx_rag_fragments", 0)
     tel.ctx_news_chars     = tel_seed.get("ctx_news_chars", 0)
     tel.ctx_news_articles  = tel_seed.get("ctx_news_articles", 0)
+    tel.ctx_method_chars     = tel_seed.get("ctx_method_chars", 0)
+    tel.ctx_method_fragments = tel_seed.get("ctx_method_fragments", 0)
     tel.ctx_schema_chars   = tel_seed.get("ctx_schema_chars", 0)
     tel.ctx_principles_chars = tel_seed.get("ctx_principles_chars", 0)
     tel.ctx_knowledge_chars  = tel_seed.get("ctx_knowledge_chars", 0)

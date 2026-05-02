@@ -43,6 +43,8 @@ class IterationTelemetry:
     ctx_rag_chars:      int = 0
     ctx_news_articles:  int = 0
     ctx_news_chars:     int = 0
+    ctx_method_fragments: int = 0
+    ctx_method_chars:   int = 0
     ctx_schema_chars:   int = 0
     ctx_knowledge_chars:int = 0
     ctx_principles_chars:int = 0
