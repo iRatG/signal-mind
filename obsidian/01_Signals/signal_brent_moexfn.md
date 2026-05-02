@@ -20,11 +20,17 @@ r = +0.71, n ≈ 850. Косвенный механизм через нефтя�
 **Статус: под атакой** — нет holdout теста, режимная зависимость не проверена.
 
 ## Статистика
-- r: +0.71
+- r_full_sample: -0.702 (negative — нефть↑ → MOEXFN↓ через 90d)
+- r_discovery (2022-2023): **-0.725**, n=401
+- r_validation_2024: **-0.097**, n=199 — сигнал исчез
+- r_validation_2025: **+0.265**, n=199 — знак инвертировался
 - lag: 90 дней
-- n: ~850
-- Период: 2022–2025
 - Marathon found: 1
+
+## ⚠️ Вердикт holdout (2026-05-02)
+**Сигнал НЕ прошёл holdout.** r=-0.72 в Discovery → r=-0.10 в 2024, знак меняется в 2025.
+Возможная причина: с 2022 Россия продаёт нефть по дисконту Urals→Brent ($15-25),
+поэтому мировая цена Brent всё меньше отражает реальные доходы российского бюджета.
 
 ## Экономический механизм
 Рост нефти → рост доходов бюджета → государство наращивает расходы →
@@ -46,9 +52,9 @@ SELECT ROUND(CORR(brent_usd, moexfn_finance), 4) AS r, COUNT(*) AS n FROM lagged
 ```
 
 ## Открытые атаки
-- [[attack_in_sample_overfitting]] — нет holdout теста ← **P0**
-- [[attack_non_stationarity]] — стабильность по годам не проверена ← **P0**
-- [[attack_regime_conditionality]] — работает ли при санкционном давлении на нефтяной экспорт?
+- [[attack_in_sample_overfitting]] — **ПОДТВЕРЖДЕНА**: сигнал исчез на holdout 2024 ← **P0 CRITICAL**
+- [[attack_non_stationarity]] — знак меняется год от года ← **P0 CRITICAL**
+- [[attack_regime_conditionality]] — дисконт Urals/Brent делает Brent плохим прокси с 2022
 
 ## Связанные концепты
 - [[concept_regime_conditionality]]

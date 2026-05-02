@@ -178,6 +178,8 @@
   },
   "active": "bb2f022f2eb74df3",
   "lastOpenFiles": [
+    "04_Decisions/decision_data_split.md",
+    "01_Signals/signal_silver_rugold.md",
     "03_Attacks/attack_llm_eval_inflation.md",
     "03_Attacks/attack_non_stationarity.md",
     "03_Attacks/attack_regime_conditionality.md",
