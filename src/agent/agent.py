@@ -180,8 +180,8 @@ def run(iterations: int = 3, start_hint: str = "", max_seconds: int = 0):
                 if topic_counter[fp] >= CONVERGENCE_SESSION_LIMIT:
                     topic   = random.choice(TOPIC_POOL)
                     context = topic
-                    topic_counter.pop(fp, None)
-                    print(f"  [anti-conv] {CONVERGENCE_SESSION_LIMIT}x repeat → {_safe(topic[:80])}")
+                    blacklist.add(fp)  # block permanently for this session
+                    print(f"  [anti-conv] {CONVERGENCE_SESSION_LIMIT}x repeat → blocked + {_safe(topic[:80])}")
 
         # --- LOOP 1: execute with SQL self-repair ---
         try:
@@ -263,6 +263,8 @@ def run(iterations: int = 3, start_hint: str = "", max_seconds: int = 0):
                 context = topic
                 reason  = "blacklist" if hyp_fp in blacklist else f"{topic_counter[hyp_fp]}x repeat"
                 print(f"  [anti-conv/{reason}] Forcing next jump → {_safe(topic[:80])}")
+                # Permanently block this fingerprint for the rest of the session
+                blacklist.add(hyp_fp)
             elif random.random() < RANDOM_JUMP_PROB:
                 topic   = random.choice(TOPIC_POOL)
                 context = topic

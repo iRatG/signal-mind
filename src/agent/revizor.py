@@ -96,15 +96,40 @@ def check_tautology(sql: str, hypothesis: str) -> Optional[str]:
     return None
 
 
+# Patterns indicating the CURRENT (active) regime — if present alongside an inactive
+# pattern, the SQL is doing comparative/segmentation analysis, not claiming validity
+# in an inactive regime. Such SQL should NOT be flagged.
+ACTIVE_REGIME_PATTERNS = [
+    r"key_rate_pct\s*[>≥]\s*(19|20|21)",   # rate > 19/20/21 %
+    r"key_rate_pct\s*>=\s*(19|20|21)",
+    r"[\"']high_rate[\"']",                  # regime label 'high_rate'
+    r"usd_rub\s*[>≥]\s*(80|85|90)",         # USD/RUB > 80/85/90
+    r"usd_rub\s*>=\s*(80|85|90)",
+]
+
+
 def check_regime(sql: str, hypothesis: str) -> Optional[str]:
-    """Return inactive regime description if signal depends on a currently-off condition."""
+    """Return inactive regime description if signal depends on a currently-off condition.
+
+    Does NOT flag comparative/segmentation SQL that contains BOTH an inactive-regime
+    condition and an active-regime condition — that is legitimate historical analysis.
+    """
     combined = sql + " " + hypothesis
     for pat in INACTIVE_REGIME_PATTERNS:
-        if re.search(pat, combined, re.IGNORECASE):
-            return (
-                f"Pattern [{pat}] — inactive at "
-                f"rate={CURRENT_KEY_RATE}%, USD/RUB={CURRENT_USD_RUB}"
-            )
+        if not re.search(pat, combined, re.IGNORECASE):
+            continue
+        # Check if the same SQL also references the current (active) regime —
+        # if so, it's a comparative analysis, not a claim of validity in inactive regime
+        is_comparative = any(
+            re.search(ap, combined, re.IGNORECASE)
+            for ap in ACTIVE_REGIME_PATTERNS
+        )
+        if is_comparative:
+            continue
+        return (
+            f"Pattern [{pat}] — inactive at "
+            f"rate={CURRENT_KEY_RATE}%, USD/RUB={CURRENT_USD_RUB}"
+        )
     return None
 
 
