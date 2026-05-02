@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "0659764c3a18653a",
+        "id": "111b401a6c3fd75e",
         "type": "tabs",
         "children": [
           {
-            "id": "cd247866c283b717",
+            "id": "bb2f022f2eb74df3",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -176,15 +176,26 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "cd247866c283b717",
+  "active": "bb2f022f2eb74df3",
   "lastOpenFiles": [
+    "03_Attacks/attack_llm_eval_inflation.md",
+    "03_Attacks/attack_non_stationarity.md",
+    "03_Attacks/attack_regime_conditionality.md",
+    "02_Approaches/approach_revizor_autofixes.md",
+    "01_Signals/signal_moexog_usd_rub.md",
+    "01_Signals/signal_usd_rub_moexfn.md",
+    "01_Signals/signal_inflation_moex10.md",
+    "01_Signals/signal_brent_moexfn.md",
+    "04_Decisions/decision_chromadb_rag.md",
+    "00_System/INDEX.md",
+    "claude_sonnet_obsidian_llm_wiki.md",
+    "TZ_methodology_rag.md",
+    "01_Signals/signal_oil_news_moexog.md",
     "06_Maps/MOC_all_instruments.md",
     "05_Concepts/concept_regime_conditionality.md",
     "05_Concepts/concept_lag_hypothesis.md",
     "05_Concepts/concept_full_data_scope.md",
-    "claude_sonnet_obsidian_llm_wiki.md",
     "04_Decisions/decision_duckdb.md",
-    "04_Decisions/decision_deepseek_api.md",
-    "04_Decisions/decision_chromadb_rag.md"
+    "04_Decisions/decision_deepseek_api.md"
   ]
 }
