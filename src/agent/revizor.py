@@ -538,6 +538,30 @@ def apply_fixes(result: AuditResult):
                 f.write(block)
             print(f"[revizor] Appended {len(truly_new)} new aliasing pattern(s) to forbidden_patterns.md", flush=True)
 
+    # 4. Append recurring WEAK_R SQL patterns (≥3 repeats per session) to forbidden_patterns.md
+    weak_issues = [iss for iss in result.issues if iss.kind == "WEAK_R"]
+    sql_fp_counter: Counter = Counter()
+    sql_fp_to_detail: dict = {}
+    for iss in weak_issues:
+        fp = re.sub(r"\s+", " ", iss.sql_snippet[:80].lower().strip())
+        sql_fp_counter[fp] += 1
+        sql_fp_to_detail[fp] = iss
+    recurring_weak = {fp: cnt for fp, cnt in sql_fp_counter.items() if cnt >= 3}
+    if recurring_weak:
+        existing_text = FORBIDDEN_PATH.read_text(encoding="utf-8") if FORBIDDEN_PATH.exists() else ""
+        new_weak = [fp for fp in recurring_weak if fp[:40] not in existing_text]
+        if new_weak:
+            block = "\n\n## AUTO-DETECTED WEAK_R PATTERNS (by Revizor)\n\n"
+            for fp in new_weak:
+                iss = sql_fp_to_detail[fp]
+                block += (
+                    f"- Recurring weak SQL ({recurring_weak[fp]}x, {iss.detail}):\n"
+                    f"  `{iss.sql_snippet[:120]}`\n"
+                )
+            with open(FORBIDDEN_PATH, "a", encoding="utf-8") as f:
+                f.write(block)
+            print(f"[revizor] Appended {len(new_weak)} recurring WEAK_R pattern(s) to forbidden_patterns.md", flush=True)
+
 
 # ── entry point ────────────────────────────────────────────────────────────
 

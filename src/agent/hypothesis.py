@@ -88,6 +88,16 @@ def generate_hypothesis(
         f"Replace {{N}} with {lag_days}, choose topic and market_col based on context.\n"
     ) if lag_days else ""
 
+    # Inject current regime so generator avoids inactive-regime hypotheses from the start
+    _regime = _load_regime()
+    regime_gen_block = (
+        f"\n⚠️ CURRENT MARKET REGIME ({str(_regime.get('updated', ''))[:10]}):\n"
+        f"  key_rate = {_regime['key_rate']}%  |  USD/RUB ≈ {_regime['usd_rub']}\n"
+        "  RULE: Do NOT generate hypotheses that are only valid when key_rate < 15% "
+        "or USD/RUB < 75 — those regimes are currently inactive.\n"
+        "  Generate hypotheses valid in the CURRENT high-rate, high-USD/RUB environment.\n\n"
+    )
+
     # Layer 2: RAG — regulatory docs + corporate reports
     rag_query = context if context else "Russian financial market signals rates sectors"
     _t_rag = time.time()
@@ -108,6 +118,7 @@ def generate_hypothesis(
         f"{knowledge_block}"
         f"{forbidden_block}"
         f"{patterns_block}"
+        f"{regime_gen_block}"
         f"{rag_block}"
         f"{news_block}"
         f"{lag_block}"
