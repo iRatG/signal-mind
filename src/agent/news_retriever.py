@@ -1,67 +1,74 @@
 """News context retriever from hf_news.db (read-only).
 
-2.52M English articles, 2021-2025, SQLite with idx_date index.
-Extracts English keywords from Russian hypothesis text and returns
-a formatted news block for LLM prompt injection.
+Mixed corpus: 2.52M English articles from HF (2021-09-06 and earlier) +
+~28k Russian articles from ru_archive: namespace (2025-09-01 → present).
+Each mapping entry below carries BOTH English and Russian search terms so the
+same query reaches both halves of the corpus.
+
+Note on SQLite LIKE with Cyrillic: SQLite's LIKE is case-insensitive for ASCII
+only; Cyrillic is byte-exact. We use lowercase RU stems — most occurrences in
+article bodies are lowercase, so this catches the bulk in practice without the
+cost of LOWER(text).
 """
 import sqlite3
 from pathlib import Path
 
 NEWS_DB = Path(__file__).parents[2] / "db" / "hf_news.db"
 
-# Russian financial terms → English search keywords (first 2 are used in LIKE)
+# Russian hypothesis stem -> [EN keyword 1, EN keyword 2, RU stem].
+# All three are used in LIKE so Russian articles also match.
 _KEYWORD_MAP: dict[str, list[str]] = {
-    "ставк":      ["interest rate", "key rate"],
-    "цб":         ["central bank", "CBR"],
-    "нефть":      ["oil", "crude"],
-    "нефт":       ["oil", "Brent"],
-    "газ":        ["natural gas", "Gazprom"],
-    "рубл":       ["ruble", "RUB"],
-    "санкц":      ["sanctions", "Russia"],
-    "банк":       ["bank", "banking"],
-    "финанс":     ["financial", "finance"],
-    "акци":       ["stock", "equity"],
-    "инфляц":     ["inflation", "CPI"],
-    "экспорт":    ["export", "commodity"],
-    "зарплат":    ["wages", "salary"],
-    "золото":     ["gold", "precious metals"],
-    "золот":      ["gold", "metals"],
-    "недвижим":   ["real estate", "housing"],
-    "ипотек":     ["mortgage", "housing loan"],
-    "moexfn":     ["financial sector", "banking sector"],
-    "moexog":     ["oil gas", "energy sector"],
-    "imoex":      ["Moscow Exchange", "Russian stock"],
-    "sp500":      ["S&P 500", "US market"],
-    "brent":      ["Brent", "crude oil"],
-    "usd":        ["dollar", "USD"],
-    "корреляц":   ["correlation", "market"],
-    "сектор":     ["sector", "industry"],
-    "индекс":     ["index", "benchmark"],
-    "волатильн":  ["volatility", "market risk"],
-    "режим":      ["regime", "policy"],
-    "дивиденд":   ["dividend", "yield"],
+    "ставк":      ["interest rate", "key rate",      "ставк"],
+    "цб":         ["central bank", "CBR",            "центробанк"],
+    "нефть":      ["oil", "crude",                   "нефть"],
+    "нефт":       ["oil", "Brent",                   "нефт"],
+    "газ":        ["natural gas", "Gazprom",         "газ"],
+    "рубл":       ["ruble", "RUB",                   "рубл"],
+    "санкц":      ["sanctions", "Russia",            "санкци"],
+    "банк":       ["bank", "banking",                "банк"],
+    "финанс":     ["financial", "finance",           "финанс"],
+    "акци":       ["stock", "equity",                "акци"],
+    "инфляц":     ["inflation", "CPI",               "инфляц"],
+    "экспорт":    ["export", "commodity",            "экспорт"],
+    "зарплат":    ["wages", "salary",                "зарплат"],
+    "золото":     ["gold", "precious metals",        "золото"],
+    "золот":      ["gold", "metals",                 "золот"],
+    "недвижим":   ["real estate", "housing",         "недвижим"],
+    "ипотек":     ["mortgage", "housing loan",       "ипотек"],
+    "moexfn":     ["financial sector", "banking sector", "moexfn"],
+    "moexog":     ["oil gas", "energy sector",       "moexog"],
+    "imoex":      ["Moscow Exchange", "Russian stock", "imoex"],
+    "sp500":      ["S&P 500", "US market",           "sp500"],
+    "brent":      ["Brent", "crude oil",             "Brent"],
+    "usd":        ["dollar", "USD",                  "доллар"],
+    "корреляц":   ["correlation", "market",          "корреляц"],
+    "сектор":     ["sector", "industry",             "сектор"],
+    "индекс":     ["index", "benchmark",             "индекс"],
+    "волатильн":  ["volatility", "market risk",      "волатильн"],
+    "режим":      ["regime", "policy",               "режим"],
+    "дивиденд":   ["dividend", "yield",              "дивиденд"],
 }
 
 _FALLBACK_KEYWORDS = ["Russia", "financial market", "economy"]
 
 
 def _extract_keywords(hypothesis: str) -> list[str]:
-    """Map Russian hypothesis text to English search keywords."""
+    """Map Russian hypothesis text to mixed EN+RU search keywords."""
     h = hypothesis.lower()
     matched: list[str] = []
-    for ru_stem, en_words in _KEYWORD_MAP.items():
+    for ru_stem, search_terms in _KEYWORD_MAP.items():
         if ru_stem in h:
-            matched.extend(en_words[:2])
+            matched.extend(search_terms)  # all 3: 2 EN + 1 RU
     if not matched:
         matched = _FALLBACK_KEYWORDS[:]
-    # Deduplicate while preserving order, cap at 6
+    # Deduplicate while preserving order, cap at 8 (was 6 — bigger budget for RU+EN)
     seen: set[str] = set()
     result: list[str] = []
     for kw in matched:
         if kw not in seen:
             seen.add(kw)
             result.append(kw)
-        if len(result) >= 6:
+        if len(result) >= 8:
             break
     return result
 
@@ -69,7 +76,7 @@ def _extract_keywords(hypothesis: str) -> list[str]:
 def get_news_context(
     hypothesis: str,
     date_from: str = "2022-01-01",
-    date_to: str = "2025-12-31",
+    date_to: str = "2027-12-31",
     top_n: int = 5,
 ) -> str:
     """
@@ -78,9 +85,9 @@ def get_news_context(
     Never raises — news retrieval is optional.
     """
     keywords = _extract_keywords(hypothesis)
-    # Use up to 3 keywords in LIKE to balance speed and coverage
+    # Use up to 5 keywords in LIKE — covers 2 EN + 1 RU per matched topic plus a few extras
     like_conditions = " OR ".join(
-        f"text LIKE '%{kw.replace(chr(39), '')}%'" for kw in keywords[:3]
+        f"text LIKE '%{kw.replace(chr(39), '')}%'" for kw in keywords[:5]
     )
 
     try:
