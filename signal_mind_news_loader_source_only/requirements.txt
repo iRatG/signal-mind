@@ -1,0 +1,16 @@
+duckdb>=1.5.0
+pandas>=2.0.0
+openpyxl>=3.1.0
+pdfplumber>=0.11.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+tqdm>=4.65.0
+datasets>=2.20.0
+huggingface_hub>=0.23.0
+openai>=1.0.0
+warcio>=1.7.4
+newspaper4k>=0.9.3
+beautifulsoup4>=4.12.0
+trafilatura>=1.8.0
+PyYAML>=6.0
+python-dateutil>=2.8.0
