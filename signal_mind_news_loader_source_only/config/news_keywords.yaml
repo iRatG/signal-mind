@@ -24,6 +24,27 @@ topics:
     - discount
     - refinery
     - fuel exports
+    - opec+
+    - saudi aramco
+    - aramco
+    - exxon
+    - exxonmobil
+    - chevron
+    - shell oil
+    - bp plc
+    - totalenergies
+    - equinor
+    - wti
+    - west texas intermediate
+    - espo
+    - shadow fleet
+    - dark fleet
+    - g7 price cap
+    - coal
+    - uranium
+    - ttf
+    - diesel
+    - gasoline
 
   rate:
     - interest rate
@@ -41,6 +62,32 @@ topics:
     - bond yield
     - treasury yield
     - nabiullina
+    - jerome powell
+    - powell
+    - christine lagarde
+    - lagarde
+    - pboc
+    - people's bank of china
+    - boe
+    - bank of england
+    - boj
+    - bank of japan
+    - bis
+    - basis point
+    - basis points
+    - yield curve
+    - treasuries
+    - gilts
+    - bunds
+    - ofz
+    - fomc
+    - fed funds
+    - forward guidance
+    - hawkish
+    - dovish
+    - terminal rate
+    - dot plot
+    - rate decision
 
   ruble:
     - ruble
@@ -55,6 +102,29 @@ topics:
     - ruble devaluation
     - ruble strengthening
     - exchange rate
+    - euro
+    - yuan
+    - renminbi
+    - cny
+    - dirham
+    - aed
+    - indian rupee
+    - inr
+    - turkish lira
+    - kazakh tenge
+    - kzt
+    - eur/rub
+    - cny/rub
+    - foreign exchange
+    - forex
+    - fx
+    - foreign reserves
+    - currency reserves
+    - dollar index
+    - dxy
+    - weak dollar
+    - strong dollar
+    - parallel exchange rate
 
   sanctions:
     - sanction
@@ -72,6 +142,24 @@ topics:
     - import substitution
     - hostile countries
     - unfriendly countries
+    - ofac
+    - sdn
+    - sdn list
+    - treasury sanctions
+    - eu sanctions
+    - sanctions package
+    - 11th sanctions package
+    - 12th sanctions package
+    - 13th sanctions package
+    - 14th sanctions package
+    - swift
+    - cips
+    - mir card
+    - mir payment
+    - dual-use
+    - circumvention
+    - blocked persons
+    - specially designated
 
   inflation:
     - inflation
@@ -89,6 +177,31 @@ topics:
     - trade balance
     - exports
     - imports
+    - ppi
+    - producer prices
+    - producer price index
+    - pmi
+    - manufacturing pmi
+    - services pmi
+    - retail sales
+    - industrial production
+    - consumer confidence
+    - consumer sentiment
+    - housing starts
+    - mortgage rates
+    - payrolls
+    - non-farm payrolls
+    - nonfarm payrolls
+    - nfp
+    - jobless claims
+    - m2
+    - money supply
+    - credit growth
+    - core inflation
+    - core cpi
+    - core pce
+    - pce
+    - deflation
 
   banking:
     - bank
@@ -106,6 +219,28 @@ topics:
     - fintech
     - payment system
     - fast payment system
+    - gazprombank
+    - promsvyazbank
+    - bank rossiya
+    - otkritie
+    - tinkoff
+    - tinkoff bank
+    - tcs group
+    - raiffeisen
+    - raiffeisenbank
+    - jpmorgan
+    - jp morgan
+    - goldman sachs
+    - morgan stanley
+    - deutsche bank
+    - barclays
+    - hsbc
+    - standard chartered
+    - ubs
+    - bank of america
+    - citigroup
+    - basel iii
+    - bank stress test
 
   gold:
     - gold
@@ -114,6 +249,17 @@ topics:
     - bullion
     - xau
     - gold price
+    - palladium
+    - platinum
+    - silver
+    - polyus gold
+    - polymetal
+    - physical gold
+    - gold etf
+    - gold reserves
+    - central bank gold
+    - lbma
+    - london bullion market
 
   markets:
     - stock
@@ -137,6 +283,26 @@ topics:
     - redomiciliation
     - bond
     - bonds
+    - nasdaq
+    - nasdaq composite
+    - dow jones
+    - dow industrials
+    - ftse 100
+    - nikkei 225
+    - hang seng
+    - dax index
+    - cac 40
+    - eurostoxx
+    - stoxx 600
+    - msci world
+    - msci emerging
+    - vix
+    - fear index
+    - etf
+    - rgbi
+    - imoex
+    - futures market
+    - commodity prices
 
   geopolitics:
     - russia
@@ -177,6 +343,32 @@ topics:
     - evacuation
     - frozen assets
     - turn to the east
+    - zelensky
+    - volodymyr zelensky
+    - donald trump
+    - joe biden
+    - kamala harris
+    - olaf scholz
+    - emmanuel macron
+    - xi jinping
+    - kim jong-un
+    - recep erdogan
+    - erdogan
+    - narendra modi
+    - lula
+    - ursula von der leyen
+    - von der leyen
+    - josep borrell
+    - jens stoltenberg
+    - stoltenberg
+    - csto
+    - saudi arabia
+    - iran
+    - iranian
+    - north korea
+    - dprk
+    - belarus
+    - lukashenko
 
   companies:
     - gazprom
@@ -201,6 +393,30 @@ topics:
     - rosseti
     - rosatom
     - rostec
+    - tatneft
+    - surgutneftegaz
+    - transneft
+    - polyus
+    - mmk
+    - magnitogorsk
+    - evraz
+    - qiwi
+    - otkritie bank
+    - rosselkhozbank
+    - phosagro
+    - acron
+    - mechel
+    - uralkali
+    - sibur
+    - uralchem
+    - magnit
+    - x5 retail
+    - pyaterochka
+    - kamaz
+    - avtovaz
+    - lada
+    - kalashnikov concern
+    - united aircraft
 
   politics:
     - putin
@@ -223,6 +439,18 @@ topics:
     - regulation
     - deoffshorization
     - deoffshorisation
+    - sergei lavrov
+    - lavrov
+    - dmitry peskov
+    - peskov
+    - dmitry medvedev
+    - medvedev
+    - nikolai patrushev
+    - patrushev
+    - anton siluanov
+    - siluanov
+    - andrey belousov
+    - belousov
 
   social:
     - unemployment
@@ -265,3 +493,18 @@ topics:
     - ozon
     - fintech
     - qr payment
+    - bitcoin
+    - ethereum
+    - stablecoin
+    - usdt
+    - tether crypto
+    - semiconductors
+    - chips
+    - microelectronics
+    - chip ban
+    - chip sanctions
+    - lithography
+    - asml
+    - tsmc
+    - intel chips
+    - nvidia
