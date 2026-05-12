@@ -56,3 +56,35 @@
 - **Запуск:** `.venv/Scripts/python -m src.agent.agent 3`
 
 Полная архитектура: `memory/project_signal_mind.md`
+
+---
+
+## VPN-туннель для парсеров зарубежных источников
+
+Текущий VPN рабочего компьютера режет соединения к западным новостным
+сайтам (BBC/Guardian/Fox/AlJazeera/Euronews/France24): `ConnectionReset 10054`
+ещё на TLS-хендшейке. Для обхода в проект встроен SSH SOCKS5-туннель через
+выделенный сервер `37.233.83.68` (Ubuntu 24.04, root, «Sympathetic Rhea»).
+
+- **Модуль:** `src/utils/proxy.py` — `vpn()`, `get_proxies()`, `start_vpn()`, `stop_vpn()`, `is_vpn_up()`.
+- **Полная документация:** [vpn/README.md](vpn/README.md).
+- **Конфиг:** ключи `vpn_*` в `.env`. SSH-ключ — в `~/.ssh/signal_mind_vpn` (не в репозитории).
+- **Bootstrap (одноразово):** `.venv/Scripts/python -m vpn.bootstrap` — генерит ключ и кладёт его на сервер.
+
+**Когда использовать:** ТОЛЬКО в парсерах зарубежных сайтов.
+**Когда НЕ использовать:** DeepSeek API, локальные БД, RU-источники, HF datasets — они работают через обычное соединение.
+
+**Шаблон интеграции в новый парсер** (см. `en_news_archive_loader.py` как образец):
+
+```python
+class HttpClient:
+    def __init__(self, ..., use_vpn: bool = False):
+        self.session = requests.Session()
+        if use_vpn:
+            from src.utils.proxy import get_proxies
+            self.session.proxies = get_proxies()
+```
+
+Плюс `--vpn` флаг в argparse и `use_vpn=args.vpn` при создании клиента.
+
+**Правило:** перед тем как добавлять VPN в новый парсер — проверить, что без него парсинг действительно падает. Если работает без VPN — не трогать.

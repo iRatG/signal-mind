@@ -158,7 +158,12 @@ def sha256(value: str) -> str:
 # ----- HTTP -----
 
 class HttpClient:
-    def __init__(self, sleep_seconds: float = 5.0, archive_sleep: float = 3.0) -> None:
+    def __init__(
+        self,
+        sleep_seconds: float = 5.0,
+        archive_sleep: float = 3.0,
+        use_vpn: bool = False,
+    ) -> None:
         self.session = requests.Session()
         self.session.headers.update({
             "User-Agent": USER_AGENT,
@@ -167,11 +172,41 @@ class HttpClient:
         })
         self.sleep_seconds = sleep_seconds
         self.archive_sleep = archive_sleep
+        self.use_vpn = use_vpn
+        self._curl_socks_arg: list[str] = []
+        if use_vpn:
+            # Lazy import so the loader still works when the vpn module is
+            # absent (e.g. minimal deployments).
+            from src.utils.proxy import get_proxies, is_vpn_up
+
+            self.session.proxies = get_proxies()
+            # is_vpn_up implies start_vpn already ran; capture the SOCKS port
+            # for the curl fallback path so it doesn't bypass the tunnel.
+            assert is_vpn_up()
+            socks_url = self.session.proxies["https"]  # socks5h://127.0.0.1:PORT
+            host_port = socks_url.split("://", 1)[1]
+            self._curl_socks_arg = ["--socks5-hostname", host_port]
+            logging.info("HTTP client routing through VPN tunnel (%s)", socks_url)
 
     def _curl_fallback(self, url: str) -> str:
+        # Browser-like headers + --compressed so euronews returns 200 instead
+        # of 406. Explicit utf-8 decoding so non-ASCII titles don't blow up on
+        # Windows cp1251 default codepage.
+        cmd = [
+            "curl", "-fsSL", "--compressed",
+            "-A", USER_AGENT,
+            "-H", "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "-H", "Accept-Language: en-US,en;q=0.5",
+            "-H", "Upgrade-Insecure-Requests: 1",
+            "-H", "Sec-Fetch-Dest: document",
+            "-H", "Sec-Fetch-Mode: navigate",
+            "-H", "Sec-Fetch-Site: none",
+            *self._curl_socks_arg,
+            url,
+        ]
         cp = subprocess.run(
-            ["curl", "-fsSL", "-A", USER_AGENT, url],
-            text=True, capture_output=True, timeout=REQUEST_TIMEOUT,
+            cmd, capture_output=True, timeout=REQUEST_TIMEOUT,
+            text=True, encoding="utf-8", errors="replace",
         )
         if cp.returncode != 0:
             raise requests.HTTPError(cp.stderr.strip() or f"curl failed for {url}")
@@ -620,7 +655,11 @@ def run(args: argparse.Namespace) -> dict:
     db_path = Path(args.sandbox_db or args.db).resolve()
     run_id = args.run_id or make_run_id()
     dry_run = not args.commit
-    client = HttpClient(sleep_seconds=args.delay, archive_sleep=args.archive_delay)
+    client = HttpClient(
+        sleep_seconds=args.delay,
+        archive_sleep=args.archive_delay,
+        use_vpn=args.vpn,
+    )
     conn = init_db(db_path)
 
     started_at = datetime.now(UTC).isoformat(timespec="seconds")
@@ -798,6 +837,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--commit", action="store_true", help="Actually write rows. Without this, dry-run only.")
     p.add_argument("--run-id", default=None, help="Explicit run id for rollback/audit")
     p.add_argument("--verbose", action="store_true", help="Debug logs")
+    p.add_argument(
+        "--vpn", action="store_true",
+        help="Route HTTP through SSH SOCKS5 tunnel (src.utils.proxy). "
+             "Use this when the local network blocks foreign news sources.",
+    )
     return p
 
 
