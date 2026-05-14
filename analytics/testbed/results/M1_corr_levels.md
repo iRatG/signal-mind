@@ -1,6 +1,6 @@
 # M1_corr_levels on testbed
 
-Run timestamp: 2026-05-14T19:38:09.319358+00:00
+Run timestamp: 2026-05-14T19:49:27.347867+00:00
 Source: analytics.testbed.methods.m1_corr_levels
 
 ## Penalty from mistakes catalogue
