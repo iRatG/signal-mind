@@ -29,6 +29,10 @@ class Window:
     sectors_view: str    # e.g. 'v_train_sectors'
     news_view: str       # e.g. 'v_train_news'
     disqualified_topics: tuple[str, ...]
+    # Window-typical regime — used to keep regime injection consistent with the
+    # data the agent actually sees. Values are window medians from data_audit_v1.
+    regime_key_rate_pct: float = 0.0
+    regime_usd_rub: float = 0.0
 
 
 _WINDOWS: dict[str, Window] = {
@@ -41,6 +45,8 @@ _WINDOWS: dict[str, Window] = {
         sectors_view="v_train_sectors",
         news_view="v_train_news",
         disqualified_topics=("ruble",),
+        regime_key_rate_pct=8.0,
+        regime_usd_rub=74.94,
     ),
     "v1_val": Window(
         name="val",
@@ -51,6 +57,8 @@ _WINDOWS: dict[str, Window] = {
         sectors_view="v_val_sectors",
         news_view="v_val_news",
         disqualified_topics=("ruble", "sanctions"),
+        regime_key_rate_pct=18.5,
+        regime_usd_rub=91.26,
     ),
     "v1_test": Window(
         name="test",
@@ -61,6 +69,8 @@ _WINDOWS: dict[str, Window] = {
         sectors_view="v_test_sectors",
         news_view="v_test_news",
         disqualified_topics=(),
+        regime_key_rate_pct=16.0,
+        regime_usd_rub=79.08,
     ),
 }
 

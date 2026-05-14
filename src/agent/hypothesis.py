@@ -26,7 +26,20 @@ _CONTEXT_COLUMNS = [
 
 
 def _load_regime() -> dict:
-    """Return current market regime from db/current_regime.json (written by Revizor)."""
+    """Return current market regime.
+
+    When EXPERIMENT_MODE is active, the regime is the median of the active
+    window (so a Train run on 2022-2023 data does not get a 2026 regime
+    injected). Otherwise read from db/current_regime.json (written by Revizor).
+    """
+    from src.agent import experiment_v1
+    w = experiment_v1.get_window()
+    if w is not None:
+        return {
+            "key_rate": w.regime_key_rate_pct,
+            "usd_rub": w.regime_usd_rub,
+            "updated": f"experiment_v1 {w.mode} window median",
+        }
     try:
         return json.loads(_REGIME_PATH.read_text(encoding="utf-8"))
     except Exception:

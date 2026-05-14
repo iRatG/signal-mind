@@ -516,7 +516,31 @@ def apply_fixes(result: AuditResult):
       db/current_regime.json      — live key_rate + USD/RUB from DuckDB
       db/convergence_blacklist.json — fingerprints that caused convergence traps
       db/forbidden_patterns.md    — appends any newly detected aliasing patterns
+
+    When EXPERIMENT_MODE is active (Experiment v1 anti-snoop rule §7), config
+    patches are skipped — only the audit report is written. Vault re-index still
+    runs.
     """
+    from src.agent import experiment_v1
+    if experiment_v1.is_active():
+        w = experiment_v1.get_window()
+        print(
+            f"[revizor] EXPERIMENT_MODE={w.mode} active — apply_fixes SKIPPED "
+            f"(anti-snoop: forbidden/blacklist/regime frozen between Train and Test)",
+            flush=True,
+        )
+        # Vault re-index is still useful and does not affect the experiment config.
+        try:
+            from src.parsers.obsidian_indexer import index_vault
+            stats = index_vault()
+            print(
+                f"[revizor] Vault re-indexed -> {stats.get('chunks', 0)} chunks",
+                flush=True,
+            )
+        except Exception as e:
+            print(f"[revizor] Vault re-index skipped: {e}", flush=True)
+        return
+
     # 1. current_regime.json — always refresh from live data
     regime = _query_current_regime()
     REGIME_PATH.write_text(json.dumps(regime, indent=2, ensure_ascii=False), encoding="utf-8")
