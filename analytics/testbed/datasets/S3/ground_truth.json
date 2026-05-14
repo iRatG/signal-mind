@@ -1,0 +1,39 @@
+{
+  "dataset": "S3",
+  "name": "Known signal at lag 14, r=-0.3",
+  "description": "A controlled signal is injected so that market_return[t] is linearly dependent on standardised news_mentions[t-14] with Pearson correlation TRUE_R = -0.3 (asymptotic). The dependency is on RETURNS, not levels.",
+  "n_days": 1000,
+  "n_seeds": 100,
+  "data_generating_process": {
+    "news_mentions": "Poisson(lambda=20.0)",
+    "market_return": "TRUE_R * z(news[t-14]) + sqrt(1-TRUE_R^2) * z(eps), scaled by sigma=0.01",
+    "TRUE_R": -0.3,
+    "LAG": 14
+  },
+  "true_signals": [
+    {
+      "news_field": "news_mentions",
+      "target_field": "market_return",
+      "lag_days": 14,
+      "expected_r": -0.3,
+      "direction": "negative"
+    }
+  ],
+  "expected_method_behavior": {
+    "should_detect_at_lags": [
+      14
+    ],
+    "should_not_detect_at_lags": [
+      1,
+      7,
+      30,
+      60,
+      90
+    ],
+    "expected_tpr_at_lag14": ">= 0.80",
+    "comment": "If a method's TPR at lag=14 is < 60%, it lacks statistical power for r=0.3 at n=1000. If it ALSO confirms at other lags, it has poor lag specificity."
+  },
+  "use_in_phase_A": "CALIBRATION (with S1, S4, S5)",
+  "use_for_loss_function": "beta * (1 - TPR_S3_at_correct_lag)",
+  "tied_to_mistakes": []
+}

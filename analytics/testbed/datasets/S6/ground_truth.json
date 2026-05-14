@@ -1,0 +1,25 @@
+{
+  "dataset": "S6",
+  "name": "Hidden confounder (key_rate drives both)",
+  "description": "key_rate_pct follows a slow AR(1) process. Both news_mentions and market_return are driven by it: more news when rates are high, market falls when rates rise. There is NO direct causal news → market mechanism. A naive correlation method will wrongly confirm a signal; a Granger-causal method, or one that conditions on key_rate, should not.",
+  "n_days": 1000,
+  "n_seeds": 100,
+  "data_generating_process": {
+    "key_rate_pct": "AR(1) around mean 12.0, persistence 0.97, innovation sigma 0.5",
+    "news_mentions": "Poisson(lambda = max(1, 10.0 + 0.6 * (rate - mean)))",
+    "market_return": "-0.0015 * (rate - mean) + N(0, 0.01^2)",
+    "direct_news_to_market_link": "NONE — confounded by key_rate"
+  },
+  "true_signals": [],
+  "expected_method_behavior": {
+    "naive_correlation": "will see spurious correlation, false confirm",
+    "granger_causal": "should not confirm news→market once rate is conditioned",
+    "var_with_rate": "impulse response of market to news should be near zero",
+    "comment": "This is the second HOLD-OUT dataset. It distinguishes methods that handle confounding from those that don't."
+  },
+  "use_in_phase_A": "HOLD-OUT for ensemble final evaluation (with S2)",
+  "use_for_loss_function": "alpha * FPR_S6 — the causal-discipline check",
+  "tied_to_mistakes": [
+    "M008"
+  ]
+}

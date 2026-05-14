@@ -1,0 +1,24 @@
+{
+  "dataset": "S2",
+  "name": "Spurious trend (CORR-on-levels trap)",
+  "description": "Two independent stochastic processes that both happen to trend — news_mentions has Poisson mean linearly increasing, market_close drifts down. There is NO causal link, only a shared time index. A method that correlates on levels will see a strong false signal; a method that correlates on returns will see none.",
+  "n_days": 1000,
+  "n_seeds": 100,
+  "data_generating_process": {
+    "news_mentions": "Poisson(lambda = 10.0 + 0.02 * t)",
+    "market_close": "200 * exp(cumsum(N(-0.0006, 0.01^2)))",
+    "joint_distribution": "independent (only share calendar t)"
+  },
+  "true_signals": [],
+  "expected_method_behavior": {
+    "should_detect_any_signal": false,
+    "corr_on_levels_expected_fpr": ">= 0.80",
+    "corr_on_returns_expected_fpr": "≈ 0.05",
+    "comment": "S2 is the headline diagnostic for mistake M001 in the catalogue. It separates methods that handle non-stationarity from those that don't. This is also our HOLD-OUT dataset (with S6)."
+  },
+  "use_in_phase_A": "HOLD-OUT for ensemble final evaluation",
+  "use_for_loss_function": "alpha * FPR_S2 is the strongest signal of M001-compatibility",
+  "tied_to_mistakes": [
+    "M001"
+  ]
+}

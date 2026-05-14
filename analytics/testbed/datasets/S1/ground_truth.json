@@ -1,0 +1,24 @@
+{
+  "dataset": "S1",
+  "name": "Pure noise",
+  "description": "Two independent series with no causal link. news_mentions is a Poisson process (lambda=20), market is a geometric random walk with sigma=0.01 log-returns. There is NO signal.",
+  "n_days": 1000,
+  "n_seeds": 100,
+  "data_generating_process": {
+    "news_mentions": "Poisson(lambda=20.0)",
+    "market_close": "100 * exp(cumsum(N(0, sigma))) with sigma=0.01",
+    "joint_distribution": "independent"
+  },
+  "true_signals": [],
+  "expected_method_behavior": {
+    "should_detect_any_signal": false,
+    "expected_fpr_at_p05": 0.05,
+    "acceptable_fpr_range_at_p05": [
+      0.02,
+      0.1
+    ],
+    "comment": "A method that flags >10% of S1 seeds as containing a signal is broken — it generates false positives on pure noise."
+  },
+  "use_in_phase_A": "FPR baseline; both calibration and hold-out methods",
+  "use_for_loss_function": "alpha * FPR_S1 component"
+}

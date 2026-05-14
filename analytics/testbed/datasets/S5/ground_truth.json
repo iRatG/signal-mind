@@ -1,0 +1,79 @@
+{
+  "dataset": "S5",
+  "name": "Multi-signal — 2 real + 1 noise",
+  "description": "Three news topics in one dataset. topic_A has a real -0.30 correlation with market_return at lag 7; topic_B has +0.20 at lag 30; topic_C has no link. A correct method ranks A and B above C, and confirms only A and B.",
+  "n_days": 1000,
+  "n_seeds": 100,
+  "data_generating_process": {
+    "topics": [
+      {
+        "name": "topic_A",
+        "process": "Poisson(20.0)"
+      },
+      {
+        "name": "topic_B",
+        "process": "Poisson(20.0)"
+      },
+      {
+        "name": "topic_C",
+        "process": "Poisson(20.0)"
+      }
+    ],
+    "market_return": "sum_i r_i * z(topic_i[t - lag_i]) + sqrt(1 - sum r_i^2) * z(eps), scaled by 0.01",
+    "topic_specs": [
+      {
+        "name": "topic_A",
+        "lag": 7,
+        "r": -0.3
+      },
+      {
+        "name": "topic_B",
+        "lag": 30,
+        "r": 0.2
+      },
+      {
+        "name": "topic_C",
+        "lag": 14,
+        "r": 0.0
+      }
+    ]
+  },
+  "true_signals": [
+    {
+      "news_field": "topic_A",
+      "target_field": "market_return",
+      "lag_days": 7,
+      "expected_r": -0.3,
+      "direction": "negative"
+    },
+    {
+      "news_field": "topic_B",
+      "target_field": "market_return",
+      "lag_days": 30,
+      "expected_r": 0.2,
+      "direction": "positive"
+    }
+  ],
+  "noise_signals": [
+    {
+      "news_field": "topic_C",
+      "comment": "No causal link — should not be confirmed at any lag"
+    }
+  ],
+  "expected_method_behavior": {
+    "should_confirm": [
+      "topic_A",
+      "topic_B"
+    ],
+    "should_reject": [
+      "topic_C"
+    ],
+    "comment": "Tests multi-hypothesis discipline. With BH FDR at q<0.1, an unbiased pipeline rejects topic_C while keeping A and B."
+  },
+  "use_in_phase_A": "CALIBRATION (with S1, S3, S4)",
+  "use_for_loss_function": "0.5 * (1 - TPR_real) + 0.5 * FPR_noise_topic",
+  "tied_to_mistakes": [
+    "M002",
+    "M004"
+  ]
+}

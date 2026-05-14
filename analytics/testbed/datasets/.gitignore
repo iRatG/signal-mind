@@ -1,0 +1,5 @@
+# Generated parquet datasets — regenerable from builders/, do not commit.
+# ground_truth.json files DO commit — they encode the experimental design.
+
+*.parquet
+!ground_truth.json

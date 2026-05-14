@@ -1,0 +1,33 @@
+{
+  "dataset": "S4",
+  "name": "Regime-dependent signal",
+  "description": "Signal active only in high_rate regime (first half of series, key_rate≈18.0%); zero in low_rate regime (second half, key_rate≈8.0%). Lag 7, r_high=-0.5 on returns.",
+  "n_days": 1000,
+  "n_seeds": 100,
+  "data_generating_process": {
+    "regime": "first half high_rate, second half low_rate",
+    "key_rate_pct": "18.0 in high_rate else 8.0, plus N(0, 0.5) noise",
+    "news_mentions": "Poisson(20.0)",
+    "market_return": "r * z(news[t-7]) + sqrt(1-r^2) * z(eps), r=r_high in high_rate else 0, scaled by 0.01"
+  },
+  "true_signals": [
+    {
+      "news_field": "news_mentions",
+      "target_field": "market_return",
+      "lag_days": 7,
+      "expected_r_in_regime": -0.5,
+      "regime_filter": "key_rate_pct > 15",
+      "direction": "negative"
+    }
+  ],
+  "expected_method_behavior": {
+    "regime_aware_method": "should detect strong signal in high_rate, reject in low_rate",
+    "regime_blind_method": "should see diluted signal (~-0.25), borderline confirm",
+    "comment": "Distinguishes methods that handle regime conditioning from those that don't. Calibration dataset."
+  },
+  "use_in_phase_A": "CALIBRATION (with S1, S3, S5)",
+  "use_for_loss_function": "beta * (1 - TPR_S4_in_high_regime)",
+  "tied_to_mistakes": [
+    "M003"
+  ]
+}
