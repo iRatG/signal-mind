@@ -1,0 +1,3 @@
+# Generated DuckDB catalog — regenerable from catalog.py
+*.duckdb
+*.duckdb.wal
