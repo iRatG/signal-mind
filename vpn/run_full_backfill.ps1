@@ -10,7 +10,7 @@
 
 [CmdletBinding()]
 param(
-    [string]$From    = "2025-09-01",
+    [string]$From    = "2025-09-20",
     [string]$To      = "today",
     [string]$Sources = "bbc,guardian,fox,aljazeera,euronews,france24",
     [string]$RunId   = "en_archive_full_v1",

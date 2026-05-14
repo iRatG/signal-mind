@@ -97,6 +97,23 @@ def main() -> int:
 
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
+    # Pre-warm the SSH tunnel ourselves with a generous timeout. Doing this
+    # before launching the loader subprocess (rather than letting HttpClient
+    # do it under its 8s default) prevents a flaky cold-start race when the
+    # SSH handshake + first-time known_hosts accept-new push past 8s.
+    print(f"[{ts_now()}] checking SSH tunnel…", flush=True)
+    try:
+        from src.utils.proxy import is_vpn_up, start_vpn
+        if is_vpn_up():
+            print(f"[{ts_now()}] tunnel already up — reusing", flush=True)
+        else:
+            t0 = time.time()
+            start_vpn(timeout=30.0)
+            print(f"[{ts_now()}] tunnel up in {time.time()-t0:.2f}s", flush=True)
+    except Exception as e:
+        print(f"[{ts_now()}] !! VPN tunnel failed: {type(e).__name__}: {e}", flush=True)
+        return 2
+
     cmd = [
         sys.executable, "-u",
         str(ROOT / "en_news_archive_loader.py"),
