@@ -17,6 +17,7 @@ import pandas as pd
 from scipy import stats
 
 from .base import Hypothesis, MethodVerdict, shift_forward
+from .evaluator import GateThresholds, evaluate
 
 
 M1_CONFIG: dict = {
@@ -80,15 +81,19 @@ class M1CorrLevels:
         y = target[mask]
         r, p = stats.pearsonr(x, y)
 
-        confirmed = (abs(r) >= R_MIN) and (n >= N_MIN) and (p < P_MAX)
+        gate = evaluate(
+            r=float(r), p_value=float(p), n=n,
+            thresholds=GateThresholds(r_min=R_MIN, n_min=N_MIN, p_max=P_MAX),
+        )
         return MethodVerdict(
-            confirmed=bool(confirmed),
+            confirmed=gate.confirmed,
             score=float(r),
             p_value=float(p),
             n=n,
             extra={
                 "r_min": R_MIN, "n_min": N_MIN, "p_max": P_MAX,
                 "target_used": "market_close (levels)",
+                "gate_reason": gate.reason,
             },
         )
 
