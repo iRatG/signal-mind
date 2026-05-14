@@ -3,6 +3,10 @@
 Working  → context string passed between iterations (in agent.py)
 Short-term → db/journals/YYYY-MM-DD.md  (one entry per iteration)
 Long-term  → db/knowledge.md             (LLM-synthesized, updated each session)
+
+When EXPERIMENT_MODE is active, the long-term file is redirected to a
+window-specific file (e.g. db/knowledge_v1_train.md) so prior findings cannot
+leak between experiment phases.
 """
 from datetime import datetime
 from pathlib import Path
@@ -15,6 +19,15 @@ KNOWLEDGE_FILE = _ROOT / "db" / "knowledge.md"
 PRINCIPLES_FILE = _ROOT / "analysis_principles.md"
 
 
+def _knowledge_file() -> Path:
+    """Return the active knowledge file path — window-specific in EXPERIMENT_MODE."""
+    from src.agent import experiment_v1
+    w = experiment_v1.get_window()
+    if w is None:
+        return KNOWLEDGE_FILE
+    return _ROOT / "db" / f"knowledge_v1_{w.name}.md"
+
+
 def load_principles() -> str:
     if PRINCIPLES_FILE.exists():
         return PRINCIPLES_FILE.read_text(encoding="utf-8").strip()
@@ -22,8 +35,8 @@ def load_principles() -> str:
 
 
 def load_knowledge() -> str:
-    if KNOWLEDGE_FILE.exists():
-        return KNOWLEDGE_FILE.read_text(encoding="utf-8").strip()
+    if _knowledge_file().exists():
+        return _knowledge_file().read_text(encoding="utf-8").strip()
     return ""
 
 
@@ -80,8 +93,8 @@ def update_knowledge(signals: list[dict]) -> bool:
     synthesis = chat([{"role": "user", "content": prompt}], temperature=0.2)
 
     ts = datetime.now().strftime("%Y-%m-%d %H:%M")
-    KNOWLEDGE_FILE.parent.mkdir(exist_ok=True)
-    with open(KNOWLEDGE_FILE, "w", encoding="utf-8") as f:
+    _knowledge_file().parent.mkdir(exist_ok=True)
+    with open(_knowledge_file(), "w", encoding="utf-8") as f:
         f.write(f"# Signal Mind — Accumulated Knowledge\n")
         f.write(f"_Last updated: {ts}_\n\n")
         f.write(synthesis.strip() + "\n")

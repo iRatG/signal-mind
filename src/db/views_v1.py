@@ -75,6 +75,27 @@ def create_split_views(con: duckdb.DuckDBPyConnection) -> None:
             WHERE news_date BETWEEN DATE '{start}' AND DATE '{end}'
         """)
 
+        con.execute(f"DROP VIEW IF EXISTS v_{name}_market_data")
+        con.execute(f"""
+            CREATE VIEW v_{name}_market_data AS
+            SELECT * FROM market_data
+            WHERE trade_date BETWEEN DATE '{start}' AND DATE '{end}'
+        """)
+
+        con.execute(f"DROP VIEW IF EXISTS v_{name}_moex_indices")
+        con.execute(f"""
+            CREATE VIEW v_{name}_moex_indices AS
+            SELECT * FROM moex_indices
+            WHERE trade_date BETWEEN DATE '{start}' AND DATE '{end}'
+        """)
+
+        con.execute(f"DROP VIEW IF EXISTS v_{name}_forex_cbr")
+        con.execute(f"""
+            CREATE VIEW v_{name}_forex_cbr AS
+            SELECT * FROM forex_cbr
+            WHERE trade_date BETWEEN DATE '{start}' AND DATE '{end}'
+        """)
+
 
 def verify_views(con: duckdb.DuckDBPyConnection) -> dict:
     out: dict = {}
@@ -82,6 +103,9 @@ def verify_views(con: duckdb.DuckDBPyConnection) -> dict:
         ctx_rows = con.execute(f"SELECT COUNT(*) FROM v_{name}_ctx").fetchone()[0]
         sect_rows = con.execute(f"SELECT COUNT(*) FROM v_{name}_sectors").fetchone()[0]
         news_rows = con.execute(f"SELECT COUNT(*) FROM v_{name}_news").fetchone()[0]
+        md_rows = con.execute(f"SELECT COUNT(*) FROM v_{name}_market_data").fetchone()[0]
+        mi_rows = con.execute(f"SELECT COUNT(*) FROM v_{name}_moex_indices").fetchone()[0]
+        fx_rows = con.execute(f"SELECT COUNT(*) FROM v_{name}_forex_cbr").fetchone()[0]
         ctx_dates = con.execute(
             f"SELECT MIN(trade_date), MAX(trade_date) FROM v_{name}_ctx"
         ).fetchone()
@@ -93,6 +117,9 @@ def verify_views(con: duckdb.DuckDBPyConnection) -> dict:
             "v_ctx_max": str(ctx_dates[1]) if ctx_dates[1] else None,
             "v_sectors_rows": sect_rows,
             "v_news_rows": news_rows,
+            "v_market_data_rows": md_rows,
+            "v_moex_indices_rows": mi_rows,
+            "v_forex_cbr_rows": fx_rows,
         }
     return out
 
@@ -118,7 +145,7 @@ def write_manifest(verification: dict, commit_hash: str | None = None) -> None:
         "views_created": [
             f"v_{name}_{kind}"
             for name in WINDOWS
-            for kind in ("ctx", "sectors", "news")
+            for kind in ("ctx", "sectors", "news", "market_data", "moex_indices", "forex_cbr")
         ],
     }
     MANIFEST_PATH.write_text(

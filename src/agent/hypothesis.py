@@ -24,6 +24,32 @@ _CONTEXT_COLUMNS = [
     "imoex_close", "usd_rub", "eur_rub", "brent_usd", "gold_usd", "key_rate_pct",
 ]
 
+def _sanitize_sql_for_window(sql: str) -> tuple[str, list[str]]:
+    """When EXPERIMENT_MODE is active, rewrite unfiltered view/table names to the
+    window-filtered equivalents. Returns (rewritten_sql, list_of_rewrites).
+
+    Outside experiment mode this is a no-op.
+    """
+    from src.agent import experiment_v1
+    w = experiment_v1.get_window()
+    if w is None:
+        return sql, []
+
+    warnings: list[str] = []
+    rewrites = {
+        r"\bv_market_context\b": w.ctx_view,
+        r"\bv_moex_sectors\b":   w.sectors_view,
+        r"\bnews_daily\b":       w.news_view,
+        r"\bmarket_data\b":      w.market_data_view,
+        r"\bmoex_indices\b":     w.moex_indices_view,
+        r"\bforex_cbr\b":        w.forex_cbr_view,
+    }
+    for pat, repl in rewrites.items():
+        if re.search(pat, sql, re.IGNORECASE):
+            warnings.append(f"rewrote {pat} -> {repl}")
+            sql = re.sub(pat, repl, sql, flags=re.IGNORECASE)
+    return sql, warnings
+
 
 def _load_regime() -> dict:
     """Return current market regime.
@@ -323,6 +349,14 @@ def run_hypothesis_cycle(
         tel.t_llm_gen_ms       = tel_seed2.get("t_llm_gen_ms", tel.t_llm_gen_ms)
         tel.tok_gen_in        += tel_seed2.get("tok_gen_in", 0)
         tel.tok_gen_out       += tel_seed2.get("tok_gen_out", 0)
+
+    # Window sanitization: rewrite unfiltered names + warn on raw-table leaks.
+    sanitized, leak_warnings = _sanitize_sql_for_window(hyp["sql"])
+    if sanitized != hyp["sql"]:
+        print(f"  [v1] sanitized SQL: {'; '.join(leak_warnings)}")
+        hyp["sql"] = sanitized
+    elif leak_warnings:
+        print(f"  [v1] WARN: {'; '.join(leak_warnings)}")
 
     print("  Executing SQL (with repair)...")
     _t_sql = time.time()

@@ -89,35 +89,63 @@ LAG HYPOTHESIS TEMPLATE (news_daily → market, lag N days):
 """
 
 
-def _experiment_overlay() -> str:
-    """If EXPERIMENT_MODE is active, prepend a hard override that pins the agent
-    to the current window and replaces unfiltered tables/views with the
-    window-filtered ones from src/db/views_v1.py.
-    """
-    w = experiment_v1.get_window()
-    if w is None:
-        return ""
+def _experiment_overlay(w) -> str:
+    """Hard-constraint header when EXPERIMENT_MODE is active."""
     topics = ", ".join(w.disqualified_topics) if w.disqualified_topics else "(none)"
     return (
         f"[EXPERIMENT v1 / {w.mode.upper()} — HARD CONSTRAINT]\n"
         f"You are operating in window {w.start} -> {w.end}.\n"
         f"You MUST NOT reference, query, or assume facts for any date OUTSIDE this window.\n"
-        f"You MUST use these window-filtered views instead of the raw ones below:\n"
-        f"  {w.ctx_view}     — replaces v_market_context\n"
-        f"  {w.sectors_view} — replaces v_moex_sectors\n"
-        f"  {w.news_view}    — replaces news_daily\n"
+        f"You MUST use ONLY these window-filtered views (the raw ones are HIDDEN below):\n"
+        f"  {w.ctx_view}     — daily market context for this window\n"
+        f"  {w.sectors_view} — MOEX sector indices for this window\n"
+        f"  {w.news_view}    — daily news topic counts for this window\n"
         f"Disqualified topics in this window (coverage < 30%): {topics}.\n"
         f"  -> Do NOT generate hypotheses involving disqualified topics.\n"
-        f"Raw tables moex_indices / market_data / forex_cbr / key_rate are still allowed,\n"
-        f"  but every WHERE clause MUST include 'trade_date BETWEEN DATE ''{w.start}'' AND DATE ''{w.end}'''.\n"
+        f"For raw tables (moex_indices, market_data, forex_cbr, key_rate) every\n"
+        f"  WHERE clause MUST include 'trade_date BETWEEN DATE ''{w.start}'' AND DATE ''{w.end}'''.\n"
         f"\n"
-        f"[FULL SCHEMA below — but use the window-filtered views above whenever possible]\n"
+        f"[SCHEMA below — all references to news_daily / v_market_context / v_moex_sectors\n"
+        f" have been rewritten to the window-filtered equivalents]\n"
         f"\n"
     )
 
 
+def _rewrite_for_window(schema_text: str, w) -> str:
+    """Replace unfiltered view/table names with their window-filtered equivalents
+    so the LLM does not even see the raw names in its prompt.
+    """
+    import re
+    rewrites = {
+        r"\bv_market_context\b": w.ctx_view,
+        r"\bv_moex_sectors\b":   w.sectors_view,
+        r"\bnews_daily\b":       w.news_view,
+        r"\bmarket_data\b":      w.market_data_view,
+        r"\bmoex_indices\b":     w.moex_indices_view,
+        r"\bforex_cbr\b":        w.forex_cbr_view,
+    }
+    for pat, repl in rewrites.items():
+        schema_text = re.sub(pat, repl, schema_text)
+    # Replace the generic "2022-01-01 to 2026-04-29" range hint with the window range.
+    schema_text = re.sub(
+        r"\b2022-01-01\s+to\s+2026-04-29\b",
+        f"{w.start} to {w.end}",
+        schema_text,
+    )
+    # Replace generic news_daily date hint "2021-2025".
+    schema_text = re.sub(
+        r"\b2021-2025\b",
+        f"{w.start[:4]}-{w.end[:4]}",
+        schema_text,
+    )
+    return schema_text
+
+
 def get_schema() -> str:
-    return (_experiment_overlay() + SCHEMA_HINT).strip()
+    w = experiment_v1.get_window()
+    if w is None:
+        return SCHEMA_HINT.strip()
+    return (_experiment_overlay(w) + _rewrite_for_window(SCHEMA_HINT, w)).strip()
 
 
 def get_table_stats() -> str:

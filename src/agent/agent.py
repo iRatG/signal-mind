@@ -75,7 +75,16 @@ CONVERGENCE_SESSION_LIMIT = 3   # force jump after this many repeats within a se
 
 
 def _load_blacklist() -> set[str]:
-    """Load cross-session convergence blacklist written by Revizor."""
+    """Load cross-session convergence blacklist written by Revizor.
+
+    Returns an empty set when EXPERIMENT_MODE is active — the cross-session
+    blacklist reflects prior marathons and would leak prior findings into the
+    Train window. In-session anti-convergence still works via the per-session
+    counter.
+    """
+    from src.agent import experiment_v1
+    if experiment_v1.is_active():
+        return set()
     try:
         data = json.loads(BLACKLIST_PATH.read_text(encoding="utf-8"))
         return set(data.get("blacklist", []))

@@ -28,6 +28,9 @@ class Window:
     ctx_view: str        # e.g. 'v_train_ctx'
     sectors_view: str    # e.g. 'v_train_sectors'
     news_view: str       # e.g. 'v_train_news'
+    market_data_view: str   # e.g. 'v_train_market_data'
+    moex_indices_view: str  # e.g. 'v_train_moex_indices'
+    forex_cbr_view: str     # e.g. 'v_train_forex_cbr'
     disqualified_topics: tuple[str, ...]
     # Window-typical regime — used to keep regime injection consistent with the
     # data the agent actually sees. Values are window medians from data_audit_v1.
@@ -44,6 +47,9 @@ _WINDOWS: dict[str, Window] = {
         ctx_view="v_train_ctx",
         sectors_view="v_train_sectors",
         news_view="v_train_news",
+        market_data_view="v_train_market_data",
+        moex_indices_view="v_train_moex_indices",
+        forex_cbr_view="v_train_forex_cbr",
         disqualified_topics=("ruble",),
         regime_key_rate_pct=8.0,
         regime_usd_rub=74.94,
@@ -56,6 +62,9 @@ _WINDOWS: dict[str, Window] = {
         ctx_view="v_val_ctx",
         sectors_view="v_val_sectors",
         news_view="v_val_news",
+        market_data_view="v_val_market_data",
+        moex_indices_view="v_val_moex_indices",
+        forex_cbr_view="v_val_forex_cbr",
         disqualified_topics=("ruble", "sanctions"),
         regime_key_rate_pct=18.5,
         regime_usd_rub=91.26,
@@ -68,6 +77,9 @@ _WINDOWS: dict[str, Window] = {
         ctx_view="v_test_ctx",
         sectors_view="v_test_sectors",
         news_view="v_test_news",
+        market_data_view="v_test_market_data",
+        moex_indices_view="v_test_moex_indices",
+        forex_cbr_view="v_test_forex_cbr",
         disqualified_topics=(),
         regime_key_rate_pct=16.0,
         regime_usd_rub=79.08,
