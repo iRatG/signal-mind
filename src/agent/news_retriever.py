@@ -13,6 +13,8 @@ cost of LOWER(text).
 import sqlite3
 from pathlib import Path
 
+from src.agent import experiment_v1
+
 NEWS_DB = Path(__file__).parents[2] / "db" / "hf_news.db"
 
 # Russian hypothesis stem -> [EN keyword 1, EN keyword 2, RU stem].
@@ -83,7 +85,16 @@ def get_news_context(
     Search hf_news.db for articles relevant to the hypothesis.
     Returns a formatted block for LLM prompt injection, or "" on failure.
     Never raises — news retrieval is optional.
+
+    When EXPERIMENT_MODE is active, both ends of the date range are clamped
+    to the active window — the agent cannot peek at news outside its split.
     """
+    w = experiment_v1.get_window()
+    if w is not None:
+        if date_from < w.start:
+            date_from = w.start
+        if date_to > w.end:
+            date_to = w.end
     keywords = _extract_keywords(hypothesis)
     # Use up to 5 keywords in LIKE — covers 2 EN + 1 RU per matched topic plus a few extras
     like_conditions = " OR ".join(
