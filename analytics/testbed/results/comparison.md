@@ -1,7 +1,7 @@
 # Methods comparison on testbed
 
-Generated: 2026-05-14T20:02:32.898160+00:00
-Methods compared: 4
+Generated: 2026-05-15T02:18:54.131283+00:00
+Methods compared: 6
 
 ## Penalty (mistakes catalogue)
 
@@ -11,39 +11,41 @@ Methods compared: 4
 | M2_corr_returns_hac | 0.9 | 0.0 | 0.9 | M008 |
 | M3_granger_hac | 0.9 | 0.135 | 1.9 | M008,M009 |
 | M4_event_study_hac | 0.9 | 0.065 | 0.9 | M008 |
+| M5_var_orth_irf | 0.9 | 0.0067 | 0.9 | M008 |
+| M6_lgbm_walkforward | 0.0 | 0.1183 | 1.0 | M009 |
 
 ## TPR per dataset
 
-| dataset | M1_corr_levels | M2_corr_returns_hac | M3_granger_hac | M4_event_study_hac |
-|---|---|---|---|---|
-| S1 | nan | nan | nan | nan |
-| S2 | nan | nan | nan | nan |
-| S3 | 0.0000 | 0.0000 | 1.0000 | 1.0000 |
-| S4 | 0.0000 | 1.0000 | 1.0000 | 1.0000 |
-| S5 | 0.0000 | 0.0000 | 1.0000 | 0.9150 |
-| S6 | nan | nan | nan | nan |
+| dataset | M1_corr_levels | M2_corr_returns_hac | M3_granger_hac | M4_event_study_hac | M5_var_orth_irf | M6_lgbm_walkforward |
+|---|---|---|---|---|---|---|
+| S1 | nan | nan | nan | nan | nan | nan |
+| S2 | nan | nan | nan | nan | nan | nan |
+| S3 | 0.0000 | 0.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| S4 | 0.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| S5 | 0.0000 | 0.0000 | 1.0000 | 0.9150 | 1.0000 | 0.9900 |
+| S6 | nan | nan | nan | nan | nan | nan |
 
 ## FPR per dataset
 
-| dataset | M1_corr_levels | M2_corr_returns_hac | M3_granger_hac | M4_event_study_hac |
-|---|---|---|---|---|
-| S1 | 0.0000 | 0.0000 | 0.0100 | 0.0283 |
-| S2 | 0.9033 | 0.0000 | 0.0083 | 0.0283 |
-| S3 | 0.0000 | 0.0000 | 0.0220 | 0.0180 |
-| S4 | 0.0000 | 0.0000 | 0.0127 | 0.0227 |
-| S5 | 0.0000 | 0.0000 | 0.0081 | 0.0169 |
-| S6 | 0.0000 | 0.0000 | 0.1350 | 0.0650 |
+| dataset | M1_corr_levels | M2_corr_returns_hac | M3_granger_hac | M4_event_study_hac | M5_var_orth_irf | M6_lgbm_walkforward |
+|---|---|---|---|---|---|---|
+| S1 | 0.0000 | 0.0000 | 0.0100 | 0.0283 | 0.0067 | 0.0350 |
+| S2 | 0.9033 | 0.0000 | 0.0083 | 0.0283 | 0.0017 | 0.0333 |
+| S3 | 0.0000 | 0.0000 | 0.0220 | 0.0180 | 0.0100 | 0.0480 |
+| S4 | 0.0000 | 0.0000 | 0.0127 | 0.0227 | 0.0018 | 0.0309 |
+| S5 | 0.0000 | 0.0000 | 0.0081 | 0.0169 | 0.0044 | 0.0381 |
+| S6 | 0.0000 | 0.0000 | 0.1350 | 0.0650 | 0.0017 | 0.1183 |
 
 ## F1 per dataset
 
-| dataset | M1_corr_levels | M2_corr_returns_hac | M3_granger_hac | M4_event_study_hac |
-|---|---|---|---|---|
-| S1 | nan | nan | nan | nan |
-| S2 | nan | nan | nan | nan |
-| S3 | — | nan | 0.9479 | 0.9569 |
-| S4 | — | 1.0000 | 0.9346 | 0.8889 |
-| S5 | — | nan | 0.9685 | 0.8927 |
-| S6 | nan | nan | nan | nan |
+| dataset | M1_corr_levels | M2_corr_returns_hac | M3_granger_hac | M4_event_study_hac | M5_var_orth_irf | M6_lgbm_walkforward |
+|---|---|---|---|---|---|---|
+| S1 | nan | nan | nan | nan | nan | nan |
+| S2 | nan | nan | nan | nan | nan | nan |
+| S3 | — | nan | 0.9479 | 0.9569 | 0.9756 | 0.8929 |
+| S4 | — | 1.0000 | 0.9346 | 0.8889 | 0.9901 | 0.8547 |
+| S5 | — | nan | 0.9685 | 0.8927 | 0.9828 | 0.8627 |
+| S6 | nan | nan | nan | nan | nan | nan |
 
 ## Interpretation hints
 
