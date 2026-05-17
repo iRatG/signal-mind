@@ -1,0 +1,53 @@
+# Frozen ensemble configuration — Phase A.4
+# Generated: 2026-05-15
+# DO NOT MODIFY unless rerunning Phase A.3b search.
+
+ensemble:
+  label: "M5+M6/AND"
+  voting_rule: AND          # Both methods must confirm
+  k_of_n: "2 of 2"
+
+  methods:
+    - id: M5_var_orth_irf
+      module: analytics.testbed.methods.m5_var
+      description: >
+        Vector Autoregression with orthogonalised Impulse Response.
+        Fixed lag order = min(hyp.lag_days, 30).
+        Auto-includes key_rate as control variable when available (S6-guard).
+        p_max=0.01, n_min=150.
+
+    - id: M6_lgbm_walkforward
+      module: analytics.testbed.methods.m6_lgbm
+      description: >
+        LightGBM regression with TimeSeriesSplit walk-forward CV.
+        IC (Spearman) >= IC_MIN=0.03 AND bootstrap 5th-pct > 0.
+        Walk-forward CV built-in -> M008 does NOT fire.
+        n_min=200.
+
+loss_function:
+  alpha: 1.0     # avg_FPR weight
+  beta: 1.0      # (1 - avg_TPR) weight
+  gamma: 2.0     # mistakes-penalty multiplier
+  delta: 0.05    # complexity penalty per method
+
+testbed_metrics:
+  avg_FPR: 0.0000       # across S1 (pure noise), S2 (trend trap), S6 (confounder)
+  avg_TPR: 0.9967       # across S3 (r=-0.3), S4 (regime), S5 (multi-signal)
+  max_FPR_no_signal: 0.0000
+  pre_penalty: 0.0
+  post_penalty: 0.0
+  triggered_mistakes: []
+  Loss: 0.1033
+
+rationale: >
+  m5 provides causal discipline (key_rate Cholesky control kills the S6
+  confounder completely; FPR=0.17% on S6) and covers all true signals
+  at 100% TPR. m6's walk-forward CV cancels M008 for the joint ensemble
+  (pre-penalty drops from 0.9 to 0.0). The AND rule means both independent
+  methods must detect the signal, driving false-positive rate to effectively
+  zero across all no-signal testbed datasets.
+
+next_step: >
+  Phase A.5 — run ensemble on shuffled real Train data (signal_mind.duckdb).
+  Permute news dates with fixed seed, confirm rate should be <= 5%.
+  If > 10%, M009 fires, return to A.3b with updated catalog.
