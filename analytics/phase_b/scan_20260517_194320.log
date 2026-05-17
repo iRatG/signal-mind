@@ -1,0 +1,50 @@
+[19:43:20] Phase B Train Scanner started
+[19:43:20] DB: C:\project\signal_mind\db\signal_mind.duckdb
+[19:43:20] Instruments: ['USD_RUB', 'EUR_RUB', 'BRENT', 'SP500', 'MSCI_WORLD', 'DXY', 'MSCI_INDIA', 'CHINA_H_SHARES', 'FTSE_CHINA_50', 'GOLD', 'SILVER']
+[19:43:20] Topics: ['oil', 'rate', 'ruble', 'sanctions', 'inflation', 'banking', 'gold']
+[19:43:20] Lags: [1, 7, 14, 30, 60, 90]
+[19:43:20] Hypotheses per instrument: 42
+[19:43:20] Total Train hypotheses: 462
+[19:43:20] ------------------------------------------------------------
+[19:43:22] Ensemble: M5=M5_var_orth_irf AND M6=M6_lgbm_walkforward
+[19:43:22] Pre-loading Train data ...
+[19:43:22]   USD_RUB: 455 rows
+[19:43:22]   EUR_RUB: 455 rows
+[19:43:22]   BRENT: 451 rows
+[19:43:22]   SP500: 542 rows
+[19:43:22]   MSCI_WORLD: 455 rows
+[19:43:22]   DXY: 452 rows
+[19:43:23]   MSCI_INDIA: 450 rows
+[19:43:23]   CHINA_H_SHARES: 431 rows
+[19:43:23]   FTSE_CHINA_50: 431 rows
+[19:43:23]   GOLD: 356 rows
+[19:43:23]   SILVER: 354 rows
+[19:43:23] Pre-loading Val data ...
+[19:43:23]   USD_RUB: 348 rows
+[19:43:23]   EUR_RUB: 348 rows
+[19:43:23]   BRENT: 343 rows
+[19:43:23]   SP500: 414 rows
+[19:43:23]   MSCI_WORLD: 348 rows
+[19:43:23]   DXY: 343 rows
+[19:43:23]   MSCI_INDIA: 347 rows
+[19:43:23]   CHINA_H_SHARES: 324 rows
+[19:43:23]   FTSE_CHINA_50: 326 rows
+[19:43:23]   GOLD: 263 rows
+[19:43:23]   SILVER: 268 rows
+[19:43:23] Pre-loading Test data ...
+[19:43:23]   USD_RUB: 173 rows
+[19:43:23]   EUR_RUB: 173 rows
+[19:43:23]   BRENT: 170 rows
+[19:43:23]   SP500: 207 rows
+[19:43:23]   MSCI_WORLD: 200 rows
+[19:43:23]   DXY: 171 rows
+[19:43:23]   MSCI_INDIA: 171 rows
+[19:43:23]   CHINA_H_SHARES: 157 rows
+[19:43:23]   FTSE_CHINA_50: 160 rows
+[19:43:24]   GOLD: 154 rows
+[19:43:24]   SILVER: 155 rows
+[19:43:24] ------------------------------------------------------------
+[19:43:24] Starting Train scan (462 hypotheses) ...
+[19:43:40]   progress 50/462 (11%)  confirmed so far: 0
+[19:43:54]   progress 100/462 (22%)  confirmed so far: 0
+[19:44:09]   progress 150/462 (32%)  confirmed so far: 0

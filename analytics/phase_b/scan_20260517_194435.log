@@ -1,0 +1,65 @@
+[19:44:35] Phase B Train Scanner started
+[19:44:35] DB: C:\project\signal_mind\db\signal_mind.duckdb
+[19:44:35] Instruments: ['USD_RUB', 'EUR_RUB', 'BRENT', 'SP500', 'MSCI_WORLD', 'DXY', 'MSCI_INDIA', 'CHINA_H_SHARES', 'FTSE_CHINA_50', 'GOLD', 'SILVER']
+[19:44:35] Topics: ['oil', 'rate', 'ruble', 'sanctions', 'inflation', 'banking', 'gold']
+[19:44:35] Lags: [1, 7, 14, 30, 60, 90]
+[19:44:35] Hypotheses per instrument: 42
+[19:44:35] Total Train hypotheses: 462
+[19:44:35] ------------------------------------------------------------
+[19:44:37] Ensemble: M5=M5_var_orth_irf AND M6=M6_lgbm_walkforward
+[19:44:37] Pre-loading Train data ...
+[19:44:37]   USD_RUB: 455 rows
+[19:44:37]   EUR_RUB: 455 rows
+[19:44:38]   BRENT: 451 rows
+[19:44:38]   SP500: 542 rows
+[19:44:38]   MSCI_WORLD: 455 rows
+[19:44:38]   DXY: 452 rows
+[19:44:38]   MSCI_INDIA: 450 rows
+[19:44:38]   CHINA_H_SHARES: 431 rows
+[19:44:38]   FTSE_CHINA_50: 431 rows
+[19:44:38]   GOLD: 356 rows
+[19:44:38]   SILVER: 354 rows
+[19:44:38] Pre-loading Val data ...
+[19:44:38]   USD_RUB: 348 rows
+[19:44:38]   EUR_RUB: 348 rows
+[19:44:38]   BRENT: 343 rows
+[19:44:38]   SP500: 414 rows
+[19:44:38]   MSCI_WORLD: 348 rows
+[19:44:38]   DXY: 343 rows
+[19:44:38]   MSCI_INDIA: 347 rows
+[19:44:38]   CHINA_H_SHARES: 324 rows
+[19:44:38]   FTSE_CHINA_50: 326 rows
+[19:44:38]   GOLD: 263 rows
+[19:44:38]   SILVER: 268 rows
+[19:44:38] Pre-loading Test data ...
+[19:44:38]   USD_RUB: 173 rows
+[19:44:38]   EUR_RUB: 173 rows
+[19:44:38]   BRENT: 170 rows
+[19:44:39]   SP500: 207 rows
+[19:44:39]   MSCI_WORLD: 200 rows
+[19:44:39]   DXY: 171 rows
+[19:44:39]   MSCI_INDIA: 171 rows
+[19:44:39]   CHINA_H_SHARES: 157 rows
+[19:44:39]   FTSE_CHINA_50: 160 rows
+[19:44:39]   GOLD: 154 rows
+[19:44:39]   SILVER: 155 rows
+[19:44:39] ------------------------------------------------------------
+[19:44:39] Starting Train scan (462 hypotheses) ...
+[19:44:55]   progress 50/462 (11%)  confirmed so far: 0
+[19:45:10]   progress 100/462 (22%)  confirmed so far: 0
+[19:45:24]   progress 150/462 (32%)  confirmed so far: 0
+[19:45:38]   progress 200/462 (43%)  confirmed so far: 0
+[19:45:53]   progress 250/462 (54%)  confirmed so far: 0
+[19:46:08]   progress 300/462 (65%)  confirmed so far: 0
+[19:46:24]   progress 350/462 (76%)  confirmed so far: 0
+[19:46:38]   progress 400/462 (87%)  confirmed so far: 0
+[19:46:55]   progress 450/462 (97%)  confirmed so far: 0
+[19:46:58] ------------------------------------------------------------
+[19:46:58] Train scan complete: 0/462 confirmed
+[19:46:58] No confirmed Train signals — skipping Val check
+[19:46:58] No double-confirmed signals — skipping Test check
+[19:46:58] Results CSV: C:\project\signal_mind\analytics\phase_b\scan_20260517_194435_results.csv
+[19:46:58] Report: C:\project\signal_mind\analytics\phase_b\scan_20260517_194435_report.md
+[19:46:58] ============================================================
+[19:46:58] DONE. 0 Train | 0 Val | 0 Test confirmed.
+[19:46:58] ============================================================
