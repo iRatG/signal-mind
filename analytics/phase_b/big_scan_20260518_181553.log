@@ -1,0 +1,83 @@
+[18:15:53] Big Scanner started
+[18:15:53] Market instruments (12): ['SP500', 'USD_RUB', 'EUR_RUB', 'DJ_SOUTH_AFRICA', 'MSCI_WORLD', 'DXY', 'BRENT', 'MSCI_INDIA', 'CHINA_H_SHARES', 'FTSE_CHINA_50', 'GOLD', 'SILVER']
+[18:15:53] MOEX sectors (4): ['IMOEX', 'MOEXFN', 'MOEXOG', 'MOEX10']
+[18:15:53] Topics (7): ['oil', 'rate', 'ruble', 'sanctions', 'inflation', 'banking', 'gold']
+[18:15:53] Lags (6): [1, 7, 14, 30, 60, 90]
+[18:15:53] Total hypotheses: 16 x 7 x 6 = 672
+[18:15:53] ------------------------------------------------------------
+[18:16:02] Ensemble: M5_var_orth_irf AND M6_lgbm_walkforward
+[18:16:02] Loading train data ...
+[18:16:02]   SP500: 542 rows
+[18:16:02]   USD_RUB: 455 rows
+[18:16:02]   EUR_RUB: 455 rows
+[18:16:02]   DJ_SOUTH_AFRICA: 455 rows
+[18:16:02]   MSCI_WORLD: 455 rows
+[18:16:03]   DXY: 452 rows
+[18:16:03]   BRENT: 451 rows
+[18:16:03]   MSCI_INDIA: 450 rows
+[18:16:03]   CHINA_H_SHARES: 431 rows
+[18:16:03]   FTSE_CHINA_50: 431 rows
+[18:16:03]   GOLD: 356 rows
+[18:16:03]   SILVER: 354 rows
+[18:16:03]   IMOEX (imoex): 424 rows
+[18:16:03]   MOEXFN (moexfn_finance): 421 rows
+[18:16:03]   MOEXOG (moexog_oil_gas): 421 rows
+[18:16:03]   MOEX10 (moex10_bluechip): 421 rows
+[18:16:03] Loading val data ...
+[18:16:03]   SP500: 414 rows
+[18:16:03]   USD_RUB: 348 rows
+[18:16:03]   EUR_RUB: 348 rows
+[18:16:03]   DJ_SOUTH_AFRICA: 348 rows
+[18:16:03]   MSCI_WORLD: 348 rows
+[18:16:03]   DXY: 343 rows
+[18:16:03]   BRENT: 343 rows
+[18:16:03]   MSCI_INDIA: 347 rows
+[18:16:03]   CHINA_H_SHARES: 324 rows
+[18:16:03]   FTSE_CHINA_50: 326 rows
+[18:16:03]   GOLD: 263 rows
+[18:16:04]   SILVER: 268 rows
+[18:16:04]   IMOEX (imoex): 339 rows
+[18:16:04]   MOEXFN (moexfn_finance): 339 rows
+[18:16:04]   MOEXOG (moexog_oil_gas): 339 rows
+[18:16:04]   MOEX10 (moex10_bluechip): 339 rows
+[18:16:04] Loading test data ...
+[18:16:04]   SP500: 207 rows
+[18:16:04]   USD_RUB: 173 rows
+[18:16:04]   EUR_RUB: 173 rows
+[18:16:04]   DJ_SOUTH_AFRICA: 173 rows
+[18:16:04]   MSCI_WORLD: 200 rows
+[18:16:04]   DXY: 171 rows
+[18:16:04]   BRENT: 170 rows
+[18:16:04]   MSCI_INDIA: 171 rows
+[18:16:04]   CHINA_H_SHARES: 157 rows
+[18:16:04]   FTSE_CHINA_50: 160 rows
+[18:16:04]   GOLD: 154 rows
+[18:16:04]   SILVER: 155 rows
+[18:16:04]   IMOEX (imoex): 168 rows
+[18:16:04]   MOEXFN (moexfn_finance): 167 rows
+[18:16:04]   MOEXOG (moexog_oil_gas): 167 rows
+[18:16:04]   MOEX10 (moex10_bluechip): 168 rows
+[18:16:04] ------------------------------------------------------------
+[18:16:04] Starting Train scan (672 hypotheses) ...
+[18:16:20]   progress 50/672 (7%)  confirmed: 0
+[18:16:34]   progress 100/672 (15%)  confirmed: 0
+[18:16:50]   progress 150/672 (22%)  confirmed: 0
+[18:17:11]   progress 200/672 (30%)  confirmed: 0
+[18:17:25]   progress 250/672 (37%)  confirmed: 0
+[18:17:38]   progress 300/672 (45%)  confirmed: 0
+[18:17:51]   progress 350/672 (52%)  confirmed: 0
+[18:18:07]   progress 400/672 (60%)  confirmed: 0
+[18:18:20]   progress 450/672 (67%)  confirmed: 0
+[18:18:31]   progress 500/672 (74%)  confirmed: 0
+[18:18:44]   progress 550/672 (82%)  confirmed: 0
+[18:18:57]   progress 600/672 (89%)  confirmed: 0
+[18:19:10]   progress 650/672 (97%)  confirmed: 0
+[18:19:16] ------------------------------------------------------------
+[18:19:16] Train complete: 0/672 confirmed
+[18:19:16] No confirmed Train signals — skipping Val
+[18:19:16] No double-confirmed signals — skipping Test
+[18:19:16] CSV: C:\project\signal_mind\analytics\phase_b\big_scan_20260518_181553_results.csv
+[18:19:16] Report: C:\project\signal_mind\analytics\phase_b\big_scan_20260518_181553_report.md
+[18:19:16] ============================================================
+[18:19:16] DONE. Train=0 | Val=0 | Test=0
+[18:19:16] ============================================================
