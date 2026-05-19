@@ -1,319 +1,392 @@
 """Semantic embedding-based news features for signal detection.
 
-Replaces keyword-count features (news_daily) with semantic similarity scores.
-For each (date, topic), computes:
-  1. Embeddings of articles matching topic keywords
-  2. Embedding of topic keywords
-  3. Cosine similarity scores
-  4. Weighted-mean daily aggregation
+Architecture (efficient):
+  1. Load ALL articles for the date range in ONE query (no topic filter)
+  2. Encode all articles once with SentenceTransformer
+  3. Save embeddings cache to disk (NPZ) — reusable across runs
+  4. For each topic: filter articles by keyword, lookup cached embeddings,
+     compute cosine similarity, aggregate per date
+  5. Write as new *_emb columns in news_daily via UPDATE JOIN
 
-Input: articles from hf_news.db or query result
-Output: DataFrame with columns [news_date, oil_emb, rate_emb, ..., gold_emb]
+This way the expensive encode step runs once, not 7×.
 
-Append-only: only computes dates > existing MAX(news_date) in DB.
+Output columns added to news_daily:
+  oil_emb, rate_emb, ruble_emb, sanctions_emb, inflation_emb, banking_emb, gold_emb
+
+Usage:
+    .venv/Scripts/python -m src.pipeline_v2.embedding_feature_builder \\
+        --date-start 2022-01-01 --date-end 2023-09-30
+    # Add --dry-run to preview without writing to DB
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+import argparse
+import logging
+import pickle
+import time
 from pathlib import Path
 from typing import Optional
-import logging
 
 import numpy as np
 import pandas as pd
 import duckdb
 from sentence_transformers import SentenceTransformer
-from scipy.spatial.distance import cosine
 
 logger = logging.getLogger(__name__)
 
-MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
-AGGREGATION_METHOD = "weighted_mean"
-AGGREGATION_TAU = 0.1  # temperature for softmax weighting
+# ──────────────────────────────────────────────────────────────────────────────
+# Config
+# ──────────────────────────────────────────────────────────────────────────────
 
-TOPICS = {
-    "oil":        ["oil", "Brent", "crude", "energy", "нефть", "нефт", "газ"],
-    "rate":       ["interest rate", "central bank", "key rate", "CBR",
-                   "ставк", "центробанк", "ключевая ставка"],
-    "ruble":      ["ruble", "RUB", "Russian currency",
-                   "рубл", "курс рубля"],
-    "sanctions":  ["sanction", "embargo", "Russia ban",
-                   "санкци", "эмбарго"],
-    "inflation":  ["inflation", "CPI", "consumer price",
-                   "инфляц", "потребительские цены"],
-    "banking":    ["banking", "bank sector", "financial sector",
-                   "банк", "банковск", "кредит"],
-    "gold":       ["gold", "precious metal",
-                   "золото", "золот"],
+MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
+
+# Softmax temperature for weighted-mean aggregation
+AGGREGATION_TAU = 0.1
+
+# Batch size for encoding (tradeoff: memory vs. speed)
+ENCODE_BATCH_SIZE = 64
+
+# Article chunk size for loading (avoid loading 2.56M rows at once)
+LOAD_CHUNK_DAYS = 90   # process 3 months at a time
+
+# Cache directory for embeddings (so re-runs are fast)
+CACHE_DIR = Path(__file__).parents[2] / "db" / "emb_cache"
+
+TOPICS: dict[str, list[str]] = {
+    "oil":       ["oil", "Brent", "crude", "energy", "нефть", "нефт", "газ"],
+    "rate":      ["interest rate", "central bank", "key rate", "CBR",
+                  "ставк", "центробанк", "ключевая ставка"],
+    "ruble":     ["ruble", "RUB", "Russian currency",
+                  "рубл", "курс рубля"],
+    "sanctions": ["sanction", "embargo", "Russia ban",
+                  "санкци", "эмбарго"],
+    "inflation": ["inflation", "CPI", "consumer price",
+                  "инфляц", "потребительские цены"],
+    "banking":   ["banking", "bank sector", "financial sector",
+                  "банк", "банковск", "кредит"],
+    "gold":      ["gold", "precious metal",
+                  "золото", "золот"],
 }
 
-DB_PATH = Path(__file__).parents[2] / "db" / "signal_mind.duckdb"
+DB_PATH   = Path(__file__).parents[2] / "db" / "signal_mind.duckdb"
 NEWS_PATH = Path(__file__).parents[2] / "db" / "hf_news.db"
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Core builder
+# ──────────────────────────────────────────────────────────────────────────────
+
 class EmbeddingFeatureBuilder:
-    """Builds semantic embedding-based daily news features."""
 
-    def __init__(self, model_name: str = MODEL_NAME, batch_size: int = 32):
-        """
-        Args:
-            model_name: HuggingFace model ID (multilingual-capable)
-            batch_size: batch size for encoding (trade-off between speed and memory)
-        """
-        self.model_name = model_name
-        self.batch_size = batch_size
+    def __init__(self, model_name: str = MODEL_NAME):
+        t0 = time.time()
         logger.info(f"Loading model: {model_name}")
-        self.model = SentenceTransformer(model_name)
+        try:
+            self.model = SentenceTransformer(model_name, local_files_only=True)
+        except Exception:
+            self.model = SentenceTransformer(model_name)
+        logger.info(f"  loaded in {time.time()-t0:.1f}s")
 
-        # Precompute topic keyword embeddings
-        self.topic_embeddings = {}
+        try:
+            self.emb_dim: int = self.model.get_embedding_dimension()
+        except AttributeError:
+            self.emb_dim = self.model.get_sentence_embedding_dimension()
+
+        # Precompute topic query embeddings once
+        self.topic_embs: dict[str, np.ndarray] = {}
         for topic, keywords in TOPICS.items():
-            topic_text = " ".join(keywords)
-            emb = self.model.encode([topic_text], convert_to_numpy=True)[0]
-            self.topic_embeddings[topic] = emb
-            logger.debug(f"  {topic}: embedding shape {emb.shape}")
+            text = " ".join(keywords)
+            self.topic_embs[topic] = self.model.encode(
+                [text], convert_to_numpy=True, show_progress_bar=False
+            )[0]
 
-    def load_articles_for_topic(self,
-                                conn: duckdb.DuckDBPyConnection,
-                                topic: str,
-                                date_start: str,
-                                date_end: str) -> list[tuple[str, str]]:
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+    # ─── load all articles for a date chunk ────────────────────────────────────
+
+    def _load_chunk(self,
+                    news_conn: duckdb.DuckDBPyConnection,
+                    date_start: str,
+                    date_end: str) -> pd.DataFrame:
         """
-        Load articles from hf_news.db matching topic keywords.
-
-        Args:
-            conn: DuckDB connection (must have hf_news.db attached as 'news')
-            topic: topic name (key in TOPICS)
-            date_start, date_end: date range (YYYY-MM-DD)
-
-        Returns:
-            List of (date, title) tuples
+        Load article IDs, dates, and text snippets (title only).
+        No topic filter — loads all articles in the date range.
         """
-        keywords = TOPICS[topic]
-        ors = " OR ".join(f"text ILIKE '%{kw}%'" for kw in keywords)
-
         query = f"""
-            SELECT date, text
+            SELECT
+                id,
+                date,
+                CASE
+                    WHEN POSITION(chr(10) IN text) > 0
+                    THEN SUBSTRING(text, 1, POSITION(chr(10) IN text) - 1)
+                    ELSE SUBSTRING(text, 1, 150)
+                END AS title,
+                text
             FROM news.articles
             WHERE date BETWEEN '{date_start}' AND '{date_end}'
-              AND ({ors})
-            ORDER BY date
+            ORDER BY date, id
         """
         try:
-            result = conn.execute(query).fetchall()
-            return result
+            return news_conn.execute(query).df()
         except Exception as e:
-            logger.warning(f"Failed to load articles for {topic}: {e}")
-            return []
+            logger.error(f"Load failed: {e}")
+            return pd.DataFrame(columns=["id", "date", "title", "text"])
 
-    def aggregate_daily_score(self, similarities: list[float], method: str = "weighted_mean") -> float:
+    # ─── encode + cache ────────────────────────────────────────────────────────
+
+    def _encode_or_load_cache(self,
+                               df_chunk: pd.DataFrame,
+                               chunk_key: str) -> np.ndarray:
         """
-        Aggregate per-article similarity scores into a single daily score.
+        Encode article titles. Loads from NPZ cache if available.
+        Cache key = chunk_key (e.g. "2022-01_2022-03").
 
-        Args:
-            similarities: list of cosine similarity values in [0, 1]
-            method: aggregation method ("mean", "max", "weighted_mean")
-
-        Returns:
-            Daily score in [0, 1]
+        Returns: (N, dim) float32 array aligned with df_chunk rows.
         """
-        if not similarities:
+        cache_file = CACHE_DIR / f"emb_{chunk_key}.npz"
+        id_file    = CACHE_DIR / f"ids_{chunk_key}.pkl"
+
+        # Check cache: same IDs in same order → reuse
+        if cache_file.exists() and id_file.exists():
+            cached_ids = pickle.loads(id_file.read_bytes())
+            if list(cached_ids) == list(df_chunk["id"].values):
+                logger.info(f"  cache HIT: {cache_file.name}")
+                return np.load(cache_file)["embs"]
+            else:
+                logger.info(f"  cache MISS (IDs differ) — re-encoding")
+
+        # Encode
+        titles = df_chunk["title"].fillna("").tolist()
+        logger.info(f"  encoding {len(titles)} articles...")
+        t0 = time.time()
+        embs = self.model.encode(
+            titles,
+            batch_size=ENCODE_BATCH_SIZE,
+            convert_to_numpy=True,
+            show_progress_bar=True,
+        )
+        logger.info(f"  encoded in {time.time()-t0:.1f}s")
+
+        # Save cache
+        np.savez_compressed(str(cache_file), embs=embs)
+        id_file.write_bytes(pickle.dumps(df_chunk["id"].values))
+        logger.info(f"  saved cache: {cache_file.name}")
+
+        return embs
+
+    # ─── per-topic similarity ──────────────────────────────────────────────────
+
+    @staticmethod
+    def _cosine_sim_batch(article_embs: np.ndarray, topic_emb: np.ndarray) -> np.ndarray:
+        """Vectorised cosine similarity → (N,) clipped to [0, 1]."""
+        norms = np.linalg.norm(article_embs, axis=1)
+        norm_t = np.linalg.norm(topic_emb)
+        sims = (article_embs @ topic_emb) / np.maximum(norms * norm_t, 1e-9)
+        return np.clip(sims, 0.0, 1.0)
+
+    @staticmethod
+    def _weighted_mean(scores: np.ndarray, tau: float = AGGREGATION_TAU) -> float:
+        if len(scores) == 0:
             return 0.0
+        if len(scores) == 1:
+            return float(scores[0])
+        exp_s = np.exp(np.clip(scores / tau, -50, 50))
+        return float(np.dot(exp_s / exp_s.sum(), scores))
 
-        similarities = np.array(similarities)
-        if method == "mean":
-            return float(np.mean(similarities))
-        elif method == "max":
-            return float(np.max(similarities))
-        elif method == "weighted_mean":
-            # Softmax weighting: higher scores get higher weight
-            scores = np.clip(similarities, 0, 1)
-            if len(scores) == 1:
-                return float(scores[0])
-            weights = np.exp(scores / AGGREGATION_TAU)
-            weights /= weights.sum()
-            return float(np.dot(weights, scores))
-        else:
-            raise ValueError(f"Unknown aggregation method: {method}")
+    def _topic_daily_scores(self,
+                             df_chunk: pd.DataFrame,
+                             embs: np.ndarray,
+                             topic: str) -> pd.Series:
+        """
+        Filter articles for topic, compute similarity, aggregate per date.
+
+        Returns: pd.Series(index=date, name=f"{topic}_emb")
+        """
+        keywords = TOPICS[topic]
+        # Fast keyword filter in pandas (OR of ILIKE → case-insensitive contains)
+        pattern = "|".join(kw.lower() for kw in keywords)
+        mask = df_chunk["text"].str.lower().str.contains(pattern, na=False, regex=True)
+        df_topic = df_chunk[mask].copy()
+
+        if df_topic.empty:
+            return pd.Series(dtype=float, name=f"{topic}_emb")
+
+        topic_emb = self.topic_embs[topic]
+        sims = self._cosine_sim_batch(embs[mask.values], topic_emb)
+        df_topic["sim"] = sims
+
+        def _agg(grp: pd.Series) -> float:
+            return self._weighted_mean(grp.values)
+
+        result = df_topic.groupby("date")["sim"].agg(_agg)
+        result.name = f"{topic}_emb"
+        return result
+
+    # ─── main build loop ───────────────────────────────────────────────────────
 
     def build_daily_scores(self,
-                          conn: duckdb.DuckDBPyConnection,
-                          date_start: Optional[str] = None,
-                          date_end: Optional[str] = None,
-                          batch_topics: Optional[list[str]] = None) -> pd.DataFrame:
+                           news_conn: duckdb.DuckDBPyConnection,
+                           date_start: str,
+                           date_end: str,
+                           topics: Optional[list[str]] = None) -> pd.DataFrame:
         """
-        Build daily embedding-based feature scores.
+        Build daily embedding features for all topics in [date_start, date_end].
 
-        If date_start is None, computes from MAX(news_date) + 1 day in existing table.
-        If date_end is None, uses today's date.
+        Processes in 90-day chunks to keep memory manageable.
+        Uses on-disk embedding cache for speed.
 
-        Args:
-            conn: DuckDB connection with hf_news.db attached
-            date_start: start date (YYYY-MM-DD), or None for append mode
-            date_end: end date (YYYY-MM-DD), or None for today
-            batch_topics: subset of topics to compute, or None for all
-
-        Returns:
-            DataFrame with columns [news_date, oil_emb, rate_emb, ..., gold_emb]
+        Returns DataFrame with columns [news_date, oil_emb, ..., gold_emb].
         """
-        topics_to_compute = batch_topics or list(TOPICS.keys())
+        topics = topics or list(TOPICS.keys())
+        topic_cols = [f"{t}_emb" for t in topics]
+        logger.info(f"Building embeddings: {date_start} → {date_end}")
 
-        # Determine date range
-        if date_start is None:
-            max_row = conn.execute("SELECT MAX(news_date) FROM news_daily").fetchone()
-            max_date = max_row[0] if max_row and max_row[0] else None
-            if max_date is None:
-                date_start = "2021-01-01"
+        chunks = pd.date_range(date_start, date_end, freq=f"{LOAD_CHUNK_DAYS}D")
+        dates_end = list(chunks[1:].strftime("%Y-%m-%d")) + [date_end]
+        chunks_start = chunks.strftime("%Y-%m-%d")
+
+        chunk_series: dict[str, list[pd.Series]] = {t: [] for t in topics}
+
+        for cs, ce in zip(chunks_start, dates_end):
+            logger.info(f"\nChunk: {cs} → {ce}")
+            df_chunk = self._load_chunk(news_conn, cs, ce)
+            if df_chunk.empty:
+                logger.info("  no articles in this chunk")
+                continue
+
+            logger.info(f"  loaded {len(df_chunk)} articles")
+
+            chunk_key = f"{cs[:7]}_{ce[:7]}"
+            embs = self._encode_or_load_cache(df_chunk, chunk_key)
+
+            for topic in topics:
+                s = self._topic_daily_scores(df_chunk, embs, topic)
+                chunk_series[topic].append(s)
+
+        # Concat all chunks per topic
+        combined: dict[str, pd.Series] = {}
+        for topic in topics:
+            parts = chunk_series[topic]
+            if parts:
+                combined[topic] = pd.concat(parts).groupby(level=0).first()
             else:
-                date_start = (max_date + timedelta(days=1)).isoformat()
+                combined[topic] = pd.Series(dtype=float, name=f"{topic}_emb")
 
-        if date_end is None:
-            date_end = datetime.now().strftime("%Y-%m-%d")
+        if not any(len(s) > 0 for s in combined.values()):
+            logger.warning("No embedding scores computed — check news_path and date range")
+            return pd.DataFrame(columns=["news_date"] + topic_cols)
 
-        logger.info(f"Building embeddings for {date_start} to {date_end}")
+        df = pd.DataFrame({f"{t}_emb": combined[t] for t in topics})
+        df.index.name = "news_date"
+        df = df.reset_index()
+        df["news_date"] = pd.to_datetime(df["news_date"]).dt.date
+        df = df.fillna(0.0)
 
-        # Collect all dates in range
-        all_dates = pd.date_range(date_start, date_end, freq='D')
-
-        # For each date, compute topic embeddings
-        results = []
-
-        for idx, date_obj in enumerate(all_dates):
-            if idx % 50 == 0:
-                logger.info(f"  processing {idx}/{len(all_dates)}")
-
-            date_str = date_obj.strftime("%Y-%m-%d")
-            row = {"news_date": date_str}
-
-            for topic in topics_to_compute:
-                articles = self.load_articles_for_topic(
-                    conn, topic, date_str, date_str
-                )
-
-                if not articles:
-                    row[f"{topic}_emb"] = 0.0
-                    continue
-
-                # Extract text snippets (title + first 200 chars for richness)
-                texts = []
-                for date, full_text in articles:
-                    title = full_text.split('\n')[0] if '\n' in full_text else full_text[:100]
-                    texts.append(title)
-
-                # Embed articles in batch
-                try:
-                    article_embeddings = self.model.encode(
-                        texts, convert_to_numpy=True, batch_size=self.batch_size
-                    )
-                except Exception as e:
-                    logger.warning(f"Embedding failed for {topic}/{date_str}: {e}. Fallback to 0.0")
-                    row[f"{topic}_emb"] = 0.0
-                    continue
-
-                # Compute similarities to topic embedding
-                topic_emb = self.topic_embeddings[topic]
-                similarities = []
-                for article_emb in article_embeddings:
-                    sim = 1.0 - cosine(article_emb, topic_emb)
-                    similarities.append(max(0.0, sim))  # clamp to [0, 1]
-
-                # Aggregate
-                daily_score = self.aggregate_daily_score(similarities, AGGREGATION_METHOD)
-                row[f"{topic}_emb"] = daily_score
-
-            results.append(row)
-
-        df = pd.DataFrame(results)
-        logger.info(f"Built {len(df)} daily rows for {len(topics_to_compute)} topics")
+        logger.info(f"\nTotal: {len(df)} daily rows")
         return df
 
-    def save_to_duckdb(self, df: pd.DataFrame, overwrite: bool = False) -> None:
-        """
-        Save embedding features to signal_mind.duckdb.
+    # ─── persist ───────────────────────────────────────────────────────────────
 
-        Append-only by default (fails if dates overlap). Set overwrite=True to
-        replace existing dates (NOT recommended for production).
-
-        Args:
-            df: DataFrame with columns [news_date, oil_emb, rate_emb, ...]
-            overwrite: if True, delete conflicting dates first
+    def save_to_duckdb(self, df: pd.DataFrame) -> int:
         """
-        logger.info(f"Writing {len(df)} embedding rows to {DB_PATH}")
+        Add embedding columns to news_daily and update rows.
+        Only updates rows where news_date already exists (no inserts).
+
+        Returns: number of rows updated.
+        """
+        if df.empty:
+            logger.warning("Empty DataFrame — nothing written")
+            return 0
 
         con = duckdb.connect(str(DB_PATH))
 
-        # Ensure embedding columns exist
-        topic_cols = list(TOPICS.keys())
-        for topic in topic_cols:
-            col_name = f"{topic}_emb"
+        # Add columns if missing
+        for topic in TOPICS:
+            col = f"{topic}_emb"
             try:
-                con.execute(f"ALTER TABLE news_daily ADD COLUMN {col_name} DOUBLE")
+                con.execute(f"ALTER TABLE news_daily ADD COLUMN {col} DOUBLE DEFAULT 0.0")
+                logger.info(f"  added column {col}")
             except duckdb.CatalogException:
-                pass  # column already exists
+                pass
 
-        # Handle conflicts
-        if not overwrite:
-            existing = con.execute(
-                f"SELECT COUNT(*) FROM news_daily "
-                f"WHERE news_date IN (SELECT news_date FROM ({df.to_sql('temp_emb', con)})"
-            ).fetchone()[0]
-            if existing > 0:
-                logger.error(f"Conflict: {existing} dates already exist. Set overwrite=True to replace.")
-                con.close()
-                return
-        else:
-            dates_to_delete = df["news_date"].tolist()
-            placeholders = ",".join(f"'{d}'" for d in dates_to_delete)
-            con.execute(f"DELETE FROM news_daily WHERE news_date IN ({placeholders})")
-            logger.warning(f"Deleted {len(dates_to_delete)} existing dates")
+        # Register and UPDATE via JOIN
+        con.register("emb_df", df)
 
-        # Insert embeddings
-        topic_cols_str = ", ".join(f"{topic}_emb" for topic in topic_cols)
-        for _, row in df.iterrows():
-            date = row["news_date"]
-            values = ", ".join(
-                f"{row.get(f'{topic}_emb', 0.0)}" for topic in topic_cols
-            )
-            con.execute(
-                f"UPDATE news_daily SET {topic_cols_str} = ({values}) "
-                f"WHERE news_date = '{date}'"
-            )
+        available_topics = [t for t in TOPICS if f"{t}_emb" in df.columns]
+        set_clause = ",\n    ".join(
+            f"news_daily.{t}_emb = emb_df.{t}_emb"
+            for t in available_topics
+        )
+        con.execute(f"""
+            UPDATE news_daily
+            SET {set_clause}
+            FROM emb_df
+            WHERE news_daily.news_date = emb_df.news_date::DATE
+        """)
 
+        placeholders = ", ".join(f"'{d}'" for d in df["news_date"].astype(str).tolist())
+        updated = con.execute(
+            f"SELECT COUNT(*) FROM news_daily WHERE news_date IN ({placeholders})"
+        ).fetchone()[0]
+
+        con.unregister("emb_df")
         con.commit()
         con.close()
-        logger.info("Write complete")
+
+        logger.info(f"Updated {updated} rows in news_daily")
+        return updated
 
 
-def build_embeddings_main(date_start: Optional[str] = None,
-                          date_end: Optional[str] = None,
-                          save: bool = True) -> pd.DataFrame:
-    """
-    Main entry point: build and optionally save embedding features.
+# ──────────────────────────────────────────────────────────────────────────────
+# CLI
+# ──────────────────────────────────────────────────────────────────────────────
 
-    Args:
-        date_start: start date or None for append mode
-        date_end: end date or None for today
-        save: if True, write to DB
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Build embedding-based news features")
+    parser.add_argument("--date-start", default="2022-01-01",
+                        help="Start date YYYY-MM-DD (default: 2022-01-01 = Train start)")
+    parser.add_argument("--date-end",   default="2025-04-30",
+                        help="End date YYYY-MM-DD (default: 2025-04-30 = Val end)")
+    parser.add_argument("--topics", nargs="+", default=None,
+                        help="Topic subset, e.g. --topics oil rate")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Preview without writing to DB")
+    args = parser.parse_args()
 
-    Returns:
-        DataFrame with embedding features
-    """
+    logging.basicConfig(
+        level=logging.INFO,
+        format="[%(asctime)s] %(message)s",
+        datefmt="%H:%M:%S",
+    )
+
     builder = EmbeddingFeatureBuilder()
 
-    con = duckdb.connect(str(DB_PATH))
+    # Use in-memory DuckDB just for reading hf_news.db (SQLite attach)
+    # signal_mind.duckdb is opened separately only if we need to save
+    con = duckdb.connect(":memory:")
     con.execute(f"ATTACH '{NEWS_PATH}' AS news (TYPE sqlite)")
 
-    df = builder.build_daily_scores(con, date_start, date_end)
-
-    if save:
-        builder.save_to_duckdb(df)
-
+    df = builder.build_daily_scores(
+        con,
+        date_start=args.date_start,
+        date_end=args.date_end,
+        topics=args.topics,
+    )
     con.close()
-    return df
+
+    print(f"\n{'='*60}")
+    print(f"Built {len(df)} rows × {len(df.columns)} columns")
+    if not df.empty:
+        print(df.describe().round(4))
+        print(f"\nSample:\n{df.head(5).to_string()}")
+    print(f"{'='*60}")
+
+    if not args.dry_run:
+        n = builder.save_to_duckdb(df)
+        print(f"\nWrote to news_daily: {n} rows updated")
+    else:
+        print("\n--dry-run: DB not modified")
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    df = build_embeddings_main(save=True)
-    print(f"\nBuilt {len(df)} rows")
-    print(df.head())
+    main()
