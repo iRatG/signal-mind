@@ -375,7 +375,7 @@ def main() -> None:
     con.close()
 
     print(f"\n{'='*60}")
-    print(f"Built {len(df)} rows × {len(df.columns)} columns")
+    print(f"Built {len(df)} rows x {len(df.columns)} columns")
     if not df.empty:
         print(df.describe().round(4))
         print(f"\nSample:\n{df.head(5).to_string()}")
