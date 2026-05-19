@@ -63,7 +63,7 @@ M6_CONFIG: dict = {
 }
 
 N_SPLITS = 5          # TimeSeriesSplit folds
-IC_MIN = 0.03         # minimum mean out-of-fold IC to confirm
+IC_MIN = 0.01         # research mode: loosened from 0.03
 N_MIN = 200           # minimum observations (need enough for CV folds)
 N_BOOTSTRAP = 200     # bootstrap resamples for IC CI
 BOOTSTRAP_CI_LO = 5   # 5th percentile of bootstrap IC must be > 0

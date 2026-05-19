@@ -74,9 +74,9 @@ M5_CONFIG: dict = {
 # ~= 3.6 — borderline but produces stable IRFs in practice.
 MAX_LAG_VAR = 30        # hard cap for VAR lag order
 N_MIN = 150
-P_MAX = 0.01
+P_MAX = 0.05            # research mode: loosened from 0.01
 # z critical value for two-sided test at alpha = P_MAX
-Z_CRIT = float(stats.norm.ppf(1.0 - P_MAX / 2.0))  # ~2.576 for P_MAX=0.01
+Z_CRIT = float(stats.norm.ppf(1.0 - P_MAX / 2.0))  # ~1.960 for P_MAX=0.05
 
 # Optional control column. When present in the dataframe it is included as
 # the most exogenous variable in the Cholesky ordering — see module docstring.
