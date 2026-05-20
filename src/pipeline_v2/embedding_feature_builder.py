@@ -314,7 +314,7 @@ class EmbeddingFeatureBuilder:
 
         available_topics = [t for t in TOPICS if f"{t}_emb" in df.columns]
         set_clause = ",\n    ".join(
-            f"news_daily.{t}_emb = emb_df.{t}_emb"
+            f"{t}_emb = emb_df.{t}_emb"
             for t in available_topics
         )
         con.execute(f"""
