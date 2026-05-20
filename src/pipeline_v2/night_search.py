@@ -905,9 +905,10 @@ class NightOrchestrator:
             # Summary for this round
             best = max(round_results, key=lambda r: r.score) if round_results else None
             total_hits = sum(r.n_train_pass for r in round_results)
+            max_ic_str = f"{best.max_ic:.4f}" if best else "0.0000"
+            best_label = best.config.label if best else "none"
             self.log(f"\n--- Round {round_num} done: {total_hits} train signals  "
-                     f"best={best.config.label if best else 'none'}  "
-                     f"max_ic={best.max_ic:.4f if best else 0:.4f}")
+                     f"best={best_label}  max_ic={max_ic_str}")
 
         # Final report
         self.write_report()
