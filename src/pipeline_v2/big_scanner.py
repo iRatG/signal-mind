@@ -438,4 +438,15 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--feature-type",
+        choices=["keyword", "embedding"],
+        default="keyword",
+        help="Feature columns to use: keyword (default) or embedding (*_emb)",
+    )
+    args, _ = parser.parse_known_args()
+    if args.feature_type == "embedding":
+        TOPICS[:] = [f"{t}_emb" for t in TOPICS]
     main()
