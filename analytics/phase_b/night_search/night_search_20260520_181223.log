@@ -1,0 +1,60 @@
+[18:12:32] Night Search started — phases=[1]  budget=0.0h/phase
+[18:12:32] Loading train data...
+[18:12:33]   train: 16/16 instruments loaded
+[18:12:33] Loading val data...
+[18:12:34]   val: 16/16 instruments loaded
+[18:12:34] Loading test data...
+[18:12:34]   test: 16/16 instruments loaded
+[18:12:34] ============================================================
+[18:12:34] PHASE 1: Feature sweep (M6-only, fast)
+[18:12:34] ============================================================
+[18:12:34] Configs: 15
+[18:12:34] 
+[1/15] sweep_keyword_raw_market_return
+[18:12:34]   Config: sweep_keyword_raw_market_return
+[18:12:34]     feature=keyword_raw  target=market_return  ensemble=M6_only  ic_min=0.03
+[18:12:38]   HIT  SP500              oil              lag=  1 m5_p=0.6627  m6_ic=0.0539
+[18:12:38]   HIT  SP500              oil              lag=  7 m5_p=0.5171  m6_ic=0.0363
+[18:12:39]   HIT  SP500              rate             lag= 14 m5_p=0.5287  m6_ic=0.0301
+[18:12:39]   HIT  SP500              rate             lag= 30 m5_p=0.9348  m6_ic=0.0314
+[18:12:39]   HIT  SP500              ruble            lag=  7 m5_p=0.9108  m6_ic=0.0474
+[18:12:40]   HIT  SP500              ruble            lag= 30 m5_p=0.0762  m6_ic=0.0413
+[18:12:41]   HIT  SP500              inflation        lag= 14 m5_p=0.5948  m6_ic=0.0655
+[18:12:42]   HIT  SP500              banking          lag=  7 m5_p=0.3701  m6_ic=0.0536
+[18:12:43]   HIT  SP500              gold             lag=  7 m5_p=0.8524  m6_ic=0.0942
+[18:12:43]   HIT  USD_RUB            oil              lag=  1 m5_p=0.4151  m6_ic=0.0614
+[18:12:44]   HIT  USD_RUB            oil              lag= 14 m5_p=0.6241  m6_ic=0.0417
+[18:12:44]   HIT  USD_RUB            oil              lag= 30 m5_p=0.1626  m6_ic=0.0698
+[18:12:44]   HIT  USD_RUB            rate             lag=  1 m5_p=0.7527  m6_ic=0.0950
+[18:12:44]   HIT  USD_RUB            rate             lag=  7 m5_p=0.8101  m6_ic=0.0394
+[18:12:45]   HIT  USD_RUB            rate             lag= 14 m5_p=0.7542  m6_ic=0.0378
+[18:12:45]   HIT  USD_RUB            rate             lag= 30 m5_p=0.9971  m6_ic=0.0479
+[18:12:45]   HIT  USD_RUB            ruble            lag=  1 m5_p=0.7646  m6_ic=0.0442
+[18:12:45]   HIT  USD_RUB            ruble            lag=  7 m5_p=0.4884  m6_ic=0.0483
+[18:12:45]   HIT  USD_RUB            ruble            lag= 14 m5_p=0.9676  m6_ic=0.1183
+[18:12:46]   HIT  USD_RUB            sanctions        lag=  1 m5_p=0.0777  m6_ic=0.1348
+[18:12:46]   HIT  USD_RUB            sanctions        lag=  7 m5_p=0.9775  m6_ic=0.0313
+[18:12:46]   HIT  USD_RUB            sanctions        lag= 14 m5_p=0.1527  m6_ic=0.0743
+[18:12:46]   HIT  USD_RUB            sanctions        lag= 30 m5_p=0.6349  m6_ic=0.0726
+[18:12:47]   HIT  USD_RUB            inflation        lag=  1 m5_p=0.8798  m6_ic=0.0351
+[18:12:47]   HIT  USD_RUB            inflation        lag=  7 m5_p=0.9352  m6_ic=0.0371
+[18:12:47]   HIT  USD_RUB            inflation        lag= 14 m5_p=0.5422  m6_ic=0.0338
+[18:12:48]   HIT  USD_RUB            banking          lag= 14 m5_p=0.8158  m6_ic=0.0645
+[18:12:48]   HIT  USD_RUB            banking          lag= 30 m5_p=0.6790  m6_ic=0.0792
+[18:12:49]   HIT  USD_RUB            gold             lag= 14 m5_p=0.9653  m6_ic=0.0307
+[18:12:49]   HIT  EUR_RUB            oil              lag=  1 m5_p=0.4151  m6_ic=0.0614
+[18:12:49]   HIT  EUR_RUB            oil              lag= 14 m5_p=0.6241  m6_ic=0.0417
+[18:12:50]   HIT  EUR_RUB            oil              lag= 30 m5_p=0.1626  m6_ic=0.0698
+[18:12:50]   HIT  EUR_RUB            rate             lag=  1 m5_p=0.7527  m6_ic=0.0950
+[18:12:50]   HIT  EUR_RUB            rate             lag=  7 m5_p=0.8101  m6_ic=0.0394
+[18:12:50]   HIT  EUR_RUB            rate             lag= 14 m5_p=0.7542  m6_ic=0.0378
+[18:12:50]   HIT  EUR_RUB            rate             lag= 30 m5_p=0.9971  m6_ic=0.0479
+[18:12:51]   HIT  EUR_RUB            ruble            lag=  1 m5_p=0.7646  m6_ic=0.0442
+[18:12:51]   HIT  EUR_RUB            ruble            lag=  7 m5_p=0.4884  m6_ic=0.0483
+[18:12:51]   HIT  EUR_RUB            ruble            lag= 14 m5_p=0.9676  m6_ic=0.1183
+[18:12:51]   HIT  EUR_RUB            sanctions        lag=  1 m5_p=0.0777  m6_ic=0.1348
+[18:12:52]   HIT  EUR_RUB            sanctions        lag=  7 m5_p=0.9775  m6_ic=0.0313
+[18:12:52]   HIT  EUR_RUB            sanctions        lag= 14 m5_p=0.1527  m6_ic=0.0743
+[18:12:52]   HIT  EUR_RUB            sanctions        lag= 30 m5_p=0.6349  m6_ic=0.0726
+[18:12:52]   HIT  EUR_RUB            inflation        lag=  1 m5_p=0.8798  m6_ic=0.0351
+[18:12:52]   HIT  EUR_RUB            inflation        lag=  7 m5_p=0.9352  m6_ic=0.0371

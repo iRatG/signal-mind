@@ -718,6 +718,202 @@ class NightOrchestrator:
             self.log(f"  Best config: {best.config.label}  "
                      f"(score={best.score:.1f}, ic_max={best.max_ic:.4f})")
 
+    # ─── adaptive config generation ───────────────────────────────────────────
+
+    def _adaptive_configs(self, round_num: int) -> list[SearchConfig]:
+        """
+        Generate next-round configs based on accumulated hits.
+
+        Round 1: full sweep (standard Phase 1)
+        Round 2: tighten IC, focus on best (feature, target, instrument) triples
+        Round 3: AND ensemble on round-2 winners; vary window sizes
+        Round 4+: vary lags, explore near-miss pairs from previous rounds
+        """
+        from src.pipeline_v2.feature_transformer import FEATURE_TYPES, TARGETS
+
+        if round_num == 1:
+            return phase1_configs()
+
+        # Gather stats from accumulated hits
+        train_hits = [h for h in self.all_hits if h.split == "train"]
+        if not train_hits:
+            self.log("  No hits yet — repeating wide sweep")
+            return phase1_configs()
+
+        import pandas as pd
+        df_hits = pd.DataFrame([asdict(h) for h in train_hits])
+        df_hits['feat'] = df_hits.config_id.str.split('__').str[0]
+        df_hits['tgt']  = df_hits.config_id.str.split('__').str[1]
+
+        # Top instruments by mean IC
+        top_insts = (df_hits.groupby('instrument')['m6_ic']
+                     .mean().nlargest(6).index.tolist())
+        # Top topics by mean IC
+        top_topics_raw = (df_hits.groupby('topic')['m6_ic']
+                          .mean().nlargest(4).index.tolist())
+        # Best (feat, tgt) combo
+        best_feat_tgt = (df_hits.groupby(['feat','tgt'])['m6_ic']
+                         .mean().idxmax())
+        best_feat, best_tgt = best_feat_tgt
+
+        self.log(f"  Adaptive round {round_num}: "
+                 f"top_insts={top_insts[:3]}, best_feat={best_feat}, best_tgt={best_tgt}")
+
+        configs: list[SearchConfig] = []
+
+        if round_num == 2:
+            # Stricter M6 (IC≥0.05), best feature types, focused instruments
+            for feat in [best_feat, "keyword_z90", "embedding_z90"]:
+                for tgt in [best_tgt, "market_return"]:
+                    configs.append(SearchConfig(
+                        feature_type=feat, target=tgt,
+                        ensemble="M6_only",
+                        m5_p_max=0.05, m6_ic_min=0.05,
+                        m6_bootstrap_min=0.0,
+                        lags=LAGS_FULL,
+                        label=f"r2_m6strict_{feat}_{tgt}",
+                    ))
+            # AND ensemble on best combo
+            configs.append(SearchConfig(
+                feature_type=best_feat, target=best_tgt,
+                ensemble="M5_AND_M6",
+                m5_p_max=0.05, m6_ic_min=0.01,
+                m6_bootstrap_min=0.0,   # disable bootstrap gate
+                lags=LAGS_FULL,
+                label=f"r2_and_{best_feat}_{best_tgt}",
+            ))
+
+        elif round_num == 3:
+            # Focus on top instruments, ALL feature types × best target
+            for feat in FEATURE_TYPES:
+                configs.append(SearchConfig(
+                    feature_type=feat, target=best_tgt,
+                    ensemble="M5_AND_M6",
+                    m5_p_max=0.05, m6_ic_min=0.01,
+                    m6_bootstrap_min=0.0,
+                    lags=LAGS_FULL,
+                    label=f"r3_and_{feat}_{best_tgt}",
+                ))
+            # M6 with very strict IC (production quality)
+            configs.append(SearchConfig(
+                feature_type=best_feat, target=best_tgt,
+                ensemble="M6_only",
+                m5_p_max=0.05, m6_ic_min=0.08,
+                m6_bootstrap_min=0.01,
+                lags=LAGS_FULL,
+                label=f"r3_m6prod_{best_feat}_{best_tgt}",
+            ))
+
+        else:
+            # Round 4+: near-miss exploration — pairs where M5 p<0.1 OR M6 IC > 0.10
+            near_m5 = df_hits[df_hits.m5_pvalue < 0.10]
+            near_m6 = df_hits[df_hits.m6_ic > 0.10]
+            near_all = pd.concat([near_m5, near_m6]).drop_duplicates(
+                subset=['feat', 'tgt'])
+
+            for _, row in near_all.iterrows():
+                configs.append(SearchConfig(
+                    feature_type=row['feat'], target=row['tgt'],
+                    ensemble="M5_AND_M6",
+                    m5_p_max=0.05, m6_ic_min=0.01,
+                    m6_bootstrap_min=0.0,
+                    lags=LAGS_FULL,
+                    label=f"r{round_num}_nearmiss_{row['feat']}_{row['tgt']}",
+                ))
+                if len(configs) >= 6:
+                    break
+
+            if not configs:
+                # Fallback: random perturbation of best config
+                configs.append(SearchConfig(
+                    feature_type=best_feat, target=best_tgt,
+                    ensemble="M5_AND_M6",
+                    m5_p_max=0.03,  # tighter
+                    m6_ic_min=0.01,
+                    m6_bootstrap_min=0.0,
+                    lags=LAGS_FULL,
+                    label=f"r{round_num}_tight_{best_feat}_{best_tgt}",
+                ))
+
+        # Deduplicate configs by label
+        seen = set()
+        unique_configs = []
+        for c in configs:
+            if c.label not in seen:
+                seen.add(c.label)
+                unique_configs.append(c)
+        return unique_configs
+
+    # ─── loop mode ────────────────────────────────────────────────────────────
+
+    def run_loop(self, max_hours: float, phases: list[int]) -> None:
+        """
+        Run multiple rounds until max_hours is exhausted.
+        Each round adapts configs based on findings of previous rounds.
+        """
+        t_start = time.time()
+        round_num = 0
+        train_dfs, val_dfs, _ = load_all_splits(self.log)
+
+        self.log(f"LOOP MODE: max={max_hours:.1f}h  phases={phases}")
+
+        while True:
+            elapsed_h = (time.time() - t_start) / 3600
+            remaining_h = max_hours - elapsed_h
+            if remaining_h < 0.1:
+                self.log(f"Time budget exhausted ({elapsed_h:.2f}h). Stopping.")
+                break
+
+            round_num += 1
+            self.log(f"\n{'='*60}")
+            self.log(f"ROUND {round_num}  |  elapsed={elapsed_h:.2f}h  "
+                     f"remaining={remaining_h:.2f}h")
+            self.log(f"{'='*60}")
+
+            # Generate adaptive configs for this round
+            configs = self._adaptive_configs(round_num)
+            self.log(f"Configs for round {round_num}: {len(configs)}")
+
+            round_results = []
+            for i, cfg in enumerate(configs):
+                # Per-config time budget = remaining / configs left (min 10 min)
+                per_cfg_budget = max(
+                    600.0,
+                    (max_hours * 3600 - (time.time() - t_start)) / max(len(configs) - i, 1)
+                )
+                self.log(f"\n[{i+1}/{len(configs)}] {cfg.label}  "
+                         f"(budget={per_cfg_budget/60:.0f}min)")
+
+                # Temporarily override phase_budget
+                orig_budget = self.phase_budget
+                self.phase_budget = per_cfg_budget
+
+                r = self.run_config(cfg, train_dfs, val_dfs, phase=round_num)
+                round_results.append(r)
+                self.phase_budget = orig_budget
+
+                self.log(f"  → train={r.n_train_pass}  val={r.n_val_pass}  "
+                         f"max_ic={r.max_ic:.4f}  score={r.score:.1f}")
+
+                # Write interim report after each config
+                self.write_report()
+
+                # Check time
+                if (time.time() - t_start) / 3600 >= max_hours:
+                    break
+
+            # Summary for this round
+            best = max(round_results, key=lambda r: r.score) if round_results else None
+            total_hits = sum(r.n_train_pass for r in round_results)
+            self.log(f"\n--- Round {round_num} done: {total_hits} train signals  "
+                     f"best={best.config.label if best else 'none'}  "
+                     f"max_ic={best.max_ic:.4f if best else 0:.4f}")
+
+        # Final report
+        self.write_report()
+        elapsed_h = (time.time() - t_start) / 3600
+        self.log(f"\nLoop ended after {round_num} rounds, {elapsed_h:.2f}h")
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # CLI
@@ -728,30 +924,34 @@ def main() -> None:
         description="Adaptive overnight signal search")
     parser.add_argument(
         "--phase-budget", type=int, default=DEFAULT_PHASE_BUDGET,
-        help="Max seconds per phase (default: 7200 = 2h)")
+        help="Max seconds per phase in single-run mode (default: 7200 = 2h)")
     parser.add_argument(
         "--phases", type=str, default="1,2,3",
-        help="Comma-separated list of phases to run (default: 1,2,3)")
+        help="Comma-separated phases for single-run mode (default: 1,2,3)")
+    parser.add_argument(
+        "--loop-hours", type=float, default=0.0,
+        help="Run in adaptive loop mode for N hours (e.g. --loop-hours 8). "
+             "Each round adapts configs based on findings. Overrides --phases.")
     args = parser.parse_args()
 
-    phases = [int(p.strip()) for p in args.phases.split(",")]
+    import logging
+    logging.basicConfig(level=logging.WARNING, format="%(message)s")
+
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     log_path = OUT_DIR / f"night_search_{ts}.log"
-
-    import logging
-    logging.basicConfig(
-        level=logging.WARNING,
-        format="%(message)s",
-    )
 
     with open(log_path, "w", encoding="utf-8", buffering=1) as log_fh:
         orchestrator = NightOrchestrator(
             phase_budget=args.phase_budget,
-            phases_to_run=phases,
+            phases_to_run=[],
             log_fh=log_fh,
             ts=ts,
         )
-        orchestrator.run(phases)
+        if args.loop_hours > 0:
+            orchestrator.run_loop(max_hours=args.loop_hours, phases=[1, 2, 3])
+        else:
+            phases = [int(p.strip()) for p in args.phases.split(",")]
+            orchestrator.run(phases)
 
     print(f"\nLog: {log_path}")
     print(f"Results: {OUT_DIR}")
