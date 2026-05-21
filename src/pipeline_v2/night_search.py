@@ -398,6 +398,305 @@ def load_regime_split(regime_start: str, regime_end: str,
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Search Knowledge — accumulated learning across rounds
+# ──────────────────────────────────────────────────────────────────────────────
+
+@dataclass
+class SearchKnowledge:
+    """
+    Accumulated knowledge from all search rounds.
+
+    Updated after every round. Used to generate smarter configs for the next.
+    This is the learning/feedback mechanism — the system gets better with each round.
+    """
+
+    # Per-entity IC history (all rounds)
+    instrument_ic:  dict = field(default_factory=dict)  # inst  -> [ic, ...]
+    topic_ic:       dict = field(default_factory=dict)  # topic -> [ic, ...]
+    lag_ic:         dict = field(default_factory=dict)  # lag   -> [ic, ...]
+    feat_ic:        dict = field(default_factory=dict)  # feat  -> [ic, ...]
+
+    # Signal stability: how many rounds each (inst, topic, lag) appeared
+    signal_count:    dict = field(default_factory=dict)  # key -> count
+    signal_val_pass: dict = field(default_factory=dict)  # key -> val_pass_count
+    signal_best_ic:  dict = field(default_factory=dict)  # key -> max ic seen
+
+    # Round-level stats for trend analysis
+    round_train_hits: list = field(default_factory=list)
+    round_val_hits:   list = field(default_factory=list)
+    round_ic_means:   list = field(default_factory=list)
+
+    # All hits (for stable signal deep-dive)
+    all_hits_flat: list = field(default_factory=list)
+
+    # Tried config IDs (to avoid exact repeats)
+    tried_config_ids: set = field(default_factory=set)
+
+    # Round counter
+    rounds_done: int = 0
+
+    def update(self, round_hits: list, val_hits: list, config_id: str) -> None:
+        """Update knowledge from one config's results."""
+        val_keys = {(h.instrument, h.topic, h.lag) for h in val_hits}
+        train_hits = [h for h in round_hits if h.split == "train"]
+
+        for h in train_hits:
+            key = (h.instrument, h.topic, h.lag)
+            feat = h.config_id.split("__")[0]
+
+            self.instrument_ic.setdefault(h.instrument, []).append(h.m6_ic)
+            self.topic_ic.setdefault(h.topic, []).append(h.m6_ic)
+            self.lag_ic.setdefault(h.lag, []).append(h.m6_ic)
+            self.feat_ic.setdefault(feat, []).append(h.m6_ic)
+
+            self.signal_count[key] = self.signal_count.get(key, 0) + 1
+            if key in val_keys:
+                self.signal_val_pass[key] = self.signal_val_pass.get(key, 0) + 1
+            self.signal_best_ic[key] = max(self.signal_best_ic.get(key, 0.0), h.m6_ic)
+
+        self.all_hits_flat.extend(train_hits)
+        self.tried_config_ids.add(config_id)
+
+    def end_round(self, n_train: int, n_val: int, mean_ic: float) -> None:
+        self.round_train_hits.append(n_train)
+        self.round_val_hits.append(n_val)
+        self.round_ic_means.append(mean_ic)
+        self.rounds_done += 1
+
+    # ─── derived stats ─────────────────────────────────────────────────────────
+
+    @property
+    def total_train(self) -> int:
+        return sum(self.round_train_hits)
+
+    @property
+    def total_val(self) -> int:
+        return sum(self.round_val_hits)
+
+    @property
+    def val_pass_rate(self) -> float:
+        return self.total_val / max(self.total_train, 1)
+
+    @property
+    def ic_trend(self) -> str:
+        """Is average IC improving, stable, or declining?"""
+        if len(self.round_ic_means) < 3:
+            return "unknown"
+        recent = np.mean(self.round_ic_means[-3:])
+        earlier = np.mean(self.round_ic_means[:-3]) if len(self.round_ic_means) > 3 else recent
+        if recent > earlier * 1.05:
+            return "improving"
+        elif recent < earlier * 0.95:
+            return "declining"
+        return "stable"
+
+    def top_instruments(self, n: int = 6) -> list:
+        if not self.instrument_ic:
+            return MARKET_INSTRUMENTS + list(MOEX_SECTORS.keys())
+        scored = {k: np.mean(v) for k, v in self.instrument_ic.items()}
+        return sorted(scored, key=scored.__getitem__, reverse=True)[:n]
+
+    def top_topics(self, n: int = 4) -> list:
+        from src.pipeline_v2.feature_transformer import KEYWORD_TOPICS
+        if not self.topic_ic:
+            return KEYWORD_TOPICS
+        scored = {k: np.mean(v) for k, v in self.topic_ic.items()}
+        return sorted(scored, key=scored.__getitem__, reverse=True)[:n]
+
+    def best_feature_type(self) -> str:
+        if not self.feat_ic:
+            return "keyword_z90"
+        # Prefer feature types with val-confirmed signals
+        val_feat_ics: dict = {}
+        for h in self.all_hits_flat:
+            key = (h.instrument, h.topic, h.lag)
+            if self.signal_val_pass.get(key, 0) > 0:
+                feat = h.config_id.split("__")[0]
+                val_feat_ics.setdefault(feat, []).append(h.m6_ic)
+        if val_feat_ics:
+            return max(val_feat_ics, key=lambda f: np.mean(val_feat_ics[f]))
+        # Fallback: highest mean IC
+        scored = {k: np.mean(v) for k, v in self.feat_ic.items()}
+        return max(scored, key=scored.__getitem__)
+
+    def best_lags(self, n: int = 4) -> list:
+        if not self.lag_ic:
+            return [1, 7, 14, 30]
+        scored = {k: np.mean(v) for k, v in self.lag_ic.items()}
+        top = sorted(scored, key=scored.__getitem__, reverse=True)[:n]
+        return sorted(top)
+
+    def stable_signals(self, min_count: int = 2) -> list:
+        """Signals that appeared in multiple rounds — high stability."""
+        return sorted(
+            [(k, v) for k, v in self.signal_count.items() if v >= min_count],
+            key=lambda x: (-x[1], -self.signal_best_ic.get(x[0], 0))
+        )
+
+    # ─── adaptive gate decisions ───────────────────────────────────────────────
+
+    def adaptive_ic_gate(self) -> float:
+        """
+        Dynamically adjust IC threshold based on what we're finding.
+        Core learning mechanism: too many signals → tighten, too few → loosen.
+        """
+        vpr = self.val_pass_rate
+        recent_train = sum(self.round_train_hits[-3:]) if self.round_train_hits else 0
+
+        # Lots of val-confirmed → we're finding real things, can be stricter
+        if vpr > 0.50:
+            return 0.08
+        # Good val rate → tighten slightly
+        if vpr > 0.30:
+            return 0.05
+        # Lots of train but no val → possible overfitting → tighten
+        if recent_train > 150 and vpr < 0.05 and self.rounds_done >= 2:
+            return 0.05
+        # Finding almost nothing → loosen
+        if recent_train < 10:
+            return 0.01
+        # Declining trend → loosen to explore more
+        if self.ic_trend == "declining":
+            return 0.01
+        return 0.03
+
+    def adaptive_ensemble(self) -> str:
+        """
+        Choose ensemble based on what pattern we see.
+        If M6 finds lots but AND finds nothing → M5 is the bottleneck.
+        Try M6-only strict to at least confirm predictive signals.
+        """
+        if self.total_train > 200 and self.total_val == 0 and self.rounds_done >= 2:
+            return "M6_only"
+        return "M5_AND_M6"
+
+    def summary_lines(self) -> list:
+        return [
+            f"  Knowledge after {self.rounds_done} rounds:",
+            f"    train_total={self.total_train}  val_total={self.total_val}  "
+            f"val_pass_rate={self.val_pass_rate:.1%}",
+            f"    stable_signals={len(self.stable_signals())}  "
+            f"ic_trend={self.ic_trend}",
+            f"    top_instruments={self.top_instruments(3)}",
+            f"    top_topics={self.top_topics(3)}",
+            f"    best_feat={self.best_feature_type()}  "
+            f"→ next_ic_gate={self.adaptive_ic_gate():.3f}  "
+            f"ensemble={self.adaptive_ensemble()}",
+        ]
+
+
+def generate_next_configs(knowledge: SearchKnowledge, round_num: int) -> list:
+    """
+    Generate configs for the next round using accumulated knowledge.
+    This is the core of the Ouroboros loop:
+      - knowledge tells us what worked → exploit
+      - we also explore what we haven't tried yet
+    """
+    ic_gate  = knowledge.adaptive_ic_gate()
+    ensemble = knowledge.adaptive_ensemble()
+    best_feat = knowledge.best_feature_type()
+    best_lags = knowledge.best_lags(n=4)
+    top_insts = knowledge.top_instruments(n=min(8, 4 + round_num))
+    top_topics = knowledge.top_topics(n=min(7, 3 + round_num))
+
+    configs = []
+
+    # ── 1. Primary: exploit best known combo ────────────────────────────────
+    configs.append(SearchConfig(
+        feature_type=best_feat,
+        target="market_return",
+        ensemble=ensemble,
+        m5_p_max=0.05,
+        m6_ic_min=ic_gate,
+        m6_bootstrap_min=0.0,
+        lags=sorted(set(best_lags + [1, 7, 30, 60, 90])),
+        label=f"r{round_num}_primary_{best_feat}",
+    ))
+
+    # ── 2. Alternate feature types not yet tried ─────────────────────────────
+    from src.pipeline_v2.feature_transformer import FEATURE_TYPES
+    feat_scores = {f: np.mean(v) for f, v in knowledge.feat_ic.items()} if knowledge.feat_ic else {}
+    tried_feats = {c.split("_primary_")[1] for c in knowledge.tried_config_ids
+                   if "_primary_" in c}
+    for feat in sorted(FEATURE_TYPES, key=lambda f: -feat_scores.get(f, 0)):
+        if feat != best_feat and feat not in tried_feats:
+            configs.append(SearchConfig(
+                feature_type=feat,
+                target="market_return",
+                ensemble=ensemble,
+                m5_p_max=0.05,
+                m6_ic_min=ic_gate,
+                m6_bootstrap_min=0.0,
+                lags=best_lags,
+                label=f"r{round_num}_alt_{feat}",
+            ))
+            if len(configs) >= 4:
+                break
+
+    # ── 3. Stable signals deep-dive ──────────────────────────────────────────
+    stable = knowledge.stable_signals(min_count=2)
+    for (inst, topic, lag), count in stable[:4]:
+        # Explore neighboring lags around this stable signal
+        neighbor_lags = sorted({max(1, lag - 7), lag, lag + 7, lag * 2})[:4]
+        label = f"r{round_num}_stable_{inst[:6]}_{topic[:6]}"
+        if label not in knowledge.tried_config_ids:
+            configs.append(SearchConfig(
+                feature_type=best_feat,
+                target="market_return",
+                ensemble="M5_AND_M6",  # always AND for stable signals
+                m5_p_max=0.05,
+                m6_ic_min=max(0.01, ic_gate - 0.02),
+                m6_bootstrap_min=0.0,
+                lags=neighbor_lags,
+                label=label,
+            ))
+
+    # ── 4. If ensemble is AND and still 0 val → try M6-strict ───────────────
+    if knowledge.total_val == 0 and knowledge.rounds_done >= 2:
+        label = f"r{round_num}_m6strict_{best_feat}"
+        if label not in knowledge.tried_config_ids:
+            configs.append(SearchConfig(
+                feature_type=best_feat,
+                target="market_return",
+                ensemble="M6_only",
+                m5_p_max=0.05,
+                m6_ic_min=max(0.05, ic_gate),
+                m6_bootstrap_min=0.01,
+                lags=LAGS_FULL,
+                label=label,
+            ))
+
+    # ── 5. Regime: every 3rd round ───────────────────────────────────────────
+    if round_num % 3 == 0:
+        for (start, end, rlabel) in [
+            ("2022-01-01", "2022-12-31", "2022"),
+            ("2023-01-01", "2023-09-30", "2023"),
+        ]:
+            label = f"r{round_num}_regime{rlabel}_{best_feat}"
+            if label not in knowledge.tried_config_ids:
+                configs.append(SearchConfig(
+                    feature_type=best_feat,
+                    target="market_return",
+                    ensemble=ensemble,
+                    m5_p_max=0.05,
+                    m6_ic_min=max(0.01, ic_gate - 0.01),
+                    m6_bootstrap_min=0.0,
+                    lags=best_lags,
+                    label=label,
+                ))
+
+    # Deduplicate and exclude already tried
+    seen: set = set()
+    unique = []
+    for c in configs:
+        if c.label not in seen and c.label not in knowledge.tried_config_ids:
+            seen.add(c.label)
+            unique.append(c)
+
+    return unique
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Night Orchestrator
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -848,20 +1147,32 @@ class NightOrchestrator:
 
     def run_loop(self, max_hours: float, phases: list[int]) -> None:
         """
-        Run multiple rounds until max_hours is exhausted.
-        Each round adapts configs based on findings of previous rounds.
+        Ouroboros loop — self-improving signal search.
+
+        Each round:
+          1. Generate configs using SearchKnowledge (learned from all previous rounds)
+          2. Run scan, collect hits
+          3. Update knowledge (which instruments/topics/lags/features are strongest)
+          4. Knowledge adapts: IC gate, ensemble choice, instrument focus
+          5. Repeat → each round is smarter than the last
+
+        The loop continues until max_hours is exhausted.
+        Interim report written after every config — safe to interrupt.
         """
         t_start = time.time()
-        round_num = 0
+        knowledge = SearchKnowledge()
         train_dfs, val_dfs, _ = load_all_splits(self.log)
 
-        self.log(f"LOOP MODE: max={max_hours:.1f}h  phases={phases}")
+        self.log(f"OUROBOROS LOOP: max={max_hours:.1f}h")
+        self.log("Each round learns from the previous. Gates adapt. Focus narrows.")
+
+        round_num = 0
 
         while True:
             elapsed_h = (time.time() - t_start) / 3600
             remaining_h = max_hours - elapsed_h
-            if remaining_h < 0.1:
-                self.log(f"Time budget exhausted ({elapsed_h:.2f}h). Stopping.")
+            if remaining_h < 0.08:   # stop with 5 min to spare for final report
+                self.log(f"Time budget exhausted ({elapsed_h:.2f}h).")
                 break
 
             round_num += 1
@@ -870,50 +1181,93 @@ class NightOrchestrator:
                      f"remaining={remaining_h:.2f}h")
             self.log(f"{'='*60}")
 
-            # Generate adaptive configs for this round
-            configs = self._adaptive_configs(round_num)
-            self.log(f"Configs for round {round_num}: {len(configs)}")
+            # ── Print what we know so far ──────────────────────────────────
+            if knowledge.rounds_done > 0:
+                for line in knowledge.summary_lines():
+                    self.log(line)
 
-            round_results = []
+            # ── Generate configs for this round ───────────────────────────
+            if round_num == 1:
+                # First round: always a full sweep
+                configs = phase1_configs()
+            else:
+                configs = generate_next_configs(knowledge, round_num)
+
+            self.log(f"Configs this round: {len(configs)}")
+            if not configs:
+                self.log("No new configs to try. Loop complete.")
+                break
+
+            # ── Run each config ────────────────────────────────────────────
+            round_train = round_val = 0
+            round_ics: list[float] = []
+
             for i, cfg in enumerate(configs):
-                # Per-config time budget = remaining / configs left (min 10 min)
-                per_cfg_budget = max(
-                    600.0,
-                    (max_hours * 3600 - (time.time() - t_start)) / max(len(configs) - i, 1)
-                )
-                self.log(f"\n[{i+1}/{len(configs)}] {cfg.label}  "
-                         f"(budget={per_cfg_budget/60:.0f}min)")
+                remaining_now = max_hours - (time.time() - t_start) / 3600
+                if remaining_now < 0.08:
+                    break
 
-                # Temporarily override phase_budget
+                # Budget: split remaining time equally among remaining configs
+                n_left = len(configs) - i
+                per_cfg_budget = max(
+                    300.0,  # min 5 min per config
+                    (remaining_now * 3600) / n_left
+                )
+
+                self.log(f"\n  [{i+1}/{len(configs)}] {cfg.label}  "
+                         f"budget={per_cfg_budget/60:.0f}min  "
+                         f"ic_gate={cfg.m6_ic_min}  ens={cfg.ensemble}")
+
                 orig_budget = self.phase_budget
                 self.phase_budget = per_cfg_budget
 
-                r = self.run_config(cfg, train_dfs, val_dfs, phase=round_num)
-                round_results.append(r)
+                # Handle regime configs (label contains "regime2022"/"regime2023")
+                custom_train = None
+                if "regime2022" in cfg.label:
+                    custom_train = load_regime_split(
+                        "2022-01-01", "2022-12-31", self.log)
+                elif "regime2023" in cfg.label:
+                    custom_train = load_regime_split(
+                        "2023-01-01", "2023-09-30", self.log)
+
+                r = self.run_config(cfg, train_dfs, val_dfs, phase=round_num,
+                                    custom_train_dfs=custom_train)
                 self.phase_budget = orig_budget
 
-                self.log(f"  → train={r.n_train_pass}  val={r.n_val_pass}  "
-                         f"max_ic={r.max_ic:.4f}  score={r.score:.1f}")
+                # Update knowledge from this config's results
+                train_hits = [h for h in r.hits if h.split == "train"]
+                val_hits   = [h for h in r.hits if h.split == "val"]
+                knowledge.update(train_hits + val_hits, val_hits, cfg.id)
 
-                # Write interim report after each config
+                round_train += r.n_train_pass
+                round_val   += r.n_val_pass
+                round_ics.extend(h.m6_ic for h in train_hits)
+
+                self.log(f"  → train={r.n_train_pass}  val={r.n_val_pass}  "
+                         f"max_ic={r.max_ic:.4f}")
+
+                # Interim report after each config
                 self.write_report()
 
-                # Check time
-                if (time.time() - t_start) / 3600 >= max_hours:
-                    break
+            # ── End of round ──────────────────────────────────────────────
+            mean_ic = float(np.mean(round_ics)) if round_ics else 0.0
+            knowledge.end_round(round_train, round_val, mean_ic)
 
-            # Summary for this round
-            best = max(round_results, key=lambda r: r.score) if round_results else None
-            total_hits = sum(r.n_train_pass for r in round_results)
-            max_ic_str = f"{best.max_ic:.4f}" if best else "0.0000"
-            best_label = best.config.label if best else "none"
-            self.log(f"\n--- Round {round_num} done: {total_hits} train signals  "
-                     f"best={best_label}  max_ic={max_ic_str}")
+            self.log(f"\n{'─'*40}")
+            self.log(f"Round {round_num} done: "
+                     f"train={round_train}  val={round_val}  mean_ic={mean_ic:.4f}")
+            self.log(f"Cumulative: train={knowledge.total_train}  "
+                     f"val={knowledge.total_val}  "
+                     f"val_rate={knowledge.val_pass_rate:.1%}  "
+                     f"stable={len(knowledge.stable_signals())}")
 
         # Final report
         self.write_report()
         elapsed_h = (time.time() - t_start) / 3600
-        self.log(f"\nLoop ended after {round_num} rounds, {elapsed_h:.2f}h")
+        self.log(f"\nOuroboros complete: {round_num} rounds in {elapsed_h:.2f}h  "
+                 f"total_train={knowledge.total_train}  "
+                 f"total_val={knowledge.total_val}  "
+                 f"stable_signals={len(knowledge.stable_signals())}")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
