@@ -1,0 +1,82 @@
+[19:11:26] Deep Test Validation — 21 gold signals
+[19:11:26] Test split: 2025-09-01 → 2026-04-29 (held-out, never touched)
+[19:11:26] Checks: M5, M6, sign consistency, rolling IC, BH-FDR
+[19:11:26] ============================================================
+[19:11:26] 
+[1/21] GOLD / inflation_z / lag=7d  (train_ic=0.1380, rounds=82)
+[19:11:26]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=0.1674±0.0770  IC_degr=0.00  → FAILED
+[19:11:26] 
+[2/21] BRENT / sanctions / lag=7d  (train_ic=0.1220, rounds=3)
+[19:11:27]   M5: fail (p=0.7783)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=0.0066±0.1086  IC_degr=0.00  → FAILED
+[19:11:27] 
+[3/21] MSCI_WORLD / sanctions_z / lag=14d  (train_ic=0.0990, rounds=65)
+[19:11:27]   M5: fail (p=0.9576)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=-0.0684±0.0893  IC_degr=0.00  → FAILED
+[19:11:27] 
+[4/21] FTSE_CHINA_50 / rate_z / lag=1d  (train_ic=0.0940, rounds=6)
+[19:11:27]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=0.2064±0.0477  IC_degr=0.00  → FAILED
+[19:11:27] 
+[5/21] DJ_SOUTH_AFRICA / sanctions_z / lag=14d  (train_ic=0.0910, rounds=7)
+[19:11:27]   M5: fail (p=0.5759)  M6: fail (IC=0.0000)  sign=OK  rolling_ic=-0.0114±0.0485  IC_degr=0.00  → FAILED
+[19:11:27] 
+[6/21] CHINA_H_SHARES / rate_z / lag=1d  (train_ic=0.0810, rounds=6)
+[19:11:28]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=-0.0523±0.0575  IC_degr=0.00  → FAILED
+[19:11:28] 
+[7/21] DXY / oil_z / lag=1d  (train_ic=0.0790, rounds=6)
+[19:11:28]   M5: fail (p=0.3131)  M6: fail (IC=0.0000)  sign=OK  rolling_ic=-0.0789±0.1003  IC_degr=0.00  → FAILED
+[19:11:28] 
+[8/21] FTSE_CHINA_50 / rate_emb / lag=14d  (train_ic=0.0780, rounds=3)
+[19:11:28]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:28] 
+[9/21] CHINA_H_SHARES / rate_emb / lag=14d  (train_ic=0.0770, rounds=3)
+[19:11:28]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:28] 
+[10/21] DXY / rate_emb / lag=14d  (train_ic=0.0770, rounds=3)
+[19:11:28]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:28] 
+[11/21] CHINA_H_SHARES / ruble_emb / lag=7d  (train_ic=0.0720, rounds=3)
+[19:11:29]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:29] 
+[12/21] MSCI_INDIA / inflation_emb_z / lag=14d  (train_ic=0.0700, rounds=3)
+[19:11:29]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:29] 
+[13/21] MOEXFN / sanctions_z / lag=1d  (train_ic=0.0700, rounds=6)
+[19:11:29]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=-0.0073±0.0518  IC_degr=0.00  → FAILED
+[19:11:29] 
+[14/21] IMOEX / ruble_z / lag=7d  (train_ic=0.0690, rounds=6)
+[19:11:30]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=-0.1318±0.0776  IC_degr=0.00  → FAILED
+[19:11:30] 
+[15/21] FTSE_CHINA_50 / inflation_emb / lag=14d  (train_ic=0.0680, rounds=3)
+[19:11:30]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:30] 
+[16/21] DJ_SOUTH_AFRICA / sanctions_emb_z / lag=7d  (train_ic=0.0670, rounds=3)
+[19:11:30]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:30] 
+[17/21] DJ_SOUTH_AFRICA / sanctions_emb / lag=7d  (train_ic=0.0610, rounds=3)
+[19:11:30]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:30] 
+[18/21] MOEXOG / rate_emb / lag=1d  (train_ic=0.0490, rounds=3)
+[19:11:31]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:31] 
+[19/21] CHINA_H_SHARES / rate_emb_z / lag=14d  (train_ic=0.0400, rounds=3)
+[19:11:31]   M5: fail (p=1.0000)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=nan±nan  IC_degr=0.00  → FAILED
+[19:11:31] 
+[20/21] DJ_SOUTH_AFRICA / sanctions / lag=14d  (train_ic=0.0380, rounds=3)
+[19:11:31]   M5: fail (p=0.5937)  M6: fail (IC=0.0000)  sign=OK  rolling_ic=-0.0059±0.0502  IC_degr=0.00  → FAILED
+[19:11:31] 
+[21/21] DJ_SOUTH_AFRICA / gold / lag=7d  (train_ic=0.0380, rounds=3)
+[19:11:32]   M5: fail (p=0.3619)  M6: fail (IC=0.0000)  sign=FLIP  rolling_ic=0.0728±0.1592  IC_degr=0.00  → FAILED
+[19:11:32] 
+============================================================
+[19:11:32] Completed in 0.1 min
+[19:11:32] 
+============================================================
+[19:11:32] FINAL VERDICTS
+[19:11:32] ============================================================
+[19:11:32] CONFIRMED:  0
+[19:11:32] MARGINAL:   0
+[19:11:32] SIGN_FLIP:  0  ← dangerous, opposite direction on test
+[19:11:32] FAILED:     21
+[19:11:32] BH-FDR significant (q<0.10): 0
+[19:11:32] 
+CSV: C:\project\signal_mind\analytics\phase_b\test_validation\test_validation_20260524_191124.csv
+[19:11:32] Report: C:\project\signal_mind\analytics\phase_b\test_validation\test_validation_20260524_191124.md
