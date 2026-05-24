@@ -322,6 +322,95 @@ def scan_split(split_dfs: dict[str, pd.DataFrame | None],
 # Data loading with feature transform
 # ──────────────────────────────────────────────────────────────────────────────
 
+def load_arbitrary_window(date_start: str, date_end: str,
+                           log_fn) -> dict[str, pd.DataFrame | None]:
+    """
+    Load data for ANY date range by querying across all split views.
+    Used for rolling window training — not limited to fixed splits.
+    """
+    import duckdb
+
+    def _load(inst: str, is_moex: bool, col: str = "") -> pd.DataFrame | None:
+        try:
+            con = duckdb.connect(str(DB_PATH), read_only=True)
+
+            # Load market from ALL splits combined
+            if is_moex:
+                parts = []
+                for split in ["train", "val", "test"]:
+                    try:
+                        p = con.execute(
+                            f"SELECT trade_date AS date, {col} AS close "
+                            f"FROM v_{split}_sectors WHERE {col} IS NOT NULL"
+                        ).fetchdf()
+                        parts.append(p)
+                    except Exception:
+                        pass
+            else:
+                parts = []
+                for split in ["train", "val", "test"]:
+                    try:
+                        p = con.execute(
+                            f"SELECT trade_date AS date, close "
+                            f"FROM v_{split}_market_data WHERE instrument='{inst}'"
+                        ).fetchdf()
+                        parts.append(p)
+                    except Exception:
+                        pass
+
+            if not parts:
+                return None
+            mkt = pd.concat(parts).drop_duplicates("date").sort_values("date")
+            mkt["date"] = pd.to_datetime(mkt["date"])
+            mkt = mkt[(mkt["date"] >= date_start) & (mkt["date"] <= date_end)]
+            if len(mkt) < 50:
+                return None
+            mkt = mkt.sort_values("date").reset_index(drop=True)
+            mkt["market_return"] = np.log(mkt["close"]).diff()
+
+            kr = con.execute(
+                "SELECT period_date AS date, rate_pct AS key_rate_pct "
+                "FROM v_key_rate_daily"
+            ).fetchdf()
+            kr["date"] = pd.to_datetime(kr["date"])
+            mkt = pd.merge_asof(mkt, kr.sort_values("date"),
+                                on="date", direction="backward")
+
+            # News from all splits
+            news_parts = []
+            for split in ["train", "val", "test"]:
+                try:
+                    np_ = con.execute(f"SELECT * FROM v_{split}_news").fetchdf()
+                    np_ = np_.rename(columns={"news_date": "date"})
+                    news_parts.append(np_)
+                except Exception:
+                    pass
+            if not news_parts:
+                return None
+            news = pd.concat(news_parts).drop_duplicates("date")
+            news["date"] = pd.to_datetime(news["date"])
+            news = news[(news["date"] >= date_start) & (news["date"] <= date_end)]
+
+            df = pd.merge(mkt, news, on="date", how="inner")
+            return df.sort_values("date").reset_index(drop=True) if len(df) >= 50 else None
+        except Exception:
+            return None
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass
+
+    dfs = {}
+    for inst in MARKET_INSTRUMENTS:
+        dfs[inst] = _load(inst, is_moex=False)
+    for name, col in MOEX_SECTORS.items():
+        dfs[name] = _load(name, is_moex=True, col=col)
+    n_ok = sum(1 for v in dfs.values() if v is not None)
+    log_fn(f"  Window {date_start}→{date_end}: {n_ok} instruments")
+    return dfs
+
+
 def load_all_splits(log_fn) -> tuple[dict, dict, dict]:
     """Pre-load all instruments for train/val/test. Returns (train, val, test)."""
     all_insts = MARKET_INSTRUMENTS + list(MOEX_SECTORS.keys())
@@ -1269,6 +1358,166 @@ class NightOrchestrator:
                  f"total_val={knowledge.total_val}  "
                  f"stable_signals={len(knowledge.stable_signals())}")
 
+    def run_rolling_loop(self, max_hours: float) -> None:
+        """
+        Rolling window Ouroboros — learn from RECENT data.
+
+        Instead of fixed Train 2022-2023, uses rolling 12-month windows
+        starting from the most recent data. Each window is trained with the
+        Ouroboros approach. Signals stable across multiple windows are the
+        most reliable.
+
+        Window sequence (most recent first, step backward by 6 months):
+          window 1: 2024-05-01 → 2025-04-30  (latest 12m, val=2025-05)
+          window 2: 2023-11-01 → 2024-10-31  (12m offset by 6m)
+          window 3: 2023-05-01 → 2024-04-30  (12m offset by 12m)
+          window 4: 2022-11-01 → 2023-10-31  (12m offset by 18m)
+        """
+        t_start = time.time()
+        knowledge = SearchKnowledge()  # shared across all windows
+
+        # Windows: (train_start, train_end, val_end) — val = next 2 months
+        windows = [
+            ("2024-05-01", "2025-04-30", "2025-06-30", "window1_recent"),
+            ("2023-11-01", "2024-10-31", "2024-12-31", "window2_2024"),
+            ("2023-05-01", "2024-04-30", "2024-06-30", "window3_2023-24"),
+            ("2022-11-01", "2023-10-31", "2023-12-31", "window4_2022-23"),
+        ]
+
+        self.log(f"ROLLING WINDOW OUROBOROS: {len(windows)} windows, max={max_hours:.1f}h")
+        self.log("Shared knowledge accumulates across all windows.")
+        self.log("Signals stable in 2+ windows = highest confidence.")
+
+        window_signal_counts: dict[tuple, list] = {}  # signal -> [window_labels where found]
+
+        for win_idx, (wstart, wend, vend, wlabel) in enumerate(windows):
+            elapsed_h = (time.time() - t_start) / 3600
+            if elapsed_h >= max_hours - 0.1:
+                self.log(f"Time budget reached after {win_idx} windows.")
+                break
+
+            remaining_h = max_hours - elapsed_h
+            window_budget_h = remaining_h / max(1, len(windows) - win_idx)
+
+            self.log(f"\n{'='*60}")
+            self.log(f"WINDOW {win_idx+1}/{len(windows)}: {wlabel}")
+            self.log(f"  Train: {wstart} → {wend}  |  Val: {wend} → {vend}")
+            self.log(f"  Budget: {window_budget_h:.1f}h  |  Elapsed: {elapsed_h:.2f}h")
+            self.log(f"{'='*60}")
+
+            # Load this window's data
+            self.log("  Loading train window...")
+            train_w = load_arbitrary_window(wstart, wend, self.log)
+            self.log("  Loading val window...")
+            val_w   = load_arbitrary_window(wend,  vend,  self.log)
+
+            # Run Ouroboros rounds within this window's budget
+            round_num = 0
+            t_window = time.time()
+
+            while True:
+                elapsed_window = (time.time() - t_window) / 3600
+                elapsed_total  = (time.time() - t_start)  / 3600
+                if elapsed_window >= window_budget_h or elapsed_total >= max_hours - 0.08:
+                    break
+
+                round_num += 1
+                self.log(f"\n  [{wlabel}] Round {round_num}  "
+                         f"elapsed_win={elapsed_window:.2f}h")
+
+                if knowledge.rounds_done > 0:
+                    for line in knowledge.summary_lines():
+                        self.log(line)
+
+                configs = phase1_configs() if round_num == 1 else \
+                          generate_next_configs(knowledge, round_num)
+
+                if not configs:
+                    self.log("  No new configs. Window done.")
+                    break
+
+                round_train = round_val = 0
+                round_ics: list[float] = []
+
+                for i, cfg in enumerate(configs):
+                    t_remaining = (max_hours - (time.time()-t_start)/3600) * 3600
+                    if t_remaining < 300:
+                        break
+                    n_left = len(configs) - i
+                    per_cfg = max(180.0, t_remaining / max(n_left, 1))
+
+                    orig_b = self.phase_budget
+                    self.phase_budget = per_cfg
+                    r = self.run_config(cfg, train_w, val_w, phase=round_num)
+                    self.phase_budget = orig_b
+
+                    train_hits = [h for h in r.hits if h.split == "train"]
+                    val_hits   = [h for h in r.hits if h.split == "val"]
+                    knowledge.update(train_hits + val_hits, val_hits, cfg.id)
+
+                    # Track which windows each signal appeared in
+                    val_keys = {(h.instrument, h.topic, h.lag) for h in val_hits}
+                    for h in train_hits:
+                        key = (h.instrument, h.topic, h.lag)
+                        if key in val_keys:
+                            if key not in window_signal_counts:
+                                window_signal_counts[key] = []
+                            if wlabel not in window_signal_counts[key]:
+                                window_signal_counts[key].append(wlabel)
+
+                    round_train += r.n_train_pass
+                    round_val   += r.n_val_pass
+                    round_ics.extend(h.m6_ic for h in train_hits)
+                    self.write_report()
+
+                mean_ic = float(np.mean(round_ics)) if round_ics else 0.0
+                knowledge.end_round(round_train, round_val, mean_ic)
+
+                self.log(f"  [{wlabel}] Round {round_num}: "
+                         f"train={round_train} val={round_val} ic={mean_ic:.4f}")
+
+        # ── Cross-window stability report ──────────────────────────────────────
+        self.log(f"\n{'='*60}")
+        self.log("CROSS-WINDOW STABILITY")
+        self.log(f"{'='*60}")
+
+        # Signals found in 2+ windows
+        multi_window = {k: v for k, v in window_signal_counts.items() if len(v) >= 2}
+        multi_sorted = sorted(multi_window.items(), key=lambda x: -len(x[1]))
+
+        self.log(f"Signals stable in 2+ windows: {len(multi_window)}")
+        for (inst, topic, lag), wins in multi_sorted[:20]:
+            best_ic = self.knowledge_best_ic(inst, topic, lag)
+            self.log(f"  {inst:18s} {topic:16s} lag={lag:2d}  "
+                     f"windows={len(wins)} {wins}  best_ic={best_ic:.4f}")
+
+        # Save stability data to CSV
+        rows = []
+        for (inst, topic, lag), wins in multi_sorted:
+            rows.append({
+                "instrument": inst, "topic": topic, "lag": lag,
+                "n_windows": len(wins), "windows": "|".join(wins),
+                "best_ic": self.knowledge_best_ic(inst, topic, lag),
+            })
+        if rows:
+            stab_path = OUT_DIR / f"rolling_stable_{self.ts}.csv"
+            pd.DataFrame(rows).to_csv(stab_path, index=False)
+            self.log(f"Stability CSV: {stab_path}")
+
+        self.write_report()
+        elapsed_h = (time.time() - t_start) / 3600
+        self.log(f"\nRolling Ouroboros complete: {elapsed_h:.2f}h  "
+                 f"stable_across_windows={len(multi_window)}")
+
+    def knowledge_best_ic(self, inst: str, topic: str, lag: int) -> float:
+        """Get best IC ever seen for this signal across all hits."""
+        key = (inst, topic, lag)
+        return next(
+            (h.m6_ic for h in sorted(self.all_hits, key=lambda x: -x.m6_ic)
+             if h.instrument == inst and h.topic == topic and h.lag == lag),
+            0.0
+        )
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # CLI
@@ -1285,8 +1534,11 @@ def main() -> None:
         help="Comma-separated phases for single-run mode (default: 1,2,3)")
     parser.add_argument(
         "--loop-hours", type=float, default=0.0,
-        help="Run in adaptive loop mode for N hours (e.g. --loop-hours 8). "
-             "Each round adapts configs based on findings. Overrides --phases.")
+        help="Adaptive loop for N hours (each round learns from previous)")
+    parser.add_argument(
+        "--rolling", type=float, default=0.0,
+        help="Rolling window Ouroboros for N hours. Uses 4 sequential 12-month "
+             "windows (most recent first). Finds signals stable across windows.")
     args = parser.parse_args()
 
     import logging
@@ -1302,7 +1554,9 @@ def main() -> None:
             log_fh=log_fh,
             ts=ts,
         )
-        if args.loop_hours > 0:
+        if args.rolling > 0:
+            orchestrator.run_rolling_loop(max_hours=args.rolling)
+        elif args.loop_hours > 0:
             orchestrator.run_loop(max_hours=args.loop_hours, phases=[1, 2, 3])
         else:
             phases = [int(p.strip()) for p in args.phases.split(",")]
