@@ -218,9 +218,12 @@ def validate_signal(instrument: str, topic: str, lag: int,
         "train_ic": train_ic, "rounds": rounds,
         "n_test": 0,
         "m5_confirmed": False, "m5_pvalue": 1.0, "m5_score": 0.0,
+        "train_m5_score": 0.0,
         "m6_confirmed": False, "m6_ic": 0.0,
         "sign_consistent": False,
         "rolling_ic_mean": 0.0, "rolling_ic_std": 0.0, "rolling_ic_positive_pct": 0.0,
+        "full_rolling_ic_mean": 0.0, "full_rolling_ic_positive_pct": 0.0,
+        "sign_flip_date": "",
         "ic_degradation": 0.0,  # test_ic / train_ic
         "verdict": "FAILED",
         "note": "",
@@ -266,12 +269,58 @@ def validate_signal(instrument: str, topic: str, lag: int,
         if topic in df_train.columns:
             try:
                 v5_tr = m5.evaluate(df_train, hyp)
+                result["train_m5_score"] = round(float(v5_tr.score), 6)
                 result["sign_consistent"] = (
                     np.sign(v5_tr.score) == np.sign(result["m5_score"])
-                    if result["m5_score"] != 0 else False
+                    if result["m5_score"] != 0 and v5_tr.score != 0 else False
                 )
             except Exception:
                 pass
+
+    # ── Sign flip timeline: rolling correlation across full history ───────────
+    # Load val data too and concatenate train+val+test for timeline
+    try:
+        import duckdb
+        con = duckdb.connect(str(DB_PATH), read_only=True)
+        full_dfs = []
+        for split in ["train", "val", "test"]:
+            if instrument in MOEX_SECTORS:
+                col = MOEX_SECTORS[instrument]
+                mkt_q = f"SELECT trade_date AS date, {col} AS close FROM v_{split}_sectors WHERE {col} IS NOT NULL ORDER BY trade_date"
+            else:
+                mkt_q = f"SELECT trade_date AS date, close FROM v_{split}_market_data WHERE instrument='{instrument}' ORDER BY trade_date"
+            mkt_s = con.execute(mkt_q).fetchdf()
+            news_s = con.execute(f"SELECT * FROM v_{split}_news").fetchdf()
+            news_s = news_s.rename(columns={"news_date": "date"})
+            if len(mkt_s) >= 10:
+                mkt_s["date"] = pd.to_datetime(mkt_s["date"])
+                news_s["date"] = pd.to_datetime(news_s["date"])
+                mkt_s = mkt_s.sort_values("date")
+                mkt_s["market_return"] = np.log(mkt_s["close"]).diff()
+                kr = con.execute("SELECT period_date AS date, rate_pct AS key_rate_pct FROM v_key_rate_daily").fetchdf()
+                kr["date"] = pd.to_datetime(kr["date"])
+                mkt_s = pd.merge_asof(mkt_s, kr.sort_values("date"), on="date", direction="backward")
+                merged = pd.merge(mkt_s, news_s, on="date", how="inner")
+                merged["_split"] = split
+                full_dfs.append(merged)
+        con.close()
+
+        if full_dfs:
+            full_df = pd.concat(full_dfs, ignore_index=True).sort_values("date").reset_index(drop=True)
+            full_df = apply_features(full_df, topic)
+            if topic in full_df.columns:
+                ric_full = rolling_ic(full_df, topic, lag, window=60)
+                if len(ric_full) > 5:
+                    # Find when IC crossed zero: positive → negative
+                    ric_pos = (ric_full > 0).astype(int)
+                    changes = ric_pos.diff()
+                    neg_crosses = ric_full[changes == -1]
+                    if len(neg_crosses) > 0:
+                        result["sign_flip_date"] = str(neg_crosses.index[-1].date())
+                    result["full_rolling_ic_positive_pct"] = round(float((ric_full > 0).mean()), 4)
+                    result["full_rolling_ic_mean"] = round(float(ric_full.mean()), 6)
+    except Exception as e:
+        result["note"] += f"Timeline error: {e}; "
 
     # ── Rolling IC on Test ───────────────────────────────────────────────────
     try:
@@ -348,8 +397,15 @@ def main() -> None:
         log_fh.write(line + "\n")
         log_fh.flush()
 
-    m5 = importlib.import_module("analytics.testbed.methods.m5_var").build()
-    m6 = importlib.import_module("analytics.testbed.methods.m6_lgbm").build()
+    # For Test validation: lower N_MIN to 100 (test split is only 154-200 rows)
+    import analytics.testbed.methods.m5_var as m5_mod
+    import analytics.testbed.methods.m6_lgbm as m6_mod
+    orig_m5_nmin = m5_mod.N_MIN
+    orig_m6_nmin = m6_mod.N_MIN
+    m5_mod.N_MIN = 80
+    m6_mod.N_MIN = 100
+    m5 = m5_mod.build()
+    m6 = m6_mod.build()
 
     with open(log_path, "w", encoding="utf-8", buffering=1) as log_fh:
         log(f"Deep Test Validation — {len(GOLD_SIGNALS)} gold signals")
