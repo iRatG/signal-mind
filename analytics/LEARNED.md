@@ -82,6 +82,18 @@ These signals worked in 2022-2025 but reversed direction in 2025-2026.
 
 ## What To Do Next
 
+## Persistent Signals (all three splits confirmed)
+
+| Signal | Train IC | Val IC | Test IC | M5 Test p | Notes |
+|---|---|---|---|---|---|
+| **SP500 / inflation_z / lag=1d** | 0.149 | 0.057 | **0.185** | 0.039 | IC grows on Test — stable |
+| **FTSE_CHINA_50 / rate_z / lag=1d** | 0.094 | 0.069 | 0.069 | 0.041 | Stable decay |
+
+Both pass M5 (structural causality) + M6 (predictive IC) + sign consistency across all splits.
+BH-FDR at q=0.10 on 54 simultaneous tests = 0 significant (honest multiple testing result).
+
+---
+
 ### Priority 1: Rolling Window Retraining
 
 Instead of fixed Train 2022-2023, use rolling 12-month windows:
