@@ -1,0 +1,144 @@
+[18:27:20] Full Two-Stage Validation — 54 candidates
+[18:27:20] Stage 1: Val split (2024-01-01 → 2025-04-30)
+[18:27:20] Stage 2: Test split (2025-09-01 → 2026-04-29) — for Stage 1 survivors
+[18:27:20] BH-FDR q=0.10 on Stage 2 M5 p-values
+[18:27:20] ============================================================
+[18:27:20] 
+--- STAGE 1: Val split ---
+
+[18:27:23]   [ 1/54] MOEX10             banking_z        lag= 7  Val M5=✗ p=0.2298  M6=✗ ic=0.0142  → fail
+[18:27:23]   [ 2/54] MSCI_WORLD         oil_emb_z        lag= 7  Val M5=✗ p=0.4395  M6=✓ ic=0.0908  → PASS
+[18:27:24]   [ 3/54] MOEXOG             gold_z           lag= 1  Val M5=✗ p=0.2380  M6=✗ ic=0.0275  → fail
+[18:27:24]   [ 4/54] MOEXFN             banking_z        lag= 7  Val M5=✗ p=0.1949  M6=✗ ic=0.0231  → fail
+[18:27:24]   [ 5/54] MOEXFN             banking_emb      lag= 1  Val M5=✓ p=0.0054  M6=✓ ic=0.0617  → PASS
+[18:27:24]   [ 6/54] MSCI_INDIA         gold_emb_z       lag= 1  Val M5=✗ p=0.7285  M6=✗ ic=0.0278  → fail
+[18:27:25]   [ 7/54] SP500              oil              lag= 7  Val M5=✓ p=0.0180  M6=✓ ic=0.0566  → PASS
+[18:27:25]   [ 8/54] MSCI_INDIA         oil_emb          lag= 7  Val M5=✗ p=0.9503  M6=✓ ic=0.0473  → PASS
+[18:27:25]   [ 9/54] DXY                oil_emb          lag= 7  Val M5=✗ p=0.1408  M6=✓ ic=0.0406  → PASS
+[18:27:25]   [10/54] CHINA_H_SHARES     rate_z           lag= 1  Val M5=✗ p=0.0863  M6=✓ ic=0.0377  → PASS
+[18:27:25]   [11/54] SP500              inflation_z      lag= 7  Val M5=✗ p=0.4699  M6=✓ ic=0.0685  → PASS
+[18:27:26]   [12/54] DJ_SOUTH_AFRICA    gold_z           lag=14  Val M5=✓ p=0.0344  M6=✓ ic=0.0946  → PASS
+[18:27:26]   [13/54] MOEXFN             inflation_z      lag= 7  Val M5=✗ p=0.3124  M6=✗ ic=0.0026  → fail
+[18:27:26]   [14/54] MOEXOG             banking_emb      lag= 1  Val M5=✓ p=0.0061  M6=✓ ic=0.0664  → PASS
+[18:27:26]   [15/54] IMOEX              banking_emb      lag= 1  Val M5=✓ p=0.0065  M6=✓ ic=0.0489  → PASS
+[18:27:26]   [16/54] DXY                banking          lag= 7  Val M5=✓ p=0.0005  M6=✓ ic=0.0908  → PASS
+[18:27:27]   [17/54] MOEX10             banking_emb      lag= 1  Val M5=✓ p=0.0128  M6=✓ ic=0.0398  → PASS
+[18:27:27]   [18/54] IMOEX              rate_emb         lag= 7  Val M5=✓ p=0.0169  M6=✗ ic=0.0207  → PASS
+[18:27:27]   [19/54] MOEXOG             rate_emb_z       lag= 7  Val M5=✓ p=0.0051  M6=✓ ic=0.0349  → PASS
+[18:27:27]   [20/54] MOEXFN             rate_emb         lag= 7  Val M5=✓ p=0.0077  M6=✓ ic=0.0698  → PASS
+[18:27:27]   [21/54] DXY                rate_emb_z       lag= 7  Val M5=✗ p=0.1913  M6=✓ ic=0.0560  → PASS
+[18:27:28]   [22/54] SP500              banking_z        lag=14  Val M5=✗ p=0.9209  M6=✗ ic=0.0218  → fail
+[18:27:28]   [23/54] SP500              oil_z            lag=30  Val M5=✗ p=0.5402  M6=✓ ic=0.0407  → PASS
+[18:27:28]   [24/54] SP500              rate_z           lag= 1  Val M5=✗ p=0.3645  M6=✗ ic=0.0291  → fail
+[18:27:28]   [25/54] MSCI_WORLD         oil_z            lag= 7  Val M5=✗ p=0.0571  M6=✗ ic=0.0288  → fail
+[18:27:28]   [26/54] DJ_SOUTH_AFRICA    oil_emb          lag=30  Val M5=✗ p=0.3434  M6=✓ ic=0.0797  → PASS
+[18:27:29]   [27/54] DJ_SOUTH_AFRICA    inflation_z      lag= 7  Val M5=✗ p=0.3553  M6=✗ ic=0.0250  → fail
+[18:27:29]   [28/54] BRENT              gold_emb_z       lag= 7  Val M5=✗ p=0.4897  M6=✓ ic=0.0345  → PASS
+[18:27:29]   [29/54] SP500              oil_emb          lag=60  Val M5=✗ p=0.7616  M6=✓ ic=0.0443  → PASS
+[18:27:29]   [30/54] DJ_SOUTH_AFRICA    ruble_z          lag=14  Val M5=✗ p=0.9399  M6=✓ ic=0.0428  → PASS
+[18:27:30]   [31/54] MSCI_WORLD         oil_z            lag=14  Val M5=✗ p=0.8474  M6=✗ ic=0.0174  → fail
+[18:27:30]   [32/54] SP500              gold_z           lag=30  Val M5=✗ p=0.3874  M6=✓ ic=0.0468  → PASS
+[18:27:30]   [33/54] IMOEX              gold_z           lag= 7  Val M5=✗ p=0.1162  M6=✓ ic=0.0329  → PASS
+[18:27:30]   [34/54] MOEXOG             inflation_z      lag= 7  Val M5=✗ p=0.3009  M6=✓ ic=0.0320  → PASS
+[18:27:30]   [35/54] CHINA_H_SHARES     oil_z            lag=14  Val M5=✗ p=0.5573  M6=✗ ic=0.0097  → fail
+[18:27:31]   [36/54] FTSE_CHINA_50      banking_z        lag= 7  Val M5=✗ p=0.8100  M6=✓ ic=0.0489  → PASS
+[18:27:31]   [37/54] MSCI_INDIA         oil_z            lag=14  Val M5=✗ p=0.5415  M6=✓ ic=0.0520  → PASS
+[18:27:31]   [38/54] FTSE_CHINA_50      oil              lag= 1  Val M5=✗ p=0.6356  M6=✓ ic=0.0758  → PASS
+[18:27:31]   [39/54] CHINA_H_SHARES     banking_z        lag= 7  Val M5=✗ p=0.8651  M6=✓ ic=0.1068  → PASS
+[18:27:31]   [40/54] MOEX10             inflation_z      lag= 7  Val M5=✗ p=0.2334  M6=✓ ic=0.0434  → PASS
+[18:27:32]   [41/54] MOEX10             ruble_z          lag= 7  Val M5=✗ p=0.0957  M6=✗ ic=0.0172  → fail
+[18:27:32]   [42/54] USD_RUB            oil_z            lag=14  Val M5=✗ p=0.3665  M6=✓ ic=0.0405  → PASS
+[18:27:32]   [43/54] EUR_RUB            oil_z            lag=14  Val M5=✗ p=0.3665  M6=✓ ic=0.0405  → PASS
+[18:27:32]   [44/54] MOEXFN             gold_z           lag= 7  Val M5=✗ p=0.1786  M6=✗ ic=0.0219  → fail
+[18:27:32]   [45/54] SP500              sanctions_z      lag=30  Val M5=✗ p=0.8255  M6=✓ ic=0.0634  → PASS
+[18:27:33]   [46/54] SP500              gold_z           lag=14  Val M5=✗ p=0.1395  M6=✓ ic=0.0364  → PASS
+[18:27:33]   [47/54] SP500              gold_z           lag= 1  Val M5=✗ p=0.4014  M6=✓ ic=0.0406  → PASS
+[18:27:33]   [48/54] SP500              inflation_z      lag= 1  Val M5=✗ p=0.4864  M6=✓ ic=0.0551  → PASS
+[18:27:33]   [49/54] SP500              rate_emb_z       lag= 1  Val M5=✗ p=0.7561  M6=✓ ic=0.0878  → PASS
+[18:27:33]   [50/54] MSCI_INDIA         gold_emb         lag=60  Val M5=✗ p=0.4397  M6=✓ ic=0.1030  → PASS
+[18:27:33]   [51/54] CHINA_H_SHARES     oil_emb_z        lag= 7  Val M5=✗ p=0.7861  M6=✓ ic=0.1199  → PASS
+[18:27:34]   [52/54] USD_RUB            ruble_z          lag= 7  Val M5=✗ p=0.6191  M6=✓ ic=0.1535  → PASS
+[18:27:34]   [53/54] EUR_RUB            ruble_z          lag= 7  Val M5=✗ p=0.6191  M6=✓ ic=0.1535  → PASS
+[18:27:34]   [54/54] IMOEX              ruble_z          lag= 7  Val M5=✗ p=0.0773  M6=✗ ic=0.0074  → fail
+[18:27:34] 
+Stage 1: 40/54 passed Val
+[18:27:34] 
+--- STAGE 2: Test split (40 candidates) ---
+
+[18:27:34]   MSCI_WORLD         oil_emb_z        lag= 7  M5=✗ p=1.0000  M6=✓ ic=0.0970  sign=FLIP  ic_decay=1.07  → SIGN_FLIP
+[18:27:34]   MOEXFN             banking_emb      lag= 1  M5=✗ p=1.0000  M6=✓ ic=0.0348  sign=FLIP  ic_decay=0.56  → SIGN_FLIP
+[18:27:35]   SP500              oil              lag= 7  M5=✗ p=0.1474  M6=✓ ic=0.1902  sign=OK  ic_decay=3.36  → MARGINAL
+[18:27:35]   MSCI_INDIA         oil_emb          lag= 7  M5=✗ p=1.0000  M6=✗ ic=0.0006  sign=FLIP  ic_decay=0.01  → FAILED
+[18:27:35]   DXY                oil_emb          lag= 7  M5=✗ p=1.0000  M6=✓ ic=0.0835  sign=FLIP  ic_decay=2.06  → SIGN_FLIP
+[18:27:35]   CHINA_H_SHARES     rate_z           lag= 1  M5=✗ p=0.1798  M6=✓ ic=0.0584  sign=OK  ic_decay=1.55  → MARGINAL
+[18:27:36]   SP500              inflation_z      lag= 7  M5=✗ p=0.0542  M6=✓ ic=0.2229  sign=OK  ic_decay=3.25  → MARGINAL
+[18:27:36]   DJ_SOUTH_AFRICA    gold_z           lag=14  M5=✗ p=0.7549  M6=✓ ic=0.0137  sign=OK  ic_decay=0.14  → FAILED
+[18:27:36]   MOEXOG             banking_emb      lag= 1  M5=✗ p=1.0000  M6=✓ ic=0.0106  sign=FLIP  ic_decay=0.16  → SIGN_FLIP
+[18:27:36]   IMOEX              banking_emb      lag= 1  M5=✗ p=1.0000  M6=✓ ic=0.0288  sign=FLIP  ic_decay=0.59  → SIGN_FLIP
+[18:27:37]   DXY                banking          lag= 7  M5=✗ p=0.4442  M6=✓ ic=0.0108  sign=OK  ic_decay=0.12  → FAILED
+[18:27:37]   MOEX10             banking_emb      lag= 1  M5=✗ p=1.0000  M6=✓ ic=0.0204  sign=FLIP  ic_decay=0.51  → SIGN_FLIP
+[18:27:37]   IMOEX              rate_emb         lag= 7  M5=✗ p=1.0000  M6=✓ ic=0.0574  sign=FLIP  ic_decay=2.78  → SIGN_FLIP
+[18:27:37]   MOEXOG             rate_emb_z       lag= 7  M5=✗ p=1.0000  M6=✓ ic=0.0846  sign=FLIP  ic_decay=2.42  → SIGN_FLIP
+[18:27:37]   MOEXFN             rate_emb         lag= 7  M5=✗ p=1.0000  M6=✓ ic=0.0561  sign=FLIP  ic_decay=0.80  → SIGN_FLIP
+[18:27:38]   DXY                rate_emb_z       lag= 7  M5=✗ p=1.0000  M6=✓ ic=0.1235  sign=FLIP  ic_decay=2.21  → SIGN_FLIP
+[18:27:38]   SP500              oil_z            lag=30  M5=✗ p=0.5599  M6=✓ ic=0.1713  sign=OK  ic_decay=4.21  → MARGINAL
+[18:27:38]   DJ_SOUTH_AFRICA    oil_emb          lag=30  M5=✗ p=1.0000  M6=✓ ic=0.0358  sign=FLIP  ic_decay=0.45  → SIGN_FLIP
+[18:27:38]   BRENT              gold_emb_z       lag= 7  M5=✗ p=1.0000  M6=✓ ic=0.2485  sign=FLIP  ic_decay=7.21  → SIGN_FLIP
+[18:27:38]   SP500              oil_emb          lag=60  M5=✗ p=1.0000  M6=✓ ic=0.1029  sign=FLIP  ic_decay=2.32  → SIGN_FLIP
+[18:27:39]   DJ_SOUTH_AFRICA    ruble_z          lag=14  M5=✗ p=0.4163  M6=✓ ic=0.0785  sign=OK  ic_decay=1.83  → MARGINAL
+[18:27:39]   SP500              gold_z           lag=30  M5=✗ p=0.8019  M6=✓ ic=0.0113  sign=OK  ic_decay=0.24  → FAILED
+[18:27:39]   IMOEX              gold_z           lag= 7  M5=✗ p=0.7055  M6=✓ ic=0.0630  sign=OK  ic_decay=1.91  → MARGINAL
+[18:27:39]   MOEXOG             inflation_z      lag= 7  M5=✗ p=0.5888  M6=✓ ic=0.0548  sign=OK  ic_decay=1.71  → MARGINAL
+[18:27:39]   FTSE_CHINA_50      banking_z        lag= 7  M5=✗ p=0.1818  M6=✓ ic=0.0620  sign=OK  ic_decay=1.27  → MARGINAL
+[18:27:40]   MSCI_INDIA         oil_z            lag=14  M5=✗ p=0.6811  M6=✓ ic=0.0169  sign=OK  ic_decay=0.33  → MARGINAL
+[18:27:40]   FTSE_CHINA_50      oil              lag= 1  M5=✗ p=0.7093  M6=✓ ic=0.0298  sign=OK  ic_decay=0.39  → MARGINAL
+[18:27:40]   CHINA_H_SHARES     banking_z        lag= 7  M5=✗ p=0.7729  M6=✓ ic=0.0605  sign=OK  ic_decay=0.57  → MARGINAL
+[18:27:40]   MOEX10             inflation_z      lag= 7  M5=✗ p=0.5197  M6=✓ ic=0.0722  sign=OK  ic_decay=1.66  → MARGINAL
+[18:27:41]   USD_RUB            oil_z            lag=14  M5=✗ p=0.4335  M6=✓ ic=0.0396  sign=OK  ic_decay=0.98  → MARGINAL
+[18:27:41]   EUR_RUB            oil_z            lag=14  M5=✗ p=0.4335  M6=✓ ic=0.0396  sign=OK  ic_decay=0.98  → MARGINAL
+[18:27:41]   SP500              sanctions_z      lag=30  M5=✗ p=0.7291  M6=✓ ic=0.0577  sign=OK  ic_decay=0.91  → MARGINAL
+[18:27:41]   SP500              gold_z           lag=14  M5=✗ p=0.9456  M6=✓ ic=0.1027  sign=OK  ic_decay=2.83  → MARGINAL
+[18:27:42]   SP500              gold_z           lag= 1  M5=✗ p=0.3605  M6=✓ ic=0.1279  sign=OK  ic_decay=3.15  → MARGINAL
+[18:27:42]   SP500              inflation_z      lag= 1  M5=✓ p=0.0392  M6=✓ ic=0.1850  sign=OK  ic_decay=3.36  → CONFIRMED
+[18:27:42]   SP500              rate_emb_z       lag= 1  M5=✗ p=1.0000  M6=✓ ic=0.0490  sign=FLIP  ic_decay=0.56  → SIGN_FLIP
+[18:27:42]   MSCI_INDIA         gold_emb         lag=60  M5=✗ p=1.0000  M6=✓ ic=0.1405  sign=FLIP  ic_decay=1.36  → SIGN_FLIP
+[18:27:42]   CHINA_H_SHARES     oil_emb_z        lag= 7  M5=✗ p=1.0000  M6=✓ ic=0.1055  sign=FLIP  ic_decay=0.88  → SIGN_FLIP
+[18:27:43]   USD_RUB            ruble_z          lag= 7  M5=✗ p=0.8590  M6=✓ ic=0.0310  sign=OK  ic_decay=0.20  → FAILED
+[18:27:43]   EUR_RUB            ruble_z          lag= 7  M5=✗ p=0.8590  M6=✓ ic=0.0310  sign=OK  ic_decay=0.20  → FAILED
+[18:27:43] 
+============================================================
+[18:27:43] FINAL SUMMARY  (0.4 min)
+[18:27:43] ============================================================
+[18:27:43] Stage 1 (Val):  40/54 passed
+[18:27:43]   CONFIRMED   : 1
+[18:27:43]   MARGINAL    : 17
+[18:27:43]   SIGN_FLIP   : 16
+[18:27:43]   FAILED      : 6
+[18:27:43]   NO_DATA     : 0
+[18:27:43]   BH-FDR (q=0.10): 0 significant
+[18:27:43] 
+*** CONFIRMED signals (Train→Val→Test) ***
+[18:27:43]   SP500 / inflation_z / lag=1d  train_ic=0.1490  val_ic=0.0551  test_ic=0.1850  ic_decay=3.36  rolling=-0.1643
+[18:27:43] 
+--- MARGINAL signals ---
+[18:27:43]   SP500 / oil / lag=7d  test_ic=0.1902  ic_decay=3.36
+[18:27:43]   CHINA_H_SHARES / rate_z / lag=1d  test_ic=0.0584  ic_decay=1.55
+[18:27:43]   SP500 / inflation_z / lag=7d  test_ic=0.2229  ic_decay=3.25
+[18:27:43]   SP500 / oil_z / lag=30d  test_ic=0.1713  ic_decay=4.21
+[18:27:43]   DJ_SOUTH_AFRICA / ruble_z / lag=14d  test_ic=0.0785  ic_decay=1.83
+[18:27:43]   IMOEX / gold_z / lag=7d  test_ic=0.0630  ic_decay=1.91
+[18:27:43]   MOEXOG / inflation_z / lag=7d  test_ic=0.0548  ic_decay=1.71
+[18:27:43]   FTSE_CHINA_50 / banking_z / lag=7d  test_ic=0.0620  ic_decay=1.27
+[18:27:43]   MSCI_INDIA / oil_z / lag=14d  test_ic=0.0169  ic_decay=0.33
+[18:27:43]   FTSE_CHINA_50 / oil / lag=1d  test_ic=0.0298  ic_decay=0.39
+[18:27:43]   CHINA_H_SHARES / banking_z / lag=7d  test_ic=0.0605  ic_decay=0.57
+[18:27:43]   MOEX10 / inflation_z / lag=7d  test_ic=0.0722  ic_decay=1.66
+[18:27:43]   USD_RUB / oil_z / lag=14d  test_ic=0.0396  ic_decay=0.98
+[18:27:43]   EUR_RUB / oil_z / lag=14d  test_ic=0.0396  ic_decay=0.98
+[18:27:43]   SP500 / sanctions_z / lag=30d  test_ic=0.0577  ic_decay=0.91
+[18:27:43]   SP500 / gold_z / lag=14d  test_ic=0.1027  ic_decay=2.83
+[18:27:43]   SP500 / gold_z / lag=1d  test_ic=0.1279  ic_decay=3.15
+[18:27:43] 
+Stage 1 CSV: C:\project\signal_mind\analytics\phase_b\full_validation/stage1_val_20260525_182718.csv
+[18:27:43] Stage 2 CSV: C:\project\signal_mind\analytics\phase_b\full_validation/stage2_test_20260525_182718.csv
+[18:27:43] Report: C:\project\signal_mind\analytics\phase_b\full_validation/full_report_20260525_182718.md
