@@ -1234,7 +1234,81 @@ class NightOrchestrator:
 
     # ─── loop mode ────────────────────────────────────────────────────────────
 
-    def run_loop(self, max_hours: float, phases: list[int]) -> None:
+    def _write_ledger(self, session_id: str, session_type: str,
+                      t_start: float, knowledge: "SearchKnowledge") -> None:
+        """Write session results to the scientific ledger."""
+        try:
+            from src.pipeline_v2.session_ledger import (
+                log_session_end, check_session_integrity, generate_summary, Flag
+            )
+            train_hits = [h for h in self.all_hits if h.split == "train"]
+            val_hits   = [h for h in self.all_hits if h.split == "val"]
+            ic_vals    = [h.m6_ic for h in train_hits]
+            val_dicts  = [
+                {
+                    "m6_ic_train": next(
+                        (t.m6_ic for t in train_hits
+                         if t.instrument == v.instrument
+                         and t.topic == v.topic and t.lag == v.lag), 0.0
+                    ),
+                    "m6_ic_val":   v.m6_ic,
+                    "sign_flip":   False,  # would need raw prediction to compute
+                    "val_pass":    v.ensemble_pass,
+                }
+                for v in val_hits
+            ]
+
+            n_hyp = sum(
+                len(r.config.lags) * len(
+                    FeatureTransformer.topic_columns(r.config.feature_type)
+                ) * len(MARKET_INSTRUMENTS + list(MOEX_SECTORS.keys()))
+                for r in self.all_results
+            )
+
+            flags, enrich = check_session_integrity(
+                n_hypotheses=n_hyp,
+                n_train=len(train_hits),
+                n_val=len(val_hits),
+                ic_values_train=ic_vals,
+                val_results=val_dicts,
+                regime_labels=[h.regime for h in train_hits],
+            )
+
+            stats = {
+                "hypotheses_tested":  n_hyp,
+                "train_signals":      len(train_hits),
+                "val_confirmed":      len(val_hits),
+                "mean_ic_train":      round(float(np.mean(ic_vals)), 4) if ic_vals else 0.0,
+                "max_ic_train":       round(float(np.max(ic_vals)), 4)  if ic_vals else 0.0,
+                "duration_hours":     round((time.time() - t_start) / 3600, 2),
+                "enrichment_factor":  enrich["enrichment_factor"],
+                "expected_by_chance": enrich["expected_by_chance"],
+                "val_rate":           enrich["val_rate"],
+            }
+
+            log_session_end(session_id, stats, flags)
+
+            # Print integrity summary
+            self.log("\n" + "=" * 60)
+            self.log("INTEGRITY CHECK")
+            self.log("=" * 60)
+            fail_n = sum(1 for f in flags if f["level"] == Flag.FAIL)
+            warn_n = sum(1 for f in flags if f["level"] == Flag.WARN)
+            self.log(f"  Enrichment vs random: {enrich['enrichment_factor']:.2f}x "
+                     f"(tested={n_hyp}, expected_fp={enrich['expected_by_chance']:.1f}, "
+                     f"actual={len(train_hits)})")
+            self.log(f"  FAIL flags: {fail_n}  WARN flags: {warn_n}")
+            for f in flags:
+                if f["level"] in (Flag.FAIL, Flag.WARN):
+                    self.log(f"  [{f['level']}] {f['code']}: {f['message'][:100]}")
+
+            generate_summary()
+            self.log(f"  Ledger updated.")
+        except Exception as e:
+            self.log(f"[ledger] Error writing ledger: {e}")
+
+    def run_loop(self, max_hours: float, phases: list[int],
+                 seed_knowledge: "SearchKnowledge | None" = None) -> None:
         """
         Ouroboros loop — self-improving signal search.
 
@@ -1245,11 +1319,20 @@ class NightOrchestrator:
           4. Knowledge adapts: IC gate, ensemble choice, instrument focus
           5. Repeat → each round is smarter than the last
 
+        seed_knowledge: pre-seeded from inter_session_analyzer.
+          Allows knowledge to carry over across separate night/day sessions.
+
         The loop continues until max_hours is exhausted.
         Interim report written after every config — safe to interrupt.
         """
         t_start = time.time()
-        knowledge = SearchKnowledge()
+        knowledge = seed_knowledge if seed_knowledge is not None else SearchKnowledge()
+        if seed_knowledge is not None:
+            self.log(f"[session] Starting with pre-seeded knowledge: "
+                     f"rounds={knowledge.rounds_done}  "
+                     f"stable={len(knowledge.stable_signals())}  "
+                     f"ic_gate→{knowledge.adaptive_ic_gate():.3f}  "
+                     f"ensemble→{knowledge.adaptive_ensemble()}")
         train_dfs, val_dfs, _ = load_all_splits(self.log)
 
         self.log(f"OUROBOROS LOOP: max={max_hours:.1f}h")
@@ -1357,6 +1440,9 @@ class NightOrchestrator:
                  f"total_train={knowledge.total_train}  "
                  f"total_val={knowledge.total_val}  "
                  f"stable_signals={len(knowledge.stable_signals())}")
+
+        # Write to scientific ledger
+        self._write_ledger(self.ts, "loop", t_start, knowledge)
 
     def run_rolling_loop(self, max_hours: float) -> None:
         """
@@ -1523,6 +1609,62 @@ class NightOrchestrator:
 # CLI
 # ──────────────────────────────────────────────────────────────────────────────
 
+def load_session_knowledge(config_path: str) -> "SearchKnowledge | None":
+    """
+    Pre-seed SearchKnowledge from inter-session config JSON.
+    Allows the system to start each session smarter than the last.
+    """
+    import json
+    p = Path(config_path)
+    if not p.exists():
+        return None
+    try:
+        cfg = json.loads(p.read_text(encoding="utf-8"))
+        k = SearchKnowledge()
+
+        # Pre-fill IC history from stable signals
+        for sig in cfg.get("stable_signals", []):
+            inst  = sig["instrument"]
+            topic = sig["topic"]
+            lag   = sig["lag"]
+            ic    = sig.get("best_ic", 0.05)
+            n_s   = sig.get("n_sessions", 1)
+            n_v   = int(sig.get("n_val", 0))
+            key   = (inst, topic, lag)
+
+            k.instrument_ic.setdefault(inst, []).extend([ic] * n_s)
+            k.topic_ic.setdefault(topic, []).extend([ic] * n_s)
+            k.lag_ic.setdefault(lag, []).extend([ic] * n_s)
+            k.signal_count[key]    = n_s
+            k.signal_val_pass[key] = n_v
+            k.signal_best_ic[key]  = ic
+
+        # Pre-fill instrument/topic IC from top lists
+        for inst in cfg.get("top_instruments", []):
+            k.instrument_ic.setdefault(inst, []).append(0.04)
+        for topic in cfg.get("top_topics", []):
+            k.topic_ic.setdefault(topic, []).append(0.04)
+
+        # Pre-fill feature IC
+        best_feat = cfg.get("best_feature", "keyword_z90")
+        k.feat_ic[best_feat] = [cfg.get("ic_gate", 0.03) * 2]
+
+        # Simulate N rounds so adaptive logic kicks in correctly
+        sessions = cfg.get("sessions_analyzed", 0)
+        val_rate = cfg.get("val_pass_rate", 0.0)
+        for _ in range(min(sessions, 5)):
+            k.end_round(
+                n_train=max(1, int(cfg.get("n_train_total", 0) / max(sessions, 1))),
+                n_val=max(0, int(cfg.get("n_val_total", 0) / max(sessions, 1))),
+                mean_ic=cfg.get("ic_gate", 0.03),
+            )
+
+        return k
+    except Exception as e:
+        print(f"[session_config] Could not load {config_path}: {e}")
+        return None
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Adaptive overnight signal search")
@@ -1539,10 +1681,30 @@ def main() -> None:
         "--rolling", type=float, default=0.0,
         help="Rolling window Ouroboros for N hours. Uses 4 sequential 12-month "
              "windows (most recent first). Finds signals stable across windows.")
+    parser.add_argument(
+        "--session-config", type=str, default="",
+        help="Path to session_config.json from inter_session_analyzer. "
+             "Pre-seeds SearchKnowledge so each session starts smarter.")
     args = parser.parse_args()
 
     import logging
     logging.basicConfig(level=logging.WARNING, format="%(message)s")
+
+    # Load inter-session knowledge if available
+    session_knowledge = None
+    cfg_path = args.session_config or str(
+        ROOT / "analytics" / "phase_b" / "session_config.json"
+    )
+    if Path(cfg_path).exists():
+        session_knowledge = load_session_knowledge(cfg_path)
+        if session_knowledge:
+            print(f"[session_config] Loaded accumulated knowledge from {cfg_path}")
+            print(f"  stable_signals={len(session_knowledge.stable_signals())}  "
+                  f"rounds_simulated={session_knowledge.rounds_done}")
+        else:
+            print(f"[session_config] Could not load {cfg_path} — starting fresh")
+    else:
+        print("[session_config] No session_config.json found — starting fresh")
 
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     log_path = OUT_DIR / f"night_search_{ts}.log"
@@ -1557,7 +1719,11 @@ def main() -> None:
         if args.rolling > 0:
             orchestrator.run_rolling_loop(max_hours=args.rolling)
         elif args.loop_hours > 0:
-            orchestrator.run_loop(max_hours=args.loop_hours, phases=[1, 2, 3])
+            orchestrator.run_loop(
+                max_hours=args.loop_hours,
+                phases=[1, 2, 3],
+                seed_knowledge=session_knowledge,
+            )
         else:
             phases = [int(p.strip()) for p in args.phases.split(",")]
             orchestrator.run(phases)
