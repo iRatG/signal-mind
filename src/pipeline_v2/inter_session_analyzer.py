@@ -182,37 +182,33 @@ def analyze(all_hits: pd.DataFrame) -> dict:
     else:
         stable_signals = []
 
-    # ── Anti-patterns: which (instrument, topic, lag) combos always fail val ─
-    if not train_hits.empty and not val_hits.empty:
-        val_keys = set(
-            zip(val_hits["instrument"], val_hits["topic"], val_hits["lag"])
-        )
-        always_fail = (
+    # ── Anti-patterns: (inst, topic, lag) that appear in train 3+ times but never val ─
+    deprioritize = []
+    if not train_hits.empty:
+        val_sig_keys: set = set()
+        if not val_hits.empty:
+            val_sig_keys = set(
+                zip(val_hits["instrument"], val_hits["topic"], val_hits["lag"])
+            )
+        # Count train appearances per signal
+        train_counts = (
             train_hits.groupby(["instrument", "topic", "lag"])
-            .apply(lambda g: all(
-                (row.instrument, row.topic, row.lag) not in val_keys
-                for _, row in g.iterrows()
-            ))
-            .reset_index()
-            .rename(columns={0: "always_fail"})
+            .size()
+            .reset_index(name="n_train")
         )
-        failed = always_fail[
-            always_fail["always_fail"] &
-            (always_fail.index.map(
-                lambda i: train_hits[
-                    (train_hits["instrument"] == always_fail.loc[i, "instrument"]) &
-                    (train_hits["topic"]      == always_fail.loc[i, "topic"]) &
-                    (train_hits["lag"]        == always_fail.loc[i, "lag"])
-                ].shape[0]
-            ) >= 3)  # appeared 3+ times in train but never in val
+        # Keep only those never confirmed on val AND appeared 3+ times
+        chronic = train_counts[
+            train_counts.apply(
+                lambda r: (r["instrument"], r["topic"], r["lag"]) not in val_sig_keys,
+                axis=1
+            ) & (train_counts["n_train"] >= 3)
         ]
-        # Build simple list of (inst, topic, lag) to deprioritize
         deprioritize = [
-            {"instrument": r.instrument, "topic": r.topic, "lag": int(r.lag)}
-            for _, r in failed.iterrows()
+            {"instrument": str(r["instrument"]),
+             "topic":      str(r["topic"]),
+             "lag":        int(r["lag"])}
+            for _, r in chronic.iterrows()
         ][:20]
-    else:
-        deprioritize = []
 
     # ── Session trend ─────────────────────────────────────────────────────────
     sess_stats = (
