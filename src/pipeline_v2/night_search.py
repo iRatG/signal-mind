@@ -677,20 +677,31 @@ class SearchKnowledge:
 def generate_next_configs(knowledge: SearchKnowledge, round_num: int) -> list:
     """
     Generate configs for the next round using accumulated knowledge.
-    This is the core of the Ouroboros loop:
+
+    IMPORTANT: labels must be CONTENT-based, NOT round-based.
+    A label describes WHAT is tested (feat + ensemble + ic_gate + ...).
+    Including round_num in a label causes the same config to be treated
+    as "new" every round → infinite loop. Fixed 2026-05-26.
+
+    Logic:
       - knowledge tells us what worked → exploit
-      - we also explore what we haven't tried yet
+      - track tried configs by content-label → never repeat exact same test
+      - when all standard configs exhausted → novelty exploration
+      - loop terminates when generate_next_configs returns empty list
     """
-    ic_gate  = knowledge.adaptive_ic_gate()
-    ensemble = knowledge.adaptive_ensemble()
+    ic_gate   = knowledge.adaptive_ic_gate()
+    ensemble  = knowledge.adaptive_ensemble()
     best_feat = knowledge.best_feature_type()
     best_lags = knowledge.best_lags(n=4)
-    top_insts = knowledge.top_instruments(n=min(8, 4 + round_num))
-    top_topics = knowledge.top_topics(n=min(7, 3 + round_num))
+
+    from src.pipeline_v2.feature_transformer import FEATURE_TYPES
 
     configs = []
 
-    # ── 1. Primary: exploit best known combo ────────────────────────────────
+    # ── 1. Primary: best known combo ─────────────────────────────────────────
+    # Label: content-based (feat + ensemble + ic_gate). Changes only when
+    # knowledge changes — prevents re-running the exact same sweep.
+    primary_label = f"primary_{best_feat}_{ensemble}_ic{ic_gate:.3f}"
     configs.append(SearchConfig(
         feature_type=best_feat,
         target="market_return",
@@ -699,16 +710,17 @@ def generate_next_configs(knowledge: SearchKnowledge, round_num: int) -> list:
         m6_ic_min=ic_gate,
         m6_bootstrap_min=0.0,
         lags=sorted(set(best_lags + [1, 7, 30, 60, 90])),
-        label=f"r{round_num}_primary_{best_feat}",
+        label=primary_label,
     ))
 
-    # ── 2. Alternate feature types not yet tried ─────────────────────────────
-    from src.pipeline_v2.feature_transformer import FEATURE_TYPES
+    # ── 2. Alternate feature types not yet tried ──────────────────────────────
     feat_scores = {f: np.mean(v) for f, v in knowledge.feat_ic.items()} if knowledge.feat_ic else {}
-    tried_feats = {c.split("_primary_")[1] for c in knowledge.tried_config_ids
-                   if "_primary_" in c}
     for feat in sorted(FEATURE_TYPES, key=lambda f: -feat_scores.get(f, 0)):
-        if feat != best_feat and feat not in tried_feats:
+        if feat == best_feat:
+            continue
+        # Content-based: feat + ensemble + ic_gate
+        alt_label = f"alt_{feat}_{ensemble}_ic{ic_gate:.3f}"
+        if alt_label not in knowledge.tried_config_ids:
             configs.append(SearchConfig(
                 feature_type=feat,
                 target="market_return",
@@ -717,33 +729,34 @@ def generate_next_configs(knowledge: SearchKnowledge, round_num: int) -> list:
                 m6_ic_min=ic_gate,
                 m6_bootstrap_min=0.0,
                 lags=best_lags,
-                label=f"r{round_num}_alt_{feat}",
+                label=alt_label,
             ))
-            if len(configs) >= 4:
-                break
+        if len(configs) >= 4:
+            break
 
-    # ── 3. Stable signals deep-dive ──────────────────────────────────────────
+    # ── 3. Stable signals deep-dive ───────────────────────────────────────────
+    # Each (inst, topic, lag) explored exactly ONCE.
+    # Label includes all three — no round_num.
     stable = knowledge.stable_signals(min_count=2)
-    for (inst, topic, lag), count in stable[:4]:
-        # Explore neighboring lags around this stable signal
-        neighbor_lags = sorted({max(1, lag - 7), lag, lag + 7, lag * 2})[:4]
-        label = f"r{round_num}_stable_{inst[:6]}_{topic[:6]}"
-        if label not in knowledge.tried_config_ids:
+    for (inst, topic, lag), count in stable[:6]:
+        neighbor_lags = sorted({max(1, lag - 7), lag, lag + 7, min(lag * 2, 90)})[:4]
+        stable_label = f"stable_{inst}_{topic}_{lag}"   # ← no round_num
+        if stable_label not in knowledge.tried_config_ids:
             configs.append(SearchConfig(
                 feature_type=best_feat,
                 target="market_return",
-                ensemble="M5_AND_M6",  # always AND for stable signals
+                ensemble="M5_AND_M6",      # always AND for stable → rigorous
                 m5_p_max=0.05,
                 m6_ic_min=max(0.01, ic_gate - 0.02),
                 m6_bootstrap_min=0.0,
                 lags=neighbor_lags,
-                label=label,
+                label=stable_label,
             ))
 
-    # ── 4. If ensemble is AND and still 0 val → try M6-strict ───────────────
+    # ── 4. M6-strict once (if AND finds nothing) ─────────────────────────────
     if knowledge.total_val == 0 and knowledge.rounds_done >= 2:
-        label = f"r{round_num}_m6strict_{best_feat}"
-        if label not in knowledge.tried_config_ids:
+        m6_label = f"m6strict_{best_feat}_ic{max(0.05, ic_gate):.3f}"
+        if m6_label not in knowledge.tried_config_ids:
             configs.append(SearchConfig(
                 feature_type=best_feat,
                 target="market_return",
@@ -752,29 +765,47 @@ def generate_next_configs(knowledge: SearchKnowledge, round_num: int) -> list:
                 m6_ic_min=max(0.05, ic_gate),
                 m6_bootstrap_min=0.01,
                 lags=LAGS_FULL,
-                label=label,
+                label=m6_label,
             ))
 
-    # ── 5. Regime: every 3rd round ───────────────────────────────────────────
-    if round_num % 3 == 0:
-        for (start, end, rlabel) in [
-            ("2022-01-01", "2022-12-31", "2022"),
-            ("2023-01-01", "2023-09-30", "2023"),
-        ]:
-            label = f"r{round_num}_regime{rlabel}_{best_feat}"
-            if label not in knowledge.tried_config_ids:
+    # ── 5. Regime split (once per feat+ensemble combo) ────────────────────────
+    for (_, _, rlabel) in [
+        ("2022-01-01", "2022-12-31", "2022"),
+        ("2023-01-01", "2023-09-30", "2023"),
+    ]:
+        regime_label = f"regime{rlabel}_{best_feat}_{ensemble}"   # ← no round_num
+        if regime_label not in knowledge.tried_config_ids:
+            configs.append(SearchConfig(
+                feature_type=best_feat,
+                target="market_return",
+                ensemble=ensemble,
+                m5_p_max=0.05,
+                m6_ic_min=max(0.01, ic_gate - 0.01),
+                m6_bootstrap_min=0.0,
+                lags=best_lags,
+                label=regime_label,
+            ))
+
+    # ── 6. Novelty: IC gate perturbation (when exhausting standard space) ────
+    # Only added when all above configs were already tried.
+    n_tried = len(knowledge.tried_config_ids)
+    if n_tried >= 15:
+        for delta_str, delta in [("lo", -0.01), ("hi", +0.01), ("vlo", -0.02)]:
+            new_ic = round(max(0.005, ic_gate + delta), 3)
+            nov_label = f"novelty_{best_feat}_{ensemble}_ic{new_ic:.3f}_{delta_str}"
+            if nov_label not in knowledge.tried_config_ids:
                 configs.append(SearchConfig(
                     feature_type=best_feat,
                     target="market_return",
                     ensemble=ensemble,
                     m5_p_max=0.05,
-                    m6_ic_min=max(0.01, ic_gate - 0.01),
+                    m6_ic_min=new_ic,
                     m6_bootstrap_min=0.0,
-                    lags=best_lags,
-                    label=label,
+                    lags=LAGS_FULL,
+                    label=nov_label,
                 ))
 
-    # Deduplicate and exclude already tried
+    # ── Deduplicate (content + already tried) ────────────────────────────────
     seen: set = set()
     unique = []
     for c in configs:
@@ -991,42 +1022,80 @@ class NightOrchestrator:
             lines.append(f"- Val signals: {winner.n_val_pass}")
             lines.append(f"- Max IC: {winner.max_ic:.4f}")
 
-        lines += ["", "## All Train-Confirmed Signals", ""]
+        lines += ["", "## All Train-Confirmed Signals (unique)", ""]
+        lines.append("*(deduplicated by instrument+topic+lag — each physical signal once)*")
+        lines.append("")
         if train_hits:
+            # Deduplicate: keep best IC per (inst, topic, lag)
+            best_per_signal: dict = {}
+            for h in train_hits:
+                key = (h.instrument, h.topic, h.lag)
+                if key not in best_per_signal or h.m6_ic > best_per_signal[key].m6_ic:
+                    best_per_signal[key] = h
+
+            val_keys = {(v.instrument, v.topic, v.lag) for v in val_hits}
+            unique_train = sorted(best_per_signal.values(), key=lambda x: -x.m6_ic)
+
+            n_raw   = len(train_hits)
+            n_uniq  = len(unique_train)
+            n_val_u = sum(1 for h in unique_train if (h.instrument, h.topic, h.lag) in val_keys)
+            lines.append(f"Raw hits: {n_raw} → Unique signals: {n_uniq} → Val-confirmed: {n_val_u}")
+            lines.append("")
             lines += [
-                "| Instrument | Topic | Lag | M5 p-val | M6 IC | Val | Regime | Config |",
-                "|---|---|---|---|---|---|---|---|",
+                "| Instrument | Topic | Lag | M5 p-val | M6 IC | Val | Regime |",
+                "|---|---|---|---|---|---|---|",
             ]
-            for h in sorted(train_hits, key=lambda x: -x.m6_ic):
-                val_pass = any(
-                    v.instrument == h.instrument and v.topic == h.topic
-                    and v.lag == h.lag and v.split == "val"
-                    for v in val_hits
-                )
+            for h in unique_train:
+                val_pass = (h.instrument, h.topic, h.lag) in val_keys
                 lines.append(
                     f"| {h.instrument} | {h.topic} | {h.lag} "
                     f"| {h.m5_pvalue:.4f} | {h.m6_ic:.4f} "
                     f"| {'PASS' if val_pass else 'fail'} "
-                    f"| {h.regime or 'full'} | {h.config_id} |"
+                    f"| {h.regime or 'full'} |"
                 )
         else:
             lines.append("*(no confirmed train signals)*")
+            unique_train = []
+            val_keys = set()
 
-        lines += ["", "## Val-Confirmed (Train+Val) Signals", ""]
-        double_confirmed = [
-            h for h in train_hits
-            if any(v.instrument == h.instrument and v.topic == h.topic
-                   and v.lag == h.lag for v in val_hits)
-        ]
-        if double_confirmed:
-            lines.append("**These passed both Train and Val — highest confidence:**")
+        lines += ["", "## Val-Confirmed Signals (unique, Train+Val)", ""]
+        double_confirmed_keys = {
+            (h.instrument, h.topic, h.lag)
+            for h in (unique_train if train_hits else [])
+            if (h.instrument, h.topic, h.lag) in val_keys
+        }
+        # Get best val IC per signal
+        best_val_ic: dict = {}
+        for v in val_hits:
+            key = (v.instrument, v.topic, v.lag)
+            if key not in best_val_ic or v.m6_ic > best_val_ic[key]:
+                best_val_ic[key] = v.m6_ic
+
+        if double_confirmed_keys:
+            lines.append(f"**{len(double_confirmed_keys)} unique signals passed both Train and Val:**")
             lines += [
-                "", "| Instrument | Topic | Lag | M6 IC | Config |",
-                "|---|---|---|---|---|",
+                "", "| Instrument | Topic | Lag | Train IC | Val IC | M5 p-val |",
+                "|---|---|---|---|---|---|",
             ]
-            for h in double_confirmed:
-                lines.append(f"| {h.instrument} | {h.topic} | {h.lag} "
-                              f"| {h.m6_ic:.4f} | {h.config_id} |")
+            # Sort by val IC descending
+            sorted_dc = sorted(
+                double_confirmed_keys,
+                key=lambda k: -best_val_ic.get(k, 0)
+            )
+            for key in sorted_dc:
+                inst, topic, lag = key
+                train_h = next(
+                    (h for h in (unique_train if train_hits else [])
+                     if h.instrument == inst and h.topic == topic and h.lag == lag),
+                    None
+                )
+                t_ic  = train_h.m6_ic    if train_h else 0.0
+                m5_p  = train_h.m5_pvalue if train_h else 1.0
+                v_ic  = best_val_ic.get(key, 0.0)
+                lines.append(
+                    f"| {inst} | {topic} | {lag} "
+                    f"| {t_ic:.4f} | {v_ic:.4f} | {m5_p:.4f} |"
+                )
         else:
             lines.append("*(no signals passed both Train and Val)*")
 
