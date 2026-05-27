@@ -165,13 +165,31 @@ analytics/phase_c/
   → Фильтрация дублей, выбор приоритетов
 ```
 
-**Obsidian vault** (30 файлов, 201 чанк) содержит накопленную методологию:
-- Известные сигналы и их статус
-- Открытые атаки и слабости
-- Устаревшие подходы
-- Карта непроверенных инструментов
+**Obsidian vault** (221 чанк) — институциональная память проекта:
 
-Используется через `src/agent/rag.py`:  
+| Тип | Чанков | Статусы | Роль в Phase C |
+|---|---|---|---|
+| `signal` | 67 | active/under_attack/partial/promising | Не повторять уже исследованные |
+| `attack` | 43 | open/partially_closed/closed | Избегать известных уязвимостей |
+| `approach` | 41 | active/deprecated | Использовать рабочие подходы |
+| `concept` | 39 | active | Базовые концепции |
+| `decision` | 21 | active | Зафиксированные решения |
+| `moc` | 10 | — | Карта контента |
+
+**Ключевые файлы:**
+- Сигналы: `signal_usd_rub_moexfn`, `signal_brent_moexfn`, `signal_silver_rugold`, `signal_msci_india_moexfn`, `signal_oil_news_moexog`, `signal_sanctions_usd_rub`, `signal_inflation_moex10`
+- Атаки: `attack_in_sample_overfitting`, `attack_multiple_testing`, `attack_non_stationarity`, `attack_regime_conditionality`, `attack_scope_convergence`, `attack_llm_eval_inflation`
+- Подходы: `approach_ouroboros_loop`, `approach_anti_convergence`, `approach_aliasing_detection`, `approach_revizor_autofixes`
+- Концепции: `concept_lag_hypothesis`, `concept_regime_conditionality`, `concept_signal_nonstationarity`, `concept_full_data_scope`
+
+**Использование в Phase C — перед каждой гипотезой:**
+1. Запросить vault по теме гипотезы → найти похожие сигналы
+2. Если уже `active` или `under_attack` → пропустить или модифицировать
+3. Найти релевантные `attack` → применить защиту заранее
+4. Использовать `approach` → выбрать правильную методологию
+5. После теста → обновить vault (новый статус, новые находки)
+
+Используется через `src/agent/rag.py`:
 `search_methodology()` и `get_methodology_context()`
 
 ---
