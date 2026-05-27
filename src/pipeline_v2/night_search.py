@@ -1116,7 +1116,7 @@ class NightOrchestrator:
             "## Recommendation for Next Session",
             "",
         ]
-        if double_confirmed:
+        if double_confirmed_keys:
             lines.append("Production-grade signals found. Next: run full big_scanner "
                          "with winning config, then Phase B real-train run.")
         elif train_hits:
