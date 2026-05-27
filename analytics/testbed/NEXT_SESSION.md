@@ -1,116 +1,121 @@
-# Hand-off — Signal Mind v2
+# Hand-off — Signal Mind
 
-**Последнее обновление:** 2026-05-25  
-**Последний коммит:** fde6231  
-**Статус:** Полный цикл поиска сигналов завершён. Два подтверждённых сигнала.
+**Последнее обновление:** 2026-05-27  
+**Статус:** Phase B работает автономно. Phase C спроектирована, готова к реализации.
 
 ---
 
 ## Прочитай это первым
 
-Мы прошли полный научный цикл: синтетический testbed → feature engineering → Ouroboros → двухэтапная валидация. Результат честный и методически чистый.
+Мы прошли два полных цикла и начинаем третий.
 
-**Два сигнала прошли Train → Val → Test:**
-
-| Сигнал | Test M5 p | Test IC | Смысл |
-|---|---|---|---|
-| SP500 / inflation_z / lag=1d | 0.039 | 0.185 | Нормализованные news об инфляции → S&P500 +1 день |
-| FTSE_CHINA_50 / rate_z / lag=1d | 0.041 | 0.069 | Нормализованные news о ставке ЦБ → Китай H-shares +1 день |
-
-**Главный вывод о данных:** z-score нормализация (window=90) обязательна. Без неё сигналы невидимы. Режим 2022-2023 ≠ режим 2025-2026 (57% sign flip).
+**Phase A** (src/agent/): RAG + LLM + Ouroboros. Хорошая генерация гипотез, плохая валидация.  
+**Phase B** (src/pipeline_v2/): M5+M6, z-score, правильные сплиты. Хорошая валидация, нет интеллекта.  
+**Phase C** (src/pipeline_c/): объединяем лучшее. Документация: `analytics/phase_c/DESIGN.md`.
 
 ---
 
-## Что запускать следующим
+## Phase B — автономный статус
 
-### Задача 1: Backtest двух сигналов
+Работает по расписанию без участия человека:
+
+| Время | Задача | Статус |
+|---|---|---|
+| 06:00 | night_search --loop-hours 7 | ✅ работает |
+| 13:00 | inter_session_analyzer | ✅ работает |
+| 14:00 | afternoon_run --loop-hours 7 | ✅ исправлен (был баг с бэктиком) |
+| 22:00 | night_search --loop-hours 7 | ✅ работает |
+
+Утренняя проверка: `.\scripts\morning_check.ps1`
+
+**Исправленные баги Phase B:**
+- Ouroboros infinite loop (метки с round_num → content-based метки)
+- NameError double_confirmed → double_confirmed_keys
+- Analyzer AttributeError (pandas groupby.apply)
+- afternoon_run бэктик-перенос (Task Scheduler)
+
+---
+
+## Phase C — что делать в следующей сессии
+
+### Шаг 1: hypothesis_schema.py
 ```python
-# Нужно написать backtest.py
-# Для SP500/inflation_z/1d и FTSE_CHINA_50/rate_z/1d:
-# - Sharpe ratio на каждом сплите
-# - Max drawdown
-# - Hit rate (% дней где знак верный)
-# - Сравнение с buy-and-hold SP500/FTSE
+@dataclass
+class RagHypothesis:
+    instrument: str          # MOEXFN, MOEXOG, IMOEX, ...
+    feature: str             # rate_z, oil_z, sanctions_z, ...
+    lag_range: list[int]     # [7, 14, 30] — из текста отчёта
+    direction: str           # "positive" | "negative" | "unknown"
+    rationale: str           # цитата или парафраз из отчёта
+    source_company: str      # sberbank | lukoil | gazprom | yandex
+    source_year: int         # 2022 | 2023 | 2024
+    source_page: int         # номер страницы
+    confidence: float        # 0-1, оценка LLM
+    hypothesis_id: str       # uuid
 ```
 
-### Задача 2: Rolling retraining (еженедельно)
-```powershell
-.venv\Scripts\python -m src.pipeline_v2.night_search --rolling 8
-```
-Запускать раз в неделю. Результаты — в `analytics/phase_b/night_search/rolling_stable_*.csv`.
+### Шаг 2: rag_extractor.py
+Для каждой пары (company, year):
+1. Запрос к ChromaDB: "чувствительность к рынку", "факторы риска"
+2. LLM читает 5-8 чанков → генерирует список RagHypothesis
+3. Сохраняет в `analytics/phase_c/hypotheses/{company}_{year}.json`
 
-### Задача 3: Свежие данные
-Загрузить market data за 2026-01 → сейчас (через parsers).
-Добавить в rolling Ouroboros как актуальное окно.
+Компании: sberbank, lukoil, gazprom, yandex  
+Годы: 2021, 2022, 2023, 2024  
+= ~16 файлов гипотез
 
-### Задача 4: Contrarian тест
-Проверить BRENT/sanctions/7d с отрицательным знаком на Test (2025-2026).
-Если держится — живой contrarian сигнал.
+### Шаг 3: hypothesis_tester.py
+- Принимает RagHypothesis
+- Тестирует все лаги из lag_range + соседние
+- M5+M6 на Train split (2022-01-01 → 2023-09-30)
+- Val holdout (2024-01-01 → 2025-04-30)
+- z-score нормализация (обязательно)
+- Возвращает: TestResult с IC, p-value, confirmed, цитата
+
+### Шаг 4: phase_c_runner.py
+Оркестратор ночного запуска Phase C.
 
 ---
 
-## Архитектура (что готово)
-
-```
-src/pipeline_v2/
-  feature_transformer.py     — rolling z-score (window=90), volatility targets
-  embedding_feature_builder.py — embeddings, NPZ cache
-  night_search.py             — Ouroboros (--loop-hours, --rolling)
-  test_validation.py          — глубокая проверка списка на Test
-  full_validation.py          — двухэтапная Val→Test на списке
-
-analytics/
-  LEARNED.md                 — всё что узнали, компактно
-  phase_b/full_validation/   — результаты финальной валидации
-  phase_b/night_search/      — все Ouroboros прогоны
-  embedding_design.md        — архитектура embeddings
-
-db/
-  news_daily: 15 колонок (7 keyword + 7 embedding + date), 1210 дней
-  emb_cache/: 14 NPZ файлов (не удалять — пересчёт 8+ часов)
-```
-
----
-
-## Данные (READ-ONLY)
-
-```sql
--- Фичи в news_daily:
--- keyword raw: oil, rate, ruble, sanctions, inflation, banking, gold (INT)
--- embedding: oil_emb, ..., gold_emb (DOUBLE [0,1])
--- z-score добавляется в runtime через FeatureTransformer.rolling_zscore()
-
--- Splits:
--- Train: 2022-01-01 → 2023-09-30 (buffer: Oct-Dec 2023)
--- Val:   2024-01-01 → 2025-04-30 (buffer: May-Aug 2025)
--- Test:  2025-09-01 → 2026-04-29  ← уже использован, больше не holdout
-```
-
----
-
-## Ключевые параметры
+## Данные Phase C (READ-ONLY)
 
 ```python
-# Рабочий ensemble
-P_MAX   = 0.05   # M5 gate (research mode)
-IC_MIN  = 0.01   # M6 gate (AND) или 0.08 (M6-only, Ouroboros)
-N_MIN_M5 = 80    # для Test split
-N_MIN_M6 = 100   # для Test split
+# ChromaDB — гипотезы
+from src.agent.rag import search_corp, search_regulatory
 
-# Feature
-FEATURE_TYPE = "keyword_z90"   # лучший по всем прогонам
-WINDOW_Z     = 90               # rolling z-score window
+# Market data — тестирование
+from src.pipeline_v2.big_scanner import load_market_split, MARKET_INSTRUMENTS
+from src.pipeline_v2.feature_transformer import FeatureTransformer
 
-# Лаги
-LAGS = [1, 7, 14, 30, 60, 90]  # стандартный набор
+# M5+M6 — валидация  
+# analytics/testbed/methods/m5_var.py
+# analytics/testbed/methods/m6_lgbm.py
+
+# Сплиты
+# Train: 2022-01-01 → 2023-09-30
+# Val:   2024-01-01 → 2025-04-30
+# Test:  2025-09-01 → 2026-04-29 (ИСПОЛЬЗОВАН В PHASE B — не трогать)
 ```
 
 ---
 
 ## Правила (не нарушать)
 
-- `db/hf_news.db` — только читать, никогда не удалять
-- `db/signal_mind.duckdb` — только читать или append, не truncate
+- `db/hf_news.db` — только читать
+- `db/signal_mind.duckdb` — только читать или append
 - `db/emb_cache/` — не удалять (8 часов пересчёта)
-- `analytics/testbed/` — frozen, не трогать методы и тесты
-- `analytics/testbed/ensemble/ensemble_config.yaml` — frozen
+- `analytics/testbed/` — frozen
+- Phase A и Phase B не трогать — они работают
+
+---
+
+## Итоги Phase B (для справки, не как семена)
+
+За 7+ сессий:
+- 66 831 хит, 6 сессий
+- Val pass rate: 25.8%
+- IC trend: improving
+- Лучшие конфиги: embedding_z90, M5_AND_M6, IC_gate=0.05
+- Топ инструменты: MSCI_INDIA, GOLD, MSCI_WORLD, CHINA_H_SHARES
+
+Эти данные — для контекста. Phase C ищет новое, не подтверждает найденное.
