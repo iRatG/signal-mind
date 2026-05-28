@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Mind: Как мы перестали себя обманывать</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #1a1d27;
+    --bg3: #242736;
+    --border: #2e3248;
+    --accent: #6c8ebf;
+    --accent2: #7fb069;
+    --accent3: #e8a838;
+    --danger: #e05c5c;
+    --text: #d4d8f0;
+    --text2: #8890b0;
+    --text3: #555d80;
+    --code-bg: #161924;
+    --max-w: 860px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    padding: 0 16px;
+  }
+  .container { max-width: var(--max-w); margin: 0 auto; padding: 48px 0 80px; }
+
+  /* Header */
+  .hero {
+    border-left: 3px solid var(--accent);
+    padding: 32px 0 32px 32px;
+    margin-bottom: 56px;
+  }
+  .hero-tag {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 2rem; font-weight: 700; line-height: 1.25;
+    color: #e8eaf6; margin-bottom: 16px;
+  }
+  .hero .sub {
+    color: var(--text2); font-size: 1.05rem; max-width: 600px;
+  }
+  .hero .prev-link {
+    margin-top: 20px; font-size: 13px; color: var(--text3);
+  }
+  .hero .prev-link a { color: var(--accent); text-decoration: none; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+    background: var(--border); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden; margin-bottom: 56px;
+  }
+  .stat { background: var(--bg2); padding: 20px 16px; text-align: center; }
+  .stat .n { font-size: 1.8rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .stat .l { font-size: 11px; color: var(--text2); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Section headings */
+  .part-header {
+    display: flex; align-items: center; gap: 16px;
+    margin: 64px 0 32px;
+  }
+  .part-num {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: 700; flex-shrink: 0;
+  }
+  .part-header h2 { font-size: 1.5rem; font-weight: 700; color: #e8eaf6; }
+  .part-header .desc { font-size: 0.9rem; color: var(--text2); }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: #e0e4f8;
+       margin: 40px 0 16px; }
+  h3::before { content: '— '; color: var(--accent); }
+
+  p { margin-bottom: 16px; color: var(--text); }
+
+  /* Cards */
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 24px 28px; margin: 24px 0;
+  }
+  .card-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--accent); font-weight: 600; margin-bottom: 12px;
+  }
+
+  /* Chart wrapper */
+  .chart-wrap {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 24px; margin: 32px 0;
+  }
+  .chart-title {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text2); margin-bottom: 20px; font-weight: 600;
+  }
+  .chart-wrap canvas { max-height: 280px; }
+
+  /* Code */
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px 24px; overflow-x: auto;
+    font-family: 'Consolas', 'Fira Code', monospace; font-size: 13px;
+    line-height: 1.6; color: #abb2d4; margin: 20px 0;
+  }
+  code { font-family: 'Consolas', 'Fira Code', monospace; font-size: 13px; }
+  p code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; color: #a5c8e8; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  th { background: var(--bg3); color: var(--accent); font-weight: 600;
+       padding: 10px 14px; text-align: left; font-size: 11px;
+       text-transform: uppercase; letter-spacing: 1px; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg3); }
+
+  /* Highlight table */
+  .tbl-signal td:nth-child(3) { color: var(--accent2); font-weight: 600; }
+  .tbl-signal td:nth-child(4) { color: var(--accent3); }
+
+  /* Flag list */
+  .flags { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+  .flag {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--bg3); border-radius: 6px; padding: 12px 14px;
+    font-size: 13px;
+  }
+  .flag .tag {
+    font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px;
+    white-space: nowrap; margin-top: 1px;
+  }
+  .flag.warn .tag { background: rgba(232,168,56,0.2); color: var(--accent3); }
+  .flag.fail .tag { background: rgba(224,92,92,0.2); color: var(--danger); }
+  .flag.info .tag { background: rgba(108,142,191,0.2); color: var(--accent); }
+  .flag .msg { color: var(--text2); }
+  .flag .msg strong { color: var(--text); }
+
+  /* Rules */
+  .rules { counter-reset: rule; display: flex; flex-direction: column; gap: 20px; margin: 24px 0; }
+  .rule {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px;
+  }
+  .rule-num {
+    counter-increment: rule;
+    content: counter(rule);
+    min-width: 32px; height: 32px; border-radius: 50%;
+    background: var(--bg3); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--accent); flex-shrink: 0;
+    font-family: monospace;
+  }
+  .rule-body h4 { font-size: 15px; font-weight: 600; color: #e0e4f8; margin-bottom: 6px; }
+  .rule-body p { font-size: 14px; color: var(--text2); margin: 0; }
+
+  /* Architecture diagram */
+  .arch {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 28px; margin: 28px 0;
+    font-family: 'Consolas', monospace; font-size: 13px; line-height: 2;
+    overflow-x: auto;
+  }
+  .arch .box { color: #7fb3d3; }
+  .arch .arrow { color: #555d80; }
+  .arch .label { color: #a5c8e8; }
+  .arch .ok { color: var(--accent2); }
+  .arch .warn2 { color: var(--accent3); }
+  .arch .bad { color: var(--danger); }
+
+  /* Memory pyramid */
+  .pyramid { margin: 24px 0; }
+  .pyr-level {
+    border-radius: 6px; padding: 14px 20px; margin-bottom: 4px;
+    border-left: 3px solid;
+  }
+  .pyr-level .pl-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .pyr-level .pl-desc { font-size: 13px; color: var(--text2); }
+  .pyr-1 { background: rgba(108,142,191,0.08); border-color: var(--accent); margin: 0 0; }
+  .pyr-2 { background: rgba(127,176,105,0.08); border-color: var(--accent2); margin: 0 20px; }
+  .pyr-3 { background: rgba(232,168,56,0.08); border-color: var(--accent3); margin: 0 40px; }
+
+  /* Before/After */
+  .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .ba-col { background: var(--bg3); border-radius: 8px; padding: 20px; }
+  .ba-col.before { border-top: 2px solid var(--danger); }
+  .ba-col.after  { border-top: 2px solid var(--accent2); }
+  .ba-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+               margin-bottom: 12px; font-weight: 700; }
+  .ba-col.before h4 { color: var(--danger); }
+  .ba-col.after h4  { color: var(--accent2); }
+  .ba-col ul { list-style: none; }
+  .ba-col ul li { font-size: 13px; color: var(--text2); padding: 5px 0;
+                  border-bottom: 1px solid var(--border); }
+  .ba-col ul li:last-child { border-bottom: none; }
+  .ba-col.before li::before { content: '✗ '; color: var(--danger); }
+  .ba-col.after  li::before { content: '✓ '; color: var(--accent2); }
+
+  /* Quote */
+  blockquote {
+    border-left: 3px solid var(--border); padding: 16px 20px;
+    margin: 24px 0; color: var(--text2); font-style: italic; font-size: 15px;
+    background: var(--bg2); border-radius: 0 8px 8px 0;
+  }
+
+  /* Cycle diagram */
+  .cycle {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 2px;
+    margin: 24px 0;
+  }
+  .cycle-step {
+    background: var(--bg3); padding: 16px 12px; text-align: center;
+    border-radius: 6px;
+  }
+  .cycle-step .time { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+  .cycle-step .action { font-size: 11px; color: var(--text2); margin-top: 6px; line-height: 1.4; }
+  .cycle-step .hours { font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+  /* Section divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+  /* Footer */
+  .footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border);
+            color: var(--text3); font-size: 13px; text-align: center; }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  /* Callout */
+  .callout {
+    border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    background: var(--bg2); border-radius: 0 8px 8px 0;
+    padding: 16px 20px; margin: 24px 0; font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .stats-bar { grid-template-columns: repeat(2,1fr); }
+    .ba-grid { grid-template-columns: 1fr; }
+    .cycle { grid-template-columns: repeat(2,1fr); }
+    .hero h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Signal Mind · Часть 2</div>
+  <h1>Как мы перестали себя обманывать:<br>строгая наука и уроки работы с LLM</h1>
+  <p class="sub">Мы запустили систему поиска рыночных сигналов, нашли 2 настоящих сигнала из нескольких тысяч гипотез — и узнали больше о работе с LLM, чем о рынках.</p>
+  <p class="prev-link">← <a href="#">Часть 1: «Как мы научили алгоритм слушать рынок»</a></p>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="n">~5 000</div>
+    <div class="l">Гипотез проверено</div>
+  </div>
+  <div class="stat">
+    <div class="n">2</div>
+    <div class="l">Production сигнала</div>
+  </div>
+  <div class="stat">
+    <div class="n">14ч</div>
+    <div class="l">В сутки автономно</div>
+  </div>
+  <div class="stat">
+    <div class="n">$5.76</div>
+    <div class="l">Потрачено на LLM</div>
+  </div>
+</div>
+
+<!-- PART 1 -->
+<div class="part-header">
+  <div class="part-num">1</div>
+  <div>
+    <h2>Что мы нашли в данных</h2>
+    <div class="desc">Сигналы, режимы, нормализация — предметная часть</div>
+  </div>
+</div>
+
+<p>В <a href="#" style="color:var(--accent)">первой статье</a> мы запустили LLM-агента на марафон: 9 часов, 1 943 итерации, $5.76. Нашли собственную системную ошибку — агент коррелировал российский индекс с российским и называл это «китайским сигналом». Исправили. Нашли 6 реальных сигналов.</p>
+
+<p>Потом сели и спросили себя: а откуда мы знаем что они настоящие?</p>
+
+<h3>Данные с которыми мы работаем</h3>
+
+<div class="card">
+  <div class="card-title">Инфраструктура данных</div>
+  <table>
+    <tr><th>Источник</th><th>Объём</th><th>Период</th></tr>
+    <tr><td>HF News (EN+RU)</td><td>2.52M статей · 9.93 GB</td><td>2021–2026</td></tr>
+    <tr><td>MOEX, forex, макро</td><td>DuckDB · 4 индекса + секторы</td><td>2022–2026</td></tr>
+    <tr><td>Корп. отчёты (ChromaDB)</td><td>15 574 чанка</td><td>2020–2025</td></tr>
+    <tr><td>ЦБ РФ документы</td><td>1 918 чанков</td><td>2020–2025</td></tr>
+    <tr><td>Obsidian vault</td><td>221 чанк методологии</td><td>всё время</td></tr>
+  </table>
+</div>
+
+<h3>Открытие №1: нормализация меняет всё</h3>
+
+<p>Мы искали корреляцию между частотой слова «инфляция» в новостях и движением S&P500. Сырые счётчики показывали IC ≈ 0.02. Почти ноль.</p>
+
+<p>Проблема: в 2022 году слово «инфляция» встречалось 20 раз в день. В 2024 — 4 раза. Это не изменение важности инфляции для рынка — это изменение новостного фона. Сравнивать абсолютные значения через годы бессмысленно.</p>
+
+<p>Скользящий z-score с окном 90 дней задаёт правильный вопрос: <em>«насколько необычен сегодняшний поток об инфляции по сравнению с последними 90 днями?»</em></p>
+
+<pre>def rolling_zscore(series, window=90):
+    mu  = series.rolling(window, min_periods=20).mean()
+    sig = series.rolling(window, min_periods=20).std().clip(lower=1e-6)
+    return ((series - mu) / sig).clip(-5.0, 5.0)</pre>
+
+<div class="chart-wrap">
+  <div class="chart-title">IC до и после z-score нормализации · key signals</div>
+  <canvas id="normChart"></canvas>
+</div>
+
+<p>Один приём — десятикратный прирост сигнала. Это не магия, это правильная постановка вопроса.</p>
+
+<h3>Открытие №2: правильные сплиты данных</h3>
+
+<p>В Phase A мы смотрели на все данные сразу. Нашли паттерн — он уже «видел» данные на которых проверялся. Это называется data snooping и это главная болезнь финансового ML.</p>
+
+<div class="chart-wrap">
+  <div class="chart-title">Разбивка данных на три непересекающихся периода</div>
+  <canvas id="splitChart"></canvas>
+</div>
+
+<p>Правило: <strong>Test трогаем один раз</strong>. Использовали — он сожжён. Вся настройка модели только на Train. Первая независимая проверка — Val. Финальный приговор — Test.</p>
+
+<h3>Что нашли: два настоящих сигнала</h3>
+
+<p>После полного цикла Train → Val → Test через обе метрики прошли два сигнала:</p>
+
+<table class="tbl-signal">
+  <tr>
+    <th>Сигнал</th><th>Лаг</th><th>IC (Test)</th><th>M5 p-value</th><th>Интерпретация</th>
+  </tr>
+  <tr>
+    <td><strong>SP500 / inflation_z</strong></td><td>1 день</td><td>0.185</td><td>0.039</td>
+    <td>Аномальный поток об инфляции → S&P500 на следующий день</td>
+  </tr>
+  <tr>
+    <td><strong>FTSE_CHINA_50 / rate_z</strong></td><td>1 день</td><td>0.069</td><td>0.041</td>
+    <td>Аномальный поток о ставке ЦБ → Китай H-shares +1 день</td>
+  </tr>
+</table>
+
+<div class="chart-wrap">
+  <div class="chart-title">Судьба 54 кандидатов: Train+Val → Test</div>
+  <canvas id="signalChart"></canvas>
+</div>
+
+<h3>Открытие №3: режимный сдвиг — главная проблема</h3>
+
+<p>57% сигналов прошедших Train+Val изменили знак на Test. Это не случайность — это структурный сдвиг рынка.</p>
+
+<div class="chart-wrap">
+  <div class="chart-title">Знаковые флипы: режим 2022–2023 vs режим 2025–2026</div>
+  <canvas id="flipChart"></canvas>
+</div>
+
+<p>Санкционные сигналы работавшие в 2022 перестали работать в 2025. Рынок адаптировался. Это означает что нельзя обучить модель один раз и забыть — нужен rolling retraining.</p>
+
+<blockquote>
+  Это не провал методологии. Это открытие о природе российского рынка: он работает в режимах, и эти режимы меняются быстрее чем ожидаешь.
+</blockquote>
+
+<h3>Честная математика</h3>
+
+<div class="card">
+  <div class="card-title">Enrichment vs случай · итого по всем сессиям</div>
+  <table>
+    <tr><th>Метрика</th><th>Значение</th><th>Интерпретация</th></tr>
+    <tr><td>Гипотез проверено</td><td>~5 000</td><td>—</td></tr>
+    <tr><td>Ожидаемых случайных (p&lt;0.05)</td><td>~250</td><td>5 000 × 0.05</td></tr>
+    <tr><td>Прошли Train+Val</td><td>54</td><td>в 4.6× меньше случайного</td></tr>
+    <tr><td>Прошли Test</td><td><strong>2</strong></td><td>настоящий holdout</td></tr>
+    <tr><td>Val→Test retention</td><td>3.7%</td><td>57% sign flip</td></tr>
+  </table>
+</div>
+
+<p>Выглядит как мало. Но это <em>честные</em> числа. Renaissance Technologies — самый успешный квантовый фонд в истории — работает на ~300 сигналах, которые собирали 30 лет. Два проверенных сигнала за несколько недель — это нормально.</p>
+
+<hr class="divider">
+
+<!-- PART 2 -->
+<div class="part-header">
+  <div class="part-num">2</div>
+  <div>
+    <h2>Как работать с LLM в исследовательских системах</h2>
+    <div class="desc">Уроки, правила, архитектура — методологическая часть</div>
+  </div>
+</div>
+
+<p>Мы потратили несколько месяцев на систему которая ищет финансовые сигналы. Но главное что мы узнали — не про финансы. Это про то как строить системы с LLM так чтобы они не вводили тебя в заблуждение.</p>
+
+<h3>Фундаментальная ошибка: LLM-судья</h3>
+
+<p>В Phase A схема была такой:</p>
+
+<div class="arch">
+<span class="box">LLM придумывает гипотезу</span>
+  <span class="arrow">↓</span>
+<span class="box">SQL проверяет данные</span>
+  <span class="arrow">↓</span>
+<span class="box bad">LLM оценивает результат SQL</span>
+  <span class="arrow">↓</span>
+<span class="box bad">LLM решает: сигнал или нет</span>
+</div>
+
+<p>Проблема: <strong>тот кто придумывает гипотезу не должен её оценивать</strong>. LLM хочет быть полезным — это его фундаментальная настройка. Когда SQL показывает корреляцию 0.3 при ожидаемой 0.5 — LLM скорее напишет «частично подтверждено» чем «не подтверждено». Не потому что врёт. Потому что так устроен.</p>
+
+<p>Реальный confirm rate в Phase A с LLM-судьёй: <strong>67.7%</strong>. После независимой верификации: <strong>15–25%</strong>. Разница — это цена конфликта интересов.</p>
+
+<div class="ba-grid">
+  <div class="ba-col before">
+    <h4>Phase A — было</h4>
+    <ul>
+      <li>LLM генерирует гипотезу</li>
+      <li>LLM оценивает результат</li>
+      <li>67.7% "подтверждено"</li>
+      <li>Нет независимой проверки</li>
+      <li>Самообман масштабируется</li>
+    </ul>
+  </div>
+  <div class="ba-col after">
+    <h4>Phase B — стало</h4>
+    <ul>
+      <li>LLM только генерирует идеи</li>
+      <li>M5+M6 (статистика) решает</li>
+      <li>25.8% val pass rate (честно)</li>
+      <li>Integrity flags — система сама флагует</li>
+      <li>2 настоящих сигнала</li>
+    </ul>
+  </div>
+</div>
+
+<h3>5 правил работы с LLM в исследовательских системах</h3>
+
+<div class="rules">
+  <div class="rule">
+    <div class="rule-num">1</div>
+    <div class="rule-body">
+      <h4>LLM генерирует — статистика решает</h4>
+      <p>LLM хорош в чтении документов, генерации идей, объяснении паттернов. LLM плох в объективной оценке своих же идей. Разделите роли архитектурно: LLM дальше этапа генерации не идёт.</p>
+    </div>
+  </div>
+  <div class="rule">
+    <div class="rule-num">2</div>
+    <div class="rule-body">
+      <h4>Каждое решение LLM — в файл с источником</h4>
+      <p>Если LLM предложил гипотезу «sanctions_z → MOEXOG lag=30» — сохраните рядом: откуда идея, какой документ, какая страница. Через месяц вы будете рады что сделали это. Без источника невозможно отделить инсайт от галлюцинации.</p>
+    </div>
+  </div>
+  <div class="rule">
+    <div class="rule-num">3</div>
+    <div class="rule-body">
+      <h4>Человек — качественный шлюз между фазами</h4>
+      <p>Между генерацией гипотез и их тестированием стоит человек. Не потому что LLM плохой — потому что человек знает контекст который LLM не знает: что изменилось в рынке на прошлой неделе, какие гипотезы уже проверяли, что уже неактуально.</p>
+    </div>
+  </div>
+  <div class="rule">
+    <div class="rule-num">4</div>
+    <div class="rule-body">
+      <h4>Встройте честность в архитектуру</h4>
+      <p>Система должна сама говорить когда её результаты ненадёжны. Enrichment vs random, sign flip rate, integrity flags — не для отчётов, а для автоматических решений. Если enrichment &lt; 1.5 — система сама должна менять параметры, не ждать человека.</p>
+    </div>
+  </div>
+  <div class="rule">
+    <div class="rule-num">5</div>
+    <div class="rule-body">
+      <h4>RAG — обязательный вход, не украшение</h4>
+      <p>Если RAG опциональный — он будет забыт при следующем рефакторинге. Если RAG — единственный источник гипотез, его невозможно потерять. У нас лежали 15 000 страниц корпоративных отчётов — и мы их не использовали два месяца.</p>
+    </div>
+  </div>
+</div>
+
+<h3>Трёхуровневая память: как система не забывает</h3>
+
+<p>Главная проблема LLM-систем — потеря контекста. Агент не помнит что проверял три дня назад. Он готов снова потратить 7 часов на гипотезу которая уже 5 раз провалилась.</p>
+
+<div class="pyramid">
+  <div class="pyr-level pyr-1">
+    <div class="pl-title">📋 Оперативная память · <code>session_config.json</code></div>
+    <div class="pl-desc">Обновляется каждый день. Топ-инструменты по IC, анти-паттерны (никогда не проходят val), лучшие лаги, IC gate для следующей сессии. Система стартует каждую ночь уже зная что работало вчера.</div>
+  </div>
+  <div class="pyr-level pyr-2">
+    <div class="pl-title">📚 Долгосрочная память · <code>ledger.jsonl</code></div>
+    <div class="pl-desc">Append-only журнал. Никогда не удаляется. Каждая сессия с результатами и integrity flags. Каждое изменение конфига с причиной. История enrichment ratio по всем сессиям. Можно в любой момент ответить на вопрос «почему система приняла это решение 2 недели назад».</div>
+  </div>
+  <div class="pyr-level pyr-3">
+    <div class="pl-title">🏛️ Институциональная память · Obsidian Vault (221 чанк)</div>
+    <div class="pl-desc">Наша база знаний в Obsidian, проиндексированная в ChromaDB. Перед каждой гипотезой: «мы это уже проверяли? какие атаки известны? что устарело?» Типы: signal (67), attack (43), approach (41), concept (39), decision (21).</div>
+  </div>
+</div>
+
+<div class="chart-wrap">
+  <div class="chart-title">Obsidian vault · распределение знаний по типам</div>
+  <canvas id="vaultChart"></canvas>
+</div>
+
+<h3>Integrity checking: система честно говорит когда ошибается</h3>
+
+<p>После каждой ночной сессии система рассчитывает собственную достоверность и выдаёт флаги:</p>
+
+<div class="flags">
+  <div class="flag fail">
+    <span class="tag">FAIL</span>
+    <span class="msg"><strong>VAL_RATE_IMPOSSIBLE</strong> — val pass rate = 62.8%. Слишком высоко для реальных данных. Возможна утечка данных или look-ahead bias. Требует ручной проверки.</span>
+  </div>
+  <div class="flag warn">
+    <span class="tag">WARN</span>
+    <span class="msg"><strong>ENRICHMENT_NEAR_CHANCE</strong> — нашли 12 сигналов, ожидалось случайных 33.6 при p&lt;0.05. Enrichment = 0.36x. Результаты сессии могут быть шумом.</span>
+  </div>
+  <div class="flag warn">
+    <span class="tag">WARN</span>
+    <span class="msg"><strong>SIGN_FLIP</strong> — 57% сигналов изменили знак на Test. Сигналы режимозависимы. Нужен rolling retraining или сегментация по режимам.</span>
+  </div>
+  <div class="flag warn">
+    <span class="tag">WARN</span>
+    <span class="msg"><strong>PERSISTENT_FLAG</strong> — флаг ENRICHMENT_NEAR_CHANCE появился в 3 сессиях подряд. Это структурная проблема, не случайность. Нужно менять IC gate.</span>
+  </div>
+  <div class="flag info">
+    <span class="tag">INFO</span>
+    <span class="msg"><strong>P_HACKING_RISK</strong> — тестируем 672 гипотезы без BH-коррекции. При p&lt;0.05 ожидается ~34 ложноположительных по случаю. Только val-confirmed сигналы надёжны.</span>
+  </div>
+</div>
+
+<p>Это неудобно. Иногда система говорит «всё что ты нашёл сегодня ночью — шум». Но это лучше чем система которая всегда говорит «отличная работа».</p>
+
+<h3>Архитектура: Ouroboros между сессиями</h3>
+
+<div class="arch">
+  <span class="label">                    СУТОЧНЫЙ ЦИКЛ</span>
+
+  <span class="box">  [22:00]  night_search --loop-hours 7</span>
+  <span class="arrow">           ↓ читает session_config.json → стартует умнее</span>
+  <span class="arrow">           ↓ Ouroboros внутри сессии (N раундов)</span>
+  <span class="arrow">           ↓ пишет night_hits_*.csv, night_report_*.md</span>
+  <span class="arrow">           ↓ пишет в ledger.jsonl (integrity check)</span>
+
+  <span class="box">  [06:00]  night_search --loop-hours 7  (снова)</span>
+
+  <span class="box">  [13:00]  inter_session_analyzer</span>
+  <span class="arrow">           ↓ читает ВСЕ CSV за всё время</span>
+  <span class="arrow">           ↓ топ-инструменты, анти-паттерны, IC gate</span>
+  <span class="arrow">           ↓ обновляет session_config.json</span>
+  <span class="arrow">           ↓ пишет в ledger (config_change с причиной)</span>
+
+  <span class="box">  [14:00]  afternoon_run --loop-hours 7</span>
+  <span class="arrow">           ↓ стартует с обновлённым конфигом</span>
+  <span class="arrow">           ↓ знает больше чем утром</span>
+</div>
+
+<div class="cycle">
+  <div class="cycle-step">
+    <div class="time">06:00</div>
+    <div class="action">Ночная сессия<br>финишировала</div>
+    <div class="hours">→ morning_check.ps1</div>
+  </div>
+  <div class="cycle-step">
+    <div class="time">13:00</div>
+    <div class="action">Межсессионный<br>анализ</div>
+    <div class="hours">~10 минут</div>
+  </div>
+  <div class="cycle-step">
+    <div class="time">14:00</div>
+    <div class="action">Дневная сессия<br>умнее ночной</div>
+    <div class="hours">7 часов</div>
+  </div>
+  <div class="cycle-step">
+    <div class="time">22:00</div>
+    <div class="action">Ночная сессия<br>стартует</div>
+    <div class="hours">7 часов</div>
+  </div>
+</div>
+
+<div class="chart-wrap">
+  <div class="chart-title">Enrichment ratio по сессиям · система учится</div>
+  <canvas id="enrichChart"></canvas>
+</div>
+
+<h3>Три бага которые мы зафиксировали (и не хотим повторять)</h3>
+
+<div class="card">
+  <div class="card-title">Bug M007 · Бесконечный цикл Ouroboros</div>
+  <p style="font-size:14px;margin-bottom:12px">Метки конфигов включали номер раунда:</p>
+  <pre style="margin:0">r3_stable_MSCI_W_sancti   ← раунд 3
+r4_stable_MSCI_W_sancti   ← та же гипотеза, раунд 4
+r25_stable_MSCI_W_sancti  ← 25 раз одно и то же</pre>
+  <p style="font-size:14px;margin-top:12px;color:var(--text2)">Система считала их разными конфигами. Потеряли 6 из 7 часов ночной сессии. <strong style="color:var(--accent2)">Исправление:</strong> метки content-based, без номера раунда.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">Bug M001 · Aliasing инструментов (из Phase A)</div>
+  <pre style="margin:0"><span style="color:var(--danger)">-- ОШИБНО: берём IMOEX, называем китайским индексом</span>
+SELECT v.imoex_close AS ftse_china_50 FROM v_market_context v
+
+<span style="color:var(--accent2)">-- ПРАВИЛЬНО:</span>
+SELECT close FROM market_data WHERE instrument = 'FTSE_CHINA_50'</pre>
+  <p style="font-size:14px;margin-top:12px;color:var(--text2)">Эта ошибка дала ~60% «подтверждённых» сигналов в марафоне. Задокументирована в <code>db/forbidden_patterns.md</code>. Штраф в loss function: -25 очков.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">Bug M004 · Потерянный RAG</div>
+  <p style="font-size:14px;color:var(--text2)">При переходе от LLM-агента к статистическому пайплайну RAG просто не перенесли. 15 574 чанков годовых отчётов лежали неиспользованными два месяца. <strong style="color:var(--accent2)">Исправление:</strong> в Phase C RAG — обязательный вход. Нет RAG → нет гипотез → нет запуска.</p>
+</div>
+
+<hr class="divider">
+
+<!-- PHASE C PREVIEW -->
+<div class="part-header">
+  <div class="part-num" style="background:var(--accent3)">→</div>
+  <div>
+    <h2>Phase C: гипотезы с источниками</h2>
+    <div class="desc">Что делаем дальше</div>
+  </div>
+</div>
+
+<p>15 574 чанков годовых отчётов Газпрома, Лукойла, Сбера, Яндекса лежат в ChromaDB. В каждом из них есть конкретные чувствительности:</p>
+
+<div class="card">
+  <div class="card-title">Пример · Gazprom Annual Report 2023</div>
+  <blockquote style="margin:0">"Санкционные ограничения на экспорт СПГ приводят к снижению выручки с задержкой 6–8 недель по мере разворота поставок на альтернативные рынки."</blockquote>
+  <div style="margin-top:12px;font-size:13px;color:var(--text2)">
+    ↓ LLM извлекает структуру<br>
+    <code>{ instrument: "MOEXOG", feature: "sanctions_z", lag_range: [42, 56], direction: "negative", source: "gazprom/AR2023/p.47" }</code><br>
+    ↓ M5+M6 тестируют на данных<br>
+    ↓ Результат с цитатой из источника
+  </div>
+</div>
+
+<p>Phase C меняет вопрос с <em>«найди корреляцию»</em> на <em>«проверь что компания сама говорила о себе»</em>. Это аудит корпоративных прогнозов на рыночных данных.</p>
+
+<div class="arch">
+  <span class="label">АРХИТЕКТУРА PHASE C</span>
+
+  <span class="box">  Сбер · Лукойл · Газпром · Яндекс</span>
+  <span class="arrow">         ↓ ChromaDB semantic search</span>
+  <span class="box">  RAG: релевантные чанки из отчётов</span>
+  <span class="arrow">         ↓ DeepSeek LLM (только генерация)</span>
+  <span class="box">  Структурированные гипотезы JSON (в файл)</span>
+  <span class="arrow">         ↓ ← Человек смотрит и корректирует</span>
+  <span class="box">  z-score нормализация · M5+M6 · Train/Val</span>
+  <span class="arrow">         ↓</span>
+  <span class="box">  Integrity check · Ledger · Enrichment</span>
+  <span class="arrow">         ↓</span>
+  <span class="ok">  Подтверждённый сигнал + цитата-источник</span>
+  <span class="arrow">         ↓ Obsidian vault: обновляем знания</span>
+</div>
+
+<div class="callout">
+  <strong>Главная идея Phase C:</strong> каждый сигнал имеет экономический механизм и документальный источник. Не «нашли корреляцию», а «Сбер предупреждал об этом риске на странице 47 — мы проверили — подтвердилось».
+</div>
+
+<hr class="divider">
+
+<!-- CONCLUSION -->
+<h3 style="margin-top:0">Вместо заключения: что изменилось в голове</h3>
+
+<table>
+  <tr><th>Раньше думали</th><th>Теперь думаем</th></tr>
+  <tr><td>LLM найдёт всё если дать ему данных</td><td>LLM генерирует идеи — статистика проверяет</td></tr>
+  <tr><td>Больше итераций = лучше результат</td><td>Правильная методология &gt; количество итераций</td></tr>
+  <tr><td>6 сигналов лучше чем 2</td><td>2 настоящих лучше чем 200 красивых</td></tr>
+  <tr><td>RAG — необязательный слой</td><td>RAG — обязательный вход, иначе теряется</td></tr>
+  <tr><td>Система сама всё поймёт</td><td>Система честно говорит когда не понимает</td></tr>
+  <tr><td>LLM оценивает LLM</td><td>Только независимая статистика оценивает LLM</td></tr>
+</table>
+
+<p style="margin-top:24px">Самое честное что можно сказать: <strong>работа с LLM-системой — это проектирование сдержек и противовесов</strong>. LLM мощный, но предвзятый. Статистика строгая, но слепая. Человек видит контекст, но не успевает всё проверить. Правильная система использует каждого там где он силён.</p>
+
+<div class="footer">
+  <p>Signal Mind · <a href="#">github.com/iRatG/signal_mind</a></p>
+  <p style="margin-top:8px">Часть 1: «Как мы научили алгоритм слушать рынок» · Часть 2: эта статья · Часть 3: скоро</p>
+</div>
+
+</div><!-- /container -->
+
+<script>
+const COLORS = {
+  blue:   'rgba(108,142,191,',
+  green:  'rgba(127,176,105,',
+  orange: 'rgba(232,168,56,',
+  red:    'rgba(224,92,92,',
+  purple: 'rgba(180,142,210,',
+  text2:  '#8890b0',
+  border: '#2e3248',
+  bg3:    '#242736',
+};
+const DEF = {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: {
+    legend: { labels: { color: COLORS.text2, font: { size: 12 } } },
+    tooltip: { backgroundColor: '#1a1d27', borderColor: '#2e3248', borderWidth: 1,
+                titleColor: '#d4d8f0', bodyColor: '#8890b0' },
+  },
+  scales: {
+    x: { ticks: { color: COLORS.text2, font:{size:11} }, grid: { color: COLORS.border } },
+    y: { ticks: { color: COLORS.text2, font:{size:11} }, grid: { color: COLORS.border } },
+  },
+};
+
+/* Chart 1: Normalization impact */
+new Chart(document.getElementById('normChart'), {
+  type: 'bar',
+  data: {
+    labels: ['SP500/inflation\nraw', 'SP500/inflation\nz-score', 'MOEXOG/sanctions\nraw', 'MOEXOG/sanctions\nz-score', 'GOLD/inflation\nraw', 'GOLD/inflation\nz-score'],
+    datasets: [{
+      label: 'Information Coefficient (IC)',
+      data: [0.021, 0.185, 0.019, 0.189, 0.014, 0.138],
+      backgroundColor: [
+        COLORS.red+'0.6)', COLORS.green+'0.8)',
+        COLORS.red+'0.6)', COLORS.green+'0.8)',
+        COLORS.red+'0.6)', COLORS.green+'0.8)',
+      ],
+      borderWidth: 0, borderRadius: 4,
+    }]
+  },
+  options: { ...DEF,
+    plugins: { ...DEF.plugins, legend: { display: false } },
+    scales: { ...DEF.scales, y: { ...DEF.scales.y, min: 0, max: 0.22,
+      ticks: { ...DEF.scales.y.ticks, callback: v => v.toFixed(3) } } },
+  }
+});
+
+/* Chart 2: Train/Val/Test split timeline */
+new Chart(document.getElementById('splitChart'), {
+  type: 'bar',
+  data: {
+    labels: [''],
+    datasets: [
+      { label: 'Train (2022–2023)', data: [24], backgroundColor: COLORS.blue+'0.7)', borderWidth:0, borderRadius:4 },
+      { label: 'Буфер', data: [3], backgroundColor: COLORS.border+')', borderWidth:0 },
+      { label: 'Val (2024–2025)', data: [16], backgroundColor: COLORS.orange+'0.7)', borderWidth:0, borderRadius:4 },
+      { label: 'Буфер', data: [4], backgroundColor: COLORS.border+')', borderWidth:0 },
+      { label: 'Test (2025–2026)', data: [8], backgroundColor: COLORS.green+'0.7)', borderWidth:0, borderRadius:4 },
+    ]
+  },
+  options: {
+    ...DEF,
+    indexAxis: 'y',
+    scales: {
+      x: { stacked:true, ticks:{ color:COLORS.text2, callback: v=>`${v} мес` }, grid:{color:COLORS.border} },
+      y: { stacked:true, display:false }
+    },
+    plugins: { ...DEF.plugins }
+  }
+});
+
+/* Chart 3: Signal funnel */
+new Chart(document.getElementById('signalChart'), {
+  type: 'bar',
+  data: {
+    labels: ['~5 000\nгипотез', 'Train\nпрошли', 'Train+Val\nпрошли', 'Test\nпрошли'],
+    datasets: [{
+      data: [5000, 812, 54, 2],
+      backgroundColor: [
+        COLORS.blue+'0.4)', COLORS.blue+'0.6)',
+        COLORS.orange+'0.7)', COLORS.green+'0.9)',
+      ],
+      borderWidth: 0, borderRadius: 6,
+    }]
+  },
+  options: { ...DEF,
+    plugins: { ...DEF.plugins, legend:{display:false} },
+    scales: { ...DEF.scales, y: { ...DEF.scales.y, type:'logarithmic',
+      ticks:{ ...DEF.scales.y.ticks, callback: v => v >= 1000 ? (v/1000)+'k' : v } } }
+  }
+});
+
+/* Chart 4: Sign flip */
+new Chart(document.getElementById('flipChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Знак сохранился (43%)', 'Знак изменился (57%)'],
+    datasets: [{
+      data: [23, 31],
+      backgroundColor: [COLORS.green+'0.8)', COLORS.red+'0.7)'],
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position:'right', labels:{color:COLORS.text2, font:{size:13}, padding:16} },
+      tooltip: { backgroundColor:'#1a1d27', borderColor:'#2e3248', borderWidth:1,
+                 titleColor:'#d4d8f0', bodyColor:'#8890b0' }
+    }
+  }
+});
+
+/* Chart 5: Vault contents */
+new Chart(document.getElementById('vaultChart'), {
+  type: 'bar',
+  data: {
+    labels: ['signal', 'attack', 'approach', 'concept', 'decision', 'moc'],
+    datasets: [
+      { label: 'active', data:[45,12,28,32,18,10], backgroundColor:COLORS.green+'0.8)',borderWidth:0,borderRadius:3 },
+      { label: 'open / partial', data:[22,18,9,5,2,0], backgroundColor:COLORS.orange+'0.7)',borderWidth:0,borderRadius:3 },
+      { label: 'deprecated', data:[0,13,4,2,1,0], backgroundColor:COLORS.red+'0.5)',borderWidth:0,borderRadius:3 },
+    ]
+  },
+  options: { ...DEF,
+    scales: { x:{...DEF.scales.x,stacked:true}, y:{...DEF.scales.y,stacked:true} }
+  }
+});
+
+/* Chart 6: Enrichment by session */
+new Chart(document.getElementById('enrichChart'), {
+  type: 'line',
+  data: {
+    labels: ['Сессия 1', 'Сессия 2', 'Сессия 3', 'Сессия 4', 'Сессия 5', 'Сессия 6', 'Сессия 7'],
+    datasets: [
+      {
+        label: 'Enrichment vs random',
+        data: [0.36, 0.82, 1.20, 1.55, 1.89, 2.10, 2.34],
+        borderColor: COLORS.blue+'1)', backgroundColor: COLORS.blue+'0.1)',
+        borderWidth: 2, fill: true, tension: 0.4,
+        pointBackgroundColor: COLORS.blue+'1)', pointRadius: 5,
+      },
+      {
+        label: 'Порог "реальный сигнал" (2x)',
+        data: [2,2,2,2,2,2,2],
+        borderColor: COLORS.green+'0.6)', borderDash:[6,4],
+        borderWidth: 1.5, fill: false, pointRadius: 0,
+      }
+    ]
+  },
+  options: { ...DEF,
+    scales: { ...DEF.scales, y: { ...DEF.scales.y, min:0, max:3,
+      ticks:{...DEF.scales.y.ticks, callback: v=>v+'x'} } }
+  }
+});
+</script>
+</body>
+</html>
