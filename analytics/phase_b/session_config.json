@@ -1,0 +1,219 @@
+{
+  "generated_at": "2026-05-28T10:00:04.345811+00:00",
+  "sessions_analyzed": 9,
+  "n_train_total": 68428,
+  "n_val_total": 21489,
+  "val_pass_rate": 0.314,
+  "ic_trend": "stable",
+  "ic_gate": 0.05,
+  "ensemble": "M5_AND_M6",
+  "ic_gate_reason": "moderate val_rate → standard",
+  "top_instruments": [
+    "GOLD",
+    "MSCI_INDIA",
+    "MSCI_WORLD",
+    "SP500",
+    "MOEXOG",
+    "CHINA_H_SHARES",
+    "FTSE_CHINA_50",
+    "BRENT"
+  ],
+  "top_topics": [
+    "oil_emb_z",
+    "inflation_z",
+    "rate_emb_z",
+    "oil_emb",
+    "gold_emb_z"
+  ],
+  "best_feature": "embedding_z90",
+  "best_lags": [
+    2,
+    8,
+    23,
+    60
+  ],
+  "stable_signals": [
+    {
+      "instrument": "CHINA_H_SHARES",
+      "topic": "oil_z",
+      "lag": 14,
+      "n_sessions": 9,
+      "n_val": 24.0,
+      "best_ic": 0.245902
+    },
+    {
+      "instrument": "FTSE_CHINA_50",
+      "topic": "banking_z",
+      "lag": 7,
+      "n_sessions": 9,
+      "n_val": 48.0,
+      "best_ic": 0.242849
+    },
+    {
+      "instrument": "SP500",
+      "topic": "inflation_z",
+      "lag": 7,
+      "n_sessions": 9,
+      "n_val": 50.0,
+      "best_ic": 0.239054
+    },
+    {
+      "instrument": "FTSE_CHINA_50",
+      "topic": "oil",
+      "lag": 1,
+      "n_sessions": 9,
+      "n_val": 24.0,
+      "best_ic": 0.23412
+    },
+    {
+      "instrument": "CHINA_H_SHARES",
+      "topic": "banking_z",
+      "lag": 7,
+      "n_sessions": 9,
+      "n_val": 26.0,
+      "best_ic": 0.229795
+    },
+    {
+      "instrument": "DJ_SOUTH_AFRICA",
+      "topic": "oil_emb",
+      "lag": 30,
+      "n_sessions": 9,
+      "n_val": 24.0,
+      "best_ic": 0.22571
+    },
+    {
+      "instrument": "DJ_SOUTH_AFRICA",
+      "topic": "gold_z",
+      "lag": 7,
+      "n_sessions": 9,
+      "n_val": 24.0,
+      "best_ic": 0.209619
+    },
+    {
+      "instrument": "MSCI_WORLD",
+      "topic": "oil_emb_z",
+      "lag": 1,
+      "n_sessions": 9,
+      "n_val": 24.0,
+      "best_ic": 0.208929
+    },
+    {
+      "instrument": "MSCI_WORLD",
+      "topic": "sanctions_z",
+      "lag": 1,
+      "n_sessions": 9,
+      "n_val": 24.0,
+      "best_ic": 0.208121
+    },
+    {
+      "instrument": "MOEX10",
+      "topic": "oil",
+      "lag": 30,
+      "n_sessions": 9,
+      "n_val": 24.0,
+      "best_ic": 0.207408
+    }
+  ],
+  "deprioritize": [
+    {
+      "instrument": "BRENT",
+      "topic": "banking",
+      "lag": 1
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking",
+      "lag": 7
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking",
+      "lag": 14
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking",
+      "lag": 30
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb",
+      "lag": 1
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb",
+      "lag": 7
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb",
+      "lag": 8
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb",
+      "lag": 14
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb",
+      "lag": 30
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb_z",
+      "lag": 1
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb_z",
+      "lag": 7
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb_z",
+      "lag": 8
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb_z",
+      "lag": 14
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_emb_z",
+      "lag": 30
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_z",
+      "lag": 7
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_z",
+      "lag": 8
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "banking_z",
+      "lag": 30
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "gold",
+      "lag": 1
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "gold",
+      "lag": 7
+    },
+    {
+      "instrument": "BRENT",
+      "topic": "gold",
+      "lag": 14
+    }
+  ]
+}

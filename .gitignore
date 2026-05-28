@@ -27,6 +27,13 @@ Thumbs.db
 # Claude Code local settings (contains personal data)
 .claude/
 
+# Phase B runtime logs (large, regenerated every night)
+analytics/phase_b/night_search/*.log
+analytics/phase_b/analysis/analyzer_*.log
+
+# Phase B CSV hits (large binary-ish data, tracked separately)
+analytics/phase_b/night_search/*_hits_*.csv
+
 
 
 key.txt
