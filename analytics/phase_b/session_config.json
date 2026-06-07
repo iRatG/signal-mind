@@ -1,116 +1,116 @@
 {
-  "generated_at": "2026-05-28T10:00:04.345811+00:00",
-  "sessions_analyzed": 9,
-  "n_train_total": 68428,
-  "n_val_total": 21489,
-  "val_pass_rate": 0.314,
+  "generated_at": "2026-06-02T10:00:04.620387+00:00",
+  "sessions_analyzed": 23,
+  "n_train_total": 138400,
+  "n_val_total": 57833,
+  "val_pass_rate": 0.4179,
   "ic_trend": "stable",
-  "ic_gate": 0.05,
+  "ic_gate": 0.08,
   "ensemble": "M5_AND_M6",
-  "ic_gate_reason": "moderate val_rate → standard",
+  "ic_gate_reason": "high val_rate → tighten",
   "top_instruments": [
     "GOLD",
-    "MSCI_INDIA",
-    "MSCI_WORLD",
-    "SP500",
     "MOEXOG",
-    "CHINA_H_SHARES",
+    "MSCI_INDIA",
+    "SP500",
+    "MSCI_WORLD",
     "FTSE_CHINA_50",
-    "BRENT"
+    "DJ_SOUTH_AFRICA",
+    "CHINA_H_SHARES"
   ],
   "top_topics": [
-    "oil_emb_z",
     "inflation_z",
+    "oil_emb_z",
     "rate_emb_z",
     "oil_emb",
-    "gold_emb_z"
+    "sanctions_emb"
   ],
-  "best_feature": "embedding_z90",
+  "best_feature": "keyword_z90",
   "best_lags": [
-    2,
     8,
     23,
-    60
+    60,
+    90
   ],
   "stable_signals": [
     {
       "instrument": "CHINA_H_SHARES",
       "topic": "oil_z",
       "lag": 14,
-      "n_sessions": 9,
-      "n_val": 24.0,
+      "n_sessions": 23,
+      "n_val": 66.0,
       "best_ic": 0.245902
     },
     {
       "instrument": "FTSE_CHINA_50",
       "topic": "banking_z",
       "lag": 7,
-      "n_sessions": 9,
-      "n_val": 48.0,
+      "n_sessions": 23,
+      "n_val": 132.0,
       "best_ic": 0.242849
     },
     {
       "instrument": "SP500",
       "topic": "inflation_z",
       "lag": 7,
-      "n_sessions": 9,
-      "n_val": 50.0,
+      "n_sessions": 23,
+      "n_val": 134.0,
       "best_ic": 0.239054
     },
     {
       "instrument": "FTSE_CHINA_50",
       "topic": "oil",
       "lag": 1,
-      "n_sessions": 9,
-      "n_val": 24.0,
+      "n_sessions": 23,
+      "n_val": 66.0,
       "best_ic": 0.23412
     },
     {
       "instrument": "CHINA_H_SHARES",
       "topic": "banking_z",
       "lag": 7,
-      "n_sessions": 9,
-      "n_val": 26.0,
+      "n_sessions": 23,
+      "n_val": 68.0,
       "best_ic": 0.229795
     },
     {
       "instrument": "DJ_SOUTH_AFRICA",
       "topic": "oil_emb",
       "lag": 30,
-      "n_sessions": 9,
-      "n_val": 24.0,
+      "n_sessions": 23,
+      "n_val": 66.0,
       "best_ic": 0.22571
     },
     {
       "instrument": "DJ_SOUTH_AFRICA",
       "topic": "gold_z",
       "lag": 7,
-      "n_sessions": 9,
-      "n_val": 24.0,
+      "n_sessions": 23,
+      "n_val": 66.0,
       "best_ic": 0.209619
     },
     {
       "instrument": "MSCI_WORLD",
       "topic": "oil_emb_z",
       "lag": 1,
-      "n_sessions": 9,
-      "n_val": 24.0,
+      "n_sessions": 23,
+      "n_val": 66.0,
       "best_ic": 0.208929
     },
     {
       "instrument": "MSCI_WORLD",
       "topic": "sanctions_z",
       "lag": 1,
-      "n_sessions": 9,
-      "n_val": 24.0,
+      "n_sessions": 23,
+      "n_val": 66.0,
       "best_ic": 0.208121
     },
     {
       "instrument": "MOEX10",
       "topic": "oil",
       "lag": 30,
-      "n_sessions": 9,
-      "n_val": 24.0,
+      "n_sessions": 23,
+      "n_val": 66.0,
       "best_ic": 0.207408
     }
   ],

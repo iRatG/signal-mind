@@ -1,0 +1,422 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году и инфляция 7,4% указывают на ужесточение ДКП, что давит на чистую процентную маржу банков (снижение на 0,8-0,9 п.п. по юрлицам и физлицам в 2022 году) и снижает прибыль финсектора.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Факторы, повлиявшие на чистую процентную маржу в 2022 году; Ключевая ставка и инфляция 2023",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9,5% г/г в 2024 году и 7,4% в 2023 году, а также рост стоимости привлеченных средств с 3,1% до 5,4% в 2022 году снижают чистую процентную маржу банков (с 5,4% до 5,3% в 2022 году), что негативно для акций финсектора.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Факторы, повлиявшие на чистую процентную маржу в 2022 году; Инфляция 2024",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Балансирующая цена на нефть в реальном выражении на 2030 год в диапазоне 40-50 долл./барр. указывает на долгосрочную зависимость выручки и EBITDA нефтегазового сектора от цен на нефть; рост цен на нефть увеличивает прибыль компаний сектора.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Климатические предпосылки и сценарии спроса",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexog_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление курса рубля в 2022 году привело к росту экспортной выручки в рублевом выражении (экспорт нефти ЛУКОЙЛа вырос на 14,1% в 2022 году), что положительно сказывается на финансовых показателях нефтегазовых компаний.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Объем реализации нефти и экспорт",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexog_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "BRENT",
+    "topic": "oil",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Снижение объемов трейдинга нефтью и газа в 2022 году (объем реализации газа снизился на 6,4%) отражает влияние рыночной конъюнктуры на цены; рост спроса и цен на нефть ведет к росту котировок BRENT.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Объем реализации газа и нефти",
+    "confidence": 0.65,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_brent_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Чистая процентная маржа Сбера в 2022 году снизилась на 0,1 п.п. до 5,3% из-за роста стоимости привлеченных средств (с 3,1% до 5,4%) на фоне повышения ключевой ставки; дальнейшее повышение ставки давит на маржу и прибыль банков.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Анализ отчета о прибылях и убытках 2022",
+    "confidence": 0.9,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляционный рост расходов Норникеля составил +281 млн долл. США в 2024 году, что увеличивает операционные затраты компаний; для банков высокая инфляция ведет к росту стоимости фондирования и снижению маржи.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Инфляционный рост расходов",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление рубля в 2022 году привело к эффекту -351 млн долл. США на расходы Норникеля, но для нефтегазового сектора ослабление рубля увеличивает рублевую выручку от экспорта, что позитивно для MOEXOG.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Эффект от снижения курса рубля",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexog_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Анализ чувствительности ЛУКОЙЛа показывает, что рост ставок на 100 б.п. снижает прибыль до налогообложения по чистым финансовым обязательствам; для банков рост ставок увеличивает стоимость фондирования и снижает маржу.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Анализ чувствительности для инструментов с переменной ставкой",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "В 2023 году чистая процентная маржа Сбера выросла до 5,98% (+0,66 п.п.) за счет роста доходности активов при снижении стоимости заемных средств; однако повышение ключевой ставки в 2023 году (с 7,5% до 16%) в перспективе увеличит стоимость фондирования и снизит маржу.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Анализ отчета о прибылях и убытках 2023",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 11,9% в декабре 2022 года и 7,4% в 2023 году, а также рост стоимости привлеченных средств (с 3,1% до 5,4% в 2022 году) снижают чистую процентную маржу банков; высокая инфляция ведет к ужесточению ДКП и давлению на прибыль финсектора.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Ослабление курса рубля и инфляция 2022; Инфляция 2023",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году и инфляция 7,4% указывают на ужесточение ДКП, что давит на чистую процентную маржу банков (снижение на 0,8-0,9 п.п. по юрлицам и физлицам в 2022 году) и снижает прибыль финсектора.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Факторы, повлиявшие на чистую процентную маржу в 2022 году; Ключевая ставка и инфляция 2023",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9,5% г/г в 2024 году и 7,4% в 2023 году, а также рост стоимости привлеченных средств с 3,1% до 5,4% в 2022 году снижают чистую процентную маржу банков (с 5,4% до 5,3% в 2022 году), что негативно для акций финсектора.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Факторы, повлиявшие на чистую процентную маржу в 2022 году; Инфляция 2024",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Балансирующая цена на нефть в реальном выражении на 2030 год в диапазоне 40-50 долл./барр. указывает на долгосрочную зависимость выручки и EBITDA нефтегазового сектора от цен на нефть; рост цен на нефть увеличивает прибыль компаний сектора.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Климатические предпосылки и сценарии спроса",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexog_oil_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление курса рубля в 2022 году привело к росту экспортной выручки в рублевом выражении (экспорт нефти ЛУКОЙЛа вырос на 14,1% в 2022 году), что положительно сказывается на финансовых показателях нефтегазовых компаний.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Объем реализации нефти и экспорт",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexog_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Чистая процентная маржа Сбера в 2022 году снизилась на 0,1 п.п. до 5,3% из-за роста стоимости привлеченных средств (с 3,1% до 5,4%) на фоне повышения ключевой ставки; дальнейшее повышение ставки давит на маржу и прибыль банков.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Анализ отчета о прибылях и убытках 2022",
+    "confidence": 0.9,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляционный рост расходов Норникеля составил +281 млн долл. США в 2024 году, что увеличивает операционные затраты компаний; для банков высокая инфляция ведет к росту стоимости фондирования и снижению маржи.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Инфляционный рост расходов",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление рубля в 2022 году привело к эффекту -351 млн долл. США на расходы Норникеля, но для нефтегазового сектора ослабление рубля увеличивает рублевую выручку от экспорта, что позитивно для MOEXOG.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Эффект от снижения курса рубля",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexog_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Анализ чувствительности ЛУКОЙЛа показывает, что рост ставок на 100 б.п. снижает прибыль до налогообложения по чистым финансовым обязательствам; для банков рост ставок увеличивает стоимость фондирования и снижает маржу.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Анализ чувствительности для инструментов с переменной ставкой",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "В 2023 году чистая процентная маржа Сбера выросла до 5,98% (+0,66 п.п.) за счет роста доходности активов при снижении стоимости заемных средств; однако повышение ключевой ставки в 2023 году (с 7,5% до 16%) в перспективе увеличит стоимость фондирования и снизит маржу.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Анализ отчета о прибылях и убытках 2023",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 11,9% в декабре 2022 года и 7,4% в 2023 году, а также рост стоимости привлеченных средств (с 3,1% до 5,4% в 2022 году) снижают чистую процентную маржу банков; высокая инфляция ведет к ужесточению ДКП и давлению на прибыль финсектора.",
+    "source_company": "lukoil",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Ослабление курса рубля и инфляция 2022; Инфляция 2023",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2020_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  }
+]

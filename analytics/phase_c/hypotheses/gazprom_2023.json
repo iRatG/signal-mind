@@ -1,0 +1,142 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году для борьбы с инфляцией 7,4% оказывает давление на чистую процентную маржу банков (как показано в отчёте Сбера за 2022 год: рост стоимости привлечённых средств снижает NIM), что ведёт к снижению прибыли и падению акций финансового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Отчёт менеджмента Сбера 2023, стр. 96; Отчёт Сбера 2022, стр. 64; Фрагмент '? 2023, p.10'",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2023_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9,5% г/г в 2024 году (с 7,4% в 2023) и ужесточение денежно-кредитной политики ЦБ (повышение ставки) сжимают кредитование и ухудшают потребительские настроения, что негативно сказывается на доходах банков и их акциях.",
+    "source_company": "gazprom",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Фрагмент 'Sberbank 2024, p.19'; Фрагмент '? 2023, p.10'",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2023_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля (волатильность, упомянутая в отчёте Газпрома) увеличивает рублёвые расходы на импорт и обслуживание валютного долга, что снижает чистую прибыль нефтегазовых компаний, несмотря на рост рублёвой выручки от экспорта.",
+    "source_company": "gazprom",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Фрагмент 'Gazprom 0, p.204'",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2023_moexog_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "BRENT",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Балансирующая цена на нефть в реальном выражении на 2030 год в диапазоне 40-50 долл./барр. (из отчёта Лукойла) указывает на долгосрочную зависимость доходов нефтяных компаний от цен на нефть; рост цен на нефть увеличивает выручку и прибыль, что позитивно для акций нефтегазового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Фрагмент 'Lukoil 0, p.32'",
+    "confidence": 0.5,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2023_brent_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление курса рубля (как в 2022 году, когда курс достигал 120 руб./долл.) приводит к ажиотажному спросу и росту инфляции, что временно увеличивает комиссионные доходы банков от конверсионных операций и торговли валютой, поддерживая их прибыль.",
+    "source_company": "gazprom",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Фрагмент 'Sberbank 2022, p.20'",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2023_moexfn_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году для борьбы с инфляцией 7,4% оказывает давление на чистую процентную маржу банков (как показано в отчёте Сбера за 2022 год: рост стоимости привлечённых средств снижает NIM), что ведёт к снижению прибыли и падению акций финансового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Отчёт менеджмента Сбера 2023, стр. 96; Отчёт Сбера 2022, стр. 64; Фрагмент '? 2023, p.10'",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2023_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9,5% г/г в 2024 году (с 7,4% в 2023) и ужесточение денежно-кредитной политики ЦБ (повышение ставки) сжимают кредитование и ухудшают потребительские настроения, что негативно сказывается на доходах банков и их акциях.",
+    "source_company": "gazprom",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Фрагмент 'Sberbank 2024, p.19'; Фрагмент '? 2023, p.10'",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2023_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  }
+]

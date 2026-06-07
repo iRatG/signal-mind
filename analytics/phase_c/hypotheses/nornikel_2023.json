@@ -1,0 +1,242 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году привело к росту стоимости привлеченных средств банков, что снижает чистую процентную маржу и прибыль финсектора (Sberbank 2022, p.64: маржа снизилась на 0,8-0,9 п.п. при росте стоимости средств).",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64",
+    "confidence": 0.9,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2023_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9,5% г/г в 2024 году (с 7,4% в 2023) ведёт к ужесточению ДКП, что сжимает кредитование и ухудшает потребительские настроения, негативно влияя на доходы банков (Sberbank 2022, p.20).",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2023_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Рост ключевой ставки в 2023 году привёл к увеличению доходности работающих активов банков, что повысило чистую процентную маржу Сбера с 5,3% до 5,98% и чистую прибыль в 5,2 раза (Sberbank 2023, p.96).",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.9,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2023_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Снижение объёмов реализации газа на 6,4% и нефти из-за снижения трейдинга (Lukoil 2022, p.16) указывает на негативное влияние падения цен/спроса на нефть на выручку нефтегазового сектора.",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Lukoil 2022, p.16",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2023_moexog_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Волатильность курсов валют оказывает влияние на результаты деятельности Газпрома (Gazprom 0, p.204), а ослабление рубля в 2022 году привело к резкому росту инфляции и неопределённости, что негативно для экспортёров с рублёвыми затратами.",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Gazprom 0, p.204",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2023_moexog_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "GOLD",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Рост инфляции до 9,5% в 2024 году и неопределённость стимулируют спрос на золото как защитный актив, что поддерживает цены на золото и акции золотодобытчиков (RUGOLD).",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2023_gold_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "sanctions",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ужесточение санкционного режима и снижение экспорта в четвёртом квартале 2024 года (Sberbank 2024, p.19) ослабляют рубль, что ведёт к росту курса USD_RUB.",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2023_usd_rub_sanctions_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году привело к росту стоимости привлеченных средств банков, что снижает чистую процентную маржу и прибыль финсектора (Sberbank 2022, p.64: маржа снизилась на 0,8-0,9 п.п. при росте стоимости средств).",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64",
+    "confidence": 0.9,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "nornikel_2023_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9,5% г/г в 2024 году (с 7,4% в 2023) ведёт к ужесточению ДКП, что сжимает кредитование и ухудшает потребительские настроения, негативно влияя на доходы банков (Sberbank 2022, p.20).",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "nornikel_2023_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Рост ключевой ставки в 2023 году привёл к увеличению доходности работающих активов банков, что повысило чистую процентную маржу Сбера с 5,3% до 5,98% и чистую прибыль в 5,2 раза (Sberbank 2023, p.96).",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.9,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "nornikel_2023_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Волатильность курсов валют оказывает влияние на результаты деятельности Газпрома (Gazprom 0, p.204), а ослабление рубля в 2022 году привело к резкому росту инфляции и неопределённости, что негативно для экспортёров с рублёвыми затратами.",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Gazprom 0, p.204",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "nornikel_2023_moexog_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "sanctions",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ужесточение санкционного режима и снижение экспорта в четвёртом квартале 2024 года (Sberbank 2024, p.19) ослабляют рубль, что ведёт к росту курса USD_RUB.",
+    "source_company": "nornikel",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "nornikel_2023_usd_rub_sanctions_emb",
+    "tested": false,
+    "results": []
+  }
+]

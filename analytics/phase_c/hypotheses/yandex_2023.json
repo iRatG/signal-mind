@@ -1,0 +1,302 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9.5% г/г в 2024 году (ускорение с 7.4% в 2023) и ужесточение ДКП (ключевая ставка повышена с 7.5% до 16%) оказывают давление на потребительский спрос и кредитование, что снижает прибыль банков и ведет к падению акций финсектора.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19 | ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2023_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% за полгода (июль-декабрь 2023) увеличивает стоимость фондирования банков, снижает чистую процентную маржу и прибыль, что негативно для акций финансового сектора.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2023_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Снижение ключевой ставки в будущем (после 2026 года) снизит стоимость фондирования и улучшит чистую процентную маржу банков, что позитивно для акций финсектора.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2025, p.14",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2023_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Высокая инфляция (9.5% в 2024) и ужесточение ДКП (ставка до 16%) сжимают потребительский спрос и инвестиции, что давит на корпоративные прибыли и широкий рынок.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19 | ? 2023, p.10",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2023_imoex_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки до 16% увеличивает стоимость заимствований для компаний, снижает инвестиционную активность и давит на корпоративные прибыли, что негативно для широкого рынка.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2023_imoex_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляционный рост расходов (+281 млн долл. США) и ослабление рубля (-351 млн долл. США) увеличивают операционные затраты компаний, что снижает их прибыль и негативно для акций финсектора через ухудшение кредитного качества.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Nornikel 2024, p.10",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2023_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля (до 120.3785 за доллар) увеличивает издержки компаний-импортеров и долговую нагрузку в валюте, что негативно для широкого рынка.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Yandex 2021, p.7",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2023_imoex_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление рубля увеличивает инфляционное давление и вынуждает ЦБ повышать ставку, что ухудшает чистую процентную маржу банков и давит на их акции.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2023_moexfn_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9.5% г/г в 2024 году (ускорение с 7.4% в 2023) и ужесточение ДКП (ключевая ставка повышена с 7.5% до 16%) оказывают давление на потребительский спрос и кредитование, что снижает прибыль банков и ведет к падению акций финсектора.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19 | ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2023_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% за полгода (июль-декабрь 2023) увеличивает стоимость фондирования банков, снижает чистую процентную маржу и прибыль, что негативно для акций финансового сектора.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2023_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Высокая инфляция (9.5% в 2024) и ужесточение ДКП (ставка до 16%) сжимают потребительский спрос и инвестиции, что давит на корпоративные прибыли и широкий рынок.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19 | ? 2023, p.10",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2023_imoex_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки до 16% увеличивает стоимость заимствований для компаний, снижает инвестиционную активность и давит на корпоративные прибыли, что негативно для широкого рынка.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2023_imoex_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляционный рост расходов (+281 млн долл. США) и ослабление рубля (-351 млн долл. США) увеличивают операционные затраты компаний, что снижает их прибыль и негативно для акций финсектора через ухудшение кредитного качества.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Nornikel 2024, p.10",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2023_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля (до 120.3785 за доллар) увеличивает издержки компаний-импортеров и долговую нагрузку в валюте, что негативно для широкого рынка.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Yandex 2021, p.7",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2023_imoex_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление рубля увеличивает инфляционное давление и вынуждает ЦБ повышать ставку, что ухудшает чистую процентную маржу банков и давит на их акции.",
+    "source_company": "yandex",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2023_moexfn_ruble_emb",
+    "tested": false,
+    "results": []
+  }
+]

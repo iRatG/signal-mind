@@ -1,0 +1,322 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9.5% г/г в 2024 году и ужесточение ДКП (ключевая ставка повышена с 7.5% до 16%) → рост стоимости фондирования → снижение чистой процентной маржи банков → падение акций финсектора",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2024_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% за полгода → рост стоимости привлеченных средств (с 3.1% до 5.4%) → снижение чистой процентной маржи (с 5.4% до 5.3%) → давление на прибыль банков",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.9,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2024_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Снижение стоимости заемных средств в 2023 году → рост чистой процентной маржи с 5.32% до 5.98% → увеличение чистой прибыли банков в 5.2 раза",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2024_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "BRENT",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Балансирующая цена на нефть в реальном выражении на 2030 год в диапазоне 40-50 долл./барр. указывает на долгосрочную зависимость доходов нефтяных компаний от цен на нефть",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.32",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2024_brent_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Рост экспорта нефти из России на 14.1% в 2022 году привел к увеличению объемов реализации, что положительно влияет на выручку нефтяных компаний",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.16",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2024_moexog_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля в апреле 2022 года привело к резкому росту инфляции до 17.8%, что негативно сказывается на рублевых активах",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2024_usd_rub_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляционный рост расходов Норникеля составил +281 млн долл. США в 2024 году, что снижает рентабельность и прибыль компаний",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Nornikel 2024, p.10",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2024_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Снижение курса рубля привело к эффекту -351 млн долл. США для Норникеля (снижение затрат в долларовом выражении), что положительно для экспортеров",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Nornikel 2024, p.10",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "lukoil_2024_usd_rub_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9.5% г/г в 2024 году и ужесточение ДКП (ключевая ставка повышена с 7.5% до 16%) → рост стоимости фондирования → снижение чистой процентной маржи банков → падение акций финсектора",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2024_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% за полгода → рост стоимости привлеченных средств (с 3.1% до 5.4%) → снижение чистой процентной маржи (с 5.4% до 5.3%) → давление на прибыль банков",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.9,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2024_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Снижение стоимости заемных средств в 2023 году → рост чистой процентной маржи с 5.32% до 5.98% → увеличение чистой прибыли банков в 5.2 раза",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2024_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "BRENT",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Балансирующая цена на нефть в реальном выражении на 2030 год в диапазоне 40-50 долл./барр. указывает на долгосрочную зависимость доходов нефтяных компаний от цен на нефть",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.32",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2024_brent_oil_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Рост экспорта нефти из России на 14.1% в 2022 году привел к увеличению объемов реализации, что положительно влияет на выручку нефтяных компаний",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.16",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2024_moexog_oil_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля в апреле 2022 года привело к резкому росту инфляции до 17.8%, что негативно сказывается на рублевых активах",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2024_usd_rub_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляционный рост расходов Норникеля составил +281 млн долл. США в 2024 году, что снижает рентабельность и прибыль компаний",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Nornikel 2024, p.10",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2024_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Снижение курса рубля привело к эффекту -351 млн долл. США для Норникеля (снижение затрат в долларовом выражении), что положительно для экспортеров",
+    "source_company": "lukoil",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Nornikel 2024, p.10",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "lukoil_2024_usd_rub_ruble_emb",
+    "tested": false,
+    "results": []
+  }
+]

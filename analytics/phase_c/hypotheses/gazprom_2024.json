@@ -1,0 +1,222 @@
+[
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля (как в 2022 году) приводит к ажиотажному спросу и росту инфляции, что негативно сказывается на внутреннем спросе и операционных расходах компаний нефтегазового сектора, снижая их прибыль и рыночную капитализацию.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2024_moexog_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции (с 7,4% в 2023 до 9,5% в 2024) ведет к ужесточению денежно-кредитной политики (повышение ключевой ставки), что увеличивает стоимость заемных средств для нефтегазовых компаний, снижая их инвестиционную активность и прибыль.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2024_moexog_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки (с 7,5% до 16% в 2023 году) увеличивает стоимость финансирования для нефтегазовых компаний, снижая их чистую прибыль и привлекательность акций.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2024_moexog_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "BRENT",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Балансирующая цена на нефть в реальном выражении для разных сценариев спроса по состоянию на 2030 год находится в диапазоне от 40 до 50 долл./барр., что указывает на долгосрочную поддержку цен на нефть при росте спроса.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.32",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2024_brent_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Волатильность курсов валют оказывает влияние на результаты деятельности ПАО «Газпром»: ослабление рубля увеличивает рублевый эквивалент долларовых расходов и снижает чистую прибыль, что давит на котировки акций.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Gazprom 0, p.204",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2024_moexog_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляционный рост расходов (например, +281 млн долл. США у Норникеля) увеличивает операционные затраты нефтегазовых компаний, снижая их маржинальность и прибыль, что негативно отражается на цене акций.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Nornikel 2024, p.10",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2024_moexog_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля (как в 2022 году) приводит к ажиотажному спросу и росту инфляции, что негативно сказывается на внутреннем спросе и операционных расходах компаний нефтегазового сектора, снижая их прибыль и рыночную капитализацию.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2024_moexog_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции (с 7,4% в 2023 до 9,5% в 2024) ведет к ужесточению денежно-кредитной политики (повышение ключевой ставки), что увеличивает стоимость заемных средств для нефтегазовых компаний, снижая их инвестиционную активность и прибыль.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2024_moexog_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки (с 7,5% до 16% в 2023 году) увеличивает стоимость финансирования для нефтегазовых компаний, снижая их чистую прибыль и привлекательность акций.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2024_moexog_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Волатильность курсов валют оказывает влияние на результаты деятельности ПАО «Газпром»: ослабление рубля увеличивает рублевый эквивалент долларовых расходов и снижает чистую прибыль, что давит на котировки акций.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Gazprom 0, p.204",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2024_moexog_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляционный рост расходов (например, +281 млн долл. США у Норникеля) увеличивает операционные затраты нефтегазовых компаний, снижая их маржинальность и прибыль, что негативно отражается на цене акций.",
+    "source_company": "gazprom",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Nornikel 2024, p.10",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2024_moexog_inflation_emb",
+    "tested": false,
+    "results": []
+  }
+]

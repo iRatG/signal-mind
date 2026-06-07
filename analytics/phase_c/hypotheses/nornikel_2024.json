@@ -1,0 +1,142 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году привело к росту стоимости привлеченных средств банков, что снижает чистую процентную маржу и прибыль финансового сектора (Sberbank 2022, p.64: маржа снизилась на 0,8-0,9 п.п. при росте стоимости средств).",
+    "source_company": "nornikel",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2024_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9,5% в 2024 году (с 7,4% в 2023) вынуждает ЦБ повышать ставку, что увеличивает стоимость фондирования банков и снижает их чистую процентную маржу, негативно влияя на акции финсектора.",
+    "source_company": "nornikel",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2024_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "В 2023 году снижение стоимости заемных средств на фоне стабилизации ставок привело к росту чистой процентной маржи Сбера на 0,66 п.п. (до 5,98%), что положительно для акций банков.",
+    "source_company": "nornikel",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2024_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "GOLD",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Рост инфляции в России до 9,5% в 2024 году повышает спрос на золото как защитный актив, что поддерживает цены на золото и акции золотодобытчиков.",
+    "source_company": "nornikel",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "nornikel_2024_gold_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году привело к росту стоимости привлеченных средств банков, что снижает чистую процентную маржу и прибыль финансового сектора (Sberbank 2022, p.64: маржа снизилась на 0,8-0,9 п.п. при росте стоимости средств).",
+    "source_company": "nornikel",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "nornikel_2024_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9,5% в 2024 году (с 7,4% в 2023) вынуждает ЦБ повышать ставку, что увеличивает стоимость фондирования банков и снижает их чистую процентную маржу, негативно влияя на акции финсектора.",
+    "source_company": "nornikel",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "nornikel_2024_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "В 2023 году снижение стоимости заемных средств на фоне стабилизации ставок привело к росту чистой процентной маржи Сбера на 0,66 п.п. (до 5,98%), что положительно для акций банков.",
+    "source_company": "nornikel",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "nornikel_2024_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  }
+]

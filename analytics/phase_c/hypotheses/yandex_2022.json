@@ -1,0 +1,262 @@
+[
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Ускорение инфляции с 7,4% до 9,5% г/г в 2024 году и ужесточение ДКП (ключевая ставка повышена с 7,5% до 16%) оказывают давление на потребительский спрос и деловую активность, что негативно для широкого рынка.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19 | ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2022_imoex_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост ключевой ставки с 7,5% до 16% в 2023 году привел к увеличению стоимости привлеченных средств банков (с 3,1% до 5,4%), что снизило чистую процентную маржу Сбера на 0,1 п.п. в 2022 году. Дальнейшее повышение ставки давит на NIM банков и их прибыль.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64 | ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2022_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "В 2023 году чистая процентная маржа Сбера выросла на 0,66 п.п. до 5,98% благодаря росту доходности работающих активов на фоне снижения стоимости заемных средств. Снижение ставки или стабилизация на высоком уровне может улучшить NIM.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2022_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля в 2022 году (до 120.3785 руб./долл.) привело к резкому росту инфляции до 17,8% в апреле 2022 года. Укрепление рубля затем способствовало замедлению инфляции. Волатильность рубля напрямую влияет на инфляционные ожидания и потребительские цены.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20 | Yandex 2021, p.7",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2022_usd_rub_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "BRENT",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Лукойл прогнозирует балансирующую цену на нефть в диапазоне 40-50 долл./барр. к 2030 году. Рост цен на нефть выше этого диапазона увеличивает выручку и прибыль нефтяных компаний, что позитивно для их акций.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.32",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2022_brent_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "sanctions",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Ужесточение санкционного режима и снижение экспорта в четвертом квартале 2024 года негативно влияют на экономическую активность и деловой климат в России, что давит на широкий рынок.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2022_imoex_sanctions_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году привело к сжатию кредитования и ухудшению потребительских настроений, что негативно для экономического роста и фондового рынка в целом.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20 | ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2022_imoex_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Ускорение инфляции с 7,4% до 9,5% г/г в 2024 году и ужесточение ДКП (ключевая ставка повышена с 7,5% до 16%) оказывают давление на потребительский спрос и деловую активность, что негативно для широкого рынка.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19 | ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2022_imoex_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост ключевой ставки с 7,5% до 16% в 2023 году привел к увеличению стоимости привлеченных средств банков (с 3,1% до 5,4%), что снизило чистую процентную маржу Сбера на 0,1 п.п. в 2022 году. Дальнейшее повышение ставки давит на NIM банков и их прибыль.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64 | ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2022_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "В 2023 году чистая процентная маржа Сбера выросла на 0,66 п.п. до 5,98% благодаря росту доходности работающих активов на фоне снижения стоимости заемных средств. Снижение ставки или стабилизация на высоком уровне может улучшить NIM.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2022_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля в 2022 году (до 120.3785 руб./долл.) привело к резкому росту инфляции до 17,8% в апреле 2022 года. Укрепление рубля затем способствовало замедлению инфляции. Волатильность рубля напрямую влияет на инфляционные ожидания и потребительские цены.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20 | Yandex 2021, p.7",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2022_usd_rub_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "sanctions",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Ужесточение санкционного режима и снижение экспорта в четвертом квартале 2024 года негативно влияют на экономическую активность и деловой климат в России, что давит на широкий рынок.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2022_imoex_sanctions_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7,5% до 16% в 2023 году привело к сжатию кредитования и ухудшению потребительских настроений, что негативно для экономического роста и фондового рынка в целом.",
+    "source_company": "yandex",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20 | ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2022_imoex_rate_emb",
+    "tested": false,
+    "results": []
+  }
+]

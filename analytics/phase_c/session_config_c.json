@@ -1,0 +1,90 @@
+{
+  "session_count": 109,
+  "company_scores": {
+    "ouroboros_v5": {
+      "signals": 1,
+      "val_pass": 0
+    },
+    "ouroboros_v29": {
+      "signals": 1,
+      "val_pass": 0
+    }
+  },
+  "topic_scores": {
+    "inflation": {
+      "signals": 1,
+      "val_pass": 1
+    },
+    "ruble": {
+      "signals": 1,
+      "val_pass": 0
+    }
+  },
+  "best_pairs": [
+    {
+      "instrument": "MOEXFN",
+      "topic": "rate",
+      "lag": 7,
+      "ic": 0.099938,
+      "source": "gazprom/2021/p.0",
+      "sessions": 30
+    },
+    {
+      "instrument": "DJ_SOUTH_AFRICA",
+      "topic": "gold",
+      "lag": 14,
+      "ic": 0.094641,
+      "source": "ouroboros_v29/0/p.0",
+      "sessions": 4
+    },
+    {
+      "instrument": "DJ_SOUTH_AFRICA",
+      "topic": "inflation",
+      "lag": 21,
+      "ic": 0.136713,
+      "source": "ouroboros_v1/0/p.0",
+      "sessions": 4
+    },
+    {
+      "instrument": "DJ_SOUTH_AFRICA",
+      "topic": "gold",
+      "lag": 21,
+      "ic": 0.095625,
+      "source": "ouroboros_v1/0/p.0",
+      "sessions": 4
+    },
+    {
+      "instrument": "DXY",
+      "topic": "oil",
+      "lag": 7,
+      "ic": 0.168545,
+      "source": "ouroboros_v17/0/p.0",
+      "sessions": 4
+    },
+    {
+      "instrument": "USD_RUB",
+      "topic": "gold",
+      "lag": 21,
+      "ic": 0.140739,
+      "source": "ouroboros_v21/0/p.0",
+      "sessions": 4
+    },
+    {
+      "instrument": "DXY",
+      "topic": "sanctions",
+      "lag": 14,
+      "ic": 0.143691,
+      "source": "systematic_v1/0/p.0",
+      "sessions": 2
+    }
+  ],
+  "skip_companies": [],
+  "preferred_years": [],
+  "notes": [
+    "Phase C started 2026-06-02",
+    "RAG sources: sberbank/lukoil/gazprom/yandex/nornikel (15574 chunks) + CBR (1918 chunks)",
+    "Methodology: keyword_z90 primary, embedding_z90 for confidence>=0.7",
+    "Validation: M5 (Mann-Whitney) AND M6 (LightGBM walk-forward)",
+    "Splits: Train 2022-2023 / Val 2024-2025 / Test 2025-2026 (frozen)"
+  ]
+}

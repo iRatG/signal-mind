@@ -1,0 +1,222 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9.5% г/г в 2024 году и ужесточение ДКП (повышение ключевой ставки с 7.5% до 16%) оказывают давление на потребительский спрос и кредитование, что снижает прибыль банков и ведет к падению акций финансового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2020_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки Банком России (с 7.5% до 16% за полгода) увеличивает стоимость фондирования банков, снижает чистую процентную маржу (NIM) и сжимает кредитование, что негативно для акций финансового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.9,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2020_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля в 2022 году привело к ажиотажному спросу и резкому росту инфляции (до 17.8% в апреле 2022), что ухудшило потребительские настроения и сжало кредитование, негативно влияя на прибыль банков.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2020_moexfn_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Балансирующая цена на нефть в реальном выражении на 2030 год в диапазоне 40-50 долл./барр. указывает на долгосрочную зависимость доходов нефтегазовых компаний от цен на нефть. Рост цен на нефть увеличивает выручку и прибыль, что позитивно для акций нефтегазового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.32",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2020_moexog_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление курса рубля увеличивает рублевую выручку экспортеров (нефть и газ), что позитивно для их финансовых результатов и акций нефтегазового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Gazprom 0, p.204",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2020_moexog_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "BRENT",
+    "topic": "sanctions",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ужесточение санкционного режима и снижение экспорта в четвертом квартале 2024 года оказывают давление на цены на нефть из-за сокращения спроса или ограничения предложения со стороны России.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.65,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "gazprom_2020_brent_sanctions_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9.5% г/г в 2024 году и ужесточение ДКП (повышение ключевой ставки с 7.5% до 16%) оказывают давление на потребительский спрос и кредитование, что снижает прибыль банков и ведет к падению акций финансового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2020_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки Банком России (с 7.5% до 16% за полгода) увеличивает стоимость фондирования банков, снижает чистую процентную маржу (NIM) и сжимает кредитование, что негативно для акций финансового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.9,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2020_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Ослабление курса рубля в 2022 году привело к ажиотажному спросу и резкому росту инфляции (до 17.8% в апреле 2022), что ухудшило потребительские настроения и сжало кредитование, негативно влияя на прибыль банков.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2020_moexfn_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Балансирующая цена на нефть в реальном выражении на 2030 год в диапазоне 40-50 долл./барр. указывает на долгосрочную зависимость доходов нефтегазовых компаний от цен на нефть. Рост цен на нефть увеличивает выручку и прибыль, что позитивно для акций нефтегазового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.32",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2020_moexog_oil_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXOG",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление курса рубля увеличивает рублевую выручку экспортеров (нефть и газ), что позитивно для их финансовых результатов и акций нефтегазового сектора.",
+    "source_company": "gazprom",
+    "source_year": 2020,
+    "source_page": 0,
+    "source_section": "Gazprom 0, p.204",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "gazprom_2020_moexog_ruble_emb",
+    "tested": false,
+    "results": []
+  }
+]

@@ -1,0 +1,322 @@
+[
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9.5% г/г в 2024 году и ужесточение ДКП (повышение ключевой ставки с 7.5% до 16%) оказывают давление на потребительский спрос и стоимость заимствований, что негативно для широкого рынка акций.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2021_imoex_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки увеличивает стоимость привлеченных средств банков (с 3.1% до 5.4%), что снижает чистую процентную маржу (с 5.4% до 5.3%) и давит на прибыль финансового сектора.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2021_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Снижение стоимости заемных средств в 2023 году привело к росту чистой процентной маржи Сбера на 0.66 п.п. до 5.98%, что позитивно для акций финансового сектора.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2021_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление курса рубля в 2022 году привело к ажиотажному спросу и росту инфляции до 17.8% в апреле, что усилило волатильность на финансовых рынках и повлияло на курс.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2021_usd_rub_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление рубля в 2022 году поддержало экспортные отрасли и инвестиции, но также привело к росту инфляции и сжатию кредитования, что оказывает смешанное, но в целом негативное влияние на широкий рынок.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2021_imoex_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "BRENT",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Снижение объемов реализации газа на 6.4% и нефти в 2022 году, а также снижение EBITDA сегмента переработки на 34.5% в 2020 году указывают на чувствительность нефтегазового сектора к ценам на нефть.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.16; Lukoil 0, p.216",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2021_brent_oil_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "sanctions",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ужесточение санкционного режима и снижение экспорта в четвертом квартале 2024 года оказывают давление на рубль, вызывая его ослабление.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2021_usd_rub_sanctions_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "sanctions",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Санкции и снижение экспорта в 2024 году негативно влияют на деловую активность и экономический рост, что давит на фондовый рынок.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2021_imoex_sanctions_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "RUGOLD",
+    "topic": "gold",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Инфляционный рост расходов и ослабление рубля в 2024 году увеличивают себестоимость и выручку золотодобывающих компаний, что может поддерживать цены на золото на MOEX.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Nornikel 2024, p.10",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "yandex_2021_rugold_gold_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9.5% г/г в 2024 году и ужесточение ДКП (повышение ключевой ставки с 7.5% до 16%) оказывают давление на потребительский спрос и стоимость заимствований, что негативно для широкого рынка акций.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2021_imoex_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки увеличивает стоимость привлеченных средств банков (с 3.1% до 5.4%), что снижает чистую процентную маржу (с 5.4% до 5.3%) и давит на прибыль финансового сектора.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2021_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Снижение стоимости заемных средств в 2023 году привело к росту чистой процентной маржи Сбера на 0.66 п.п. до 5.98%, что позитивно для акций финансового сектора.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2021_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление курса рубля в 2022 году привело к ажиотажному спросу и росту инфляции до 17.8% в апреле, что усилило волатильность на финансовых рынках и повлияло на курс.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2021_usd_rub_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "BRENT",
+    "topic": "oil",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Снижение объемов реализации газа на 6.4% и нефти в 2022 году, а также снижение EBITDA сегмента переработки на 34.5% в 2020 году указывают на чувствительность нефтегазового сектора к ценам на нефть.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Lukoil 0, p.16; Lukoil 0, p.216",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2021_brent_oil_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "USD_RUB",
+    "topic": "sanctions",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ужесточение санкционного режима и снижение экспорта в четвертом квартале 2024 года оказывают давление на рубль, вызывая его ослабление.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2021_usd_rub_sanctions_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "sanctions",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Санкции и снижение экспорта в 2024 году негативно влияют на деловую активность и экономический рост, что давит на фондовый рынок.",
+    "source_company": "yandex",
+    "source_year": 2021,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "yandex_2021_imoex_sanctions_emb",
+    "tested": false,
+    "results": []
+  }
+]

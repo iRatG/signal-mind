@@ -1,0 +1,222 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9.5% г/г в 2024 году ускорилась с 7.4% г/г в 2023 году, что привело к ужесточению ДКП и росту ключевой ставки, что давит на чистую процентную маржу банков и снижает их прибыль.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2023_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% в 2023 году увеличивает стоимость привлеченных средств банков, снижая чистую процентную маржу и прибыль, что негативно для акций финансового сектора.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.9,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2023_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "positive",
+    "rationale": "Снижение ключевой ставки в будущем (после 2026 года) позволит смягчить денежно-кредитную политику, снизить стоимость фондирования банков и улучшить их чистую процентную маржу, что позитивно для акций финансового сектора.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2025, p.14",
+    "confidence": 0.6,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2023_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 11.9% в декабре 2022 года после пика 17.8% в апреле 2022 года привела к сжатию кредитования и ухудшению потребительских настроений, что снижает доходы банков от розничного кредитования.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2023_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% в 2023 году ужесточает денежно-кредитные условия, снижая деловую активность и инвестиции, что негативно для широкого рынка акций.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2023_imoex_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Ускорение инфляции до 9.5% в 2024 году с 7.4% в 2023 году ведет к ужесточению ДКП и снижению реальных доходов населения, что негативно для потребительского спроса и корпоративных прибылей, давя на рынок в целом.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2023_imoex_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9.5% г/г в 2024 году ускорилась с 7.4% г/г в 2023 году, что привело к ужесточению ДКП и росту ключевой ставки, что давит на чистую процентную маржу банков и снижает их прибыль.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2023_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% в 2023 году увеличивает стоимость привлеченных средств банков, снижая чистую процентную маржу и прибыль, что негативно для акций финансового сектора.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.9,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2023_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 11.9% в декабре 2022 года после пика 17.8% в апреле 2022 года привела к сжатию кредитования и ухудшению потребительских настроений, что снижает доходы банков от розничного кредитования.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2023_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% в 2023 году ужесточает денежно-кредитные условия, снижая деловую активность и инвестиции, что негативно для широкого рынка акций.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2023_imoex_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Ускорение инфляции до 9.5% в 2024 году с 7.4% в 2023 году ведет к ужесточению ДКП и снижению реальных доходов населения, что негативно для потребительского спроса и корпоративных прибылей, давя на рынок в целом.",
+    "source_company": "sberbank",
+    "source_year": 2023,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2023_imoex_inflation_emb",
+    "tested": false,
+    "results": []
+  }
+]

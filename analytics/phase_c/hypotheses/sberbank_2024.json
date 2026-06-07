@@ -1,0 +1,202 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9.5% г/г в 2024 году (ускорение с 7.4% в 2023) → Банк России ужесточает ДКП → рост ставок → давление на чистую процентную маржу банков → снижение прибыли → падение акций финсектора",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2024_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% в 2023 году → рост стоимости привлеченных средств → снижение чистой процентной маржи банков (как показано в 2022 году: маржа снизилась на 0.1 п.п. при росте стоимости средств) → падение акций финсектора",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2024_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Снижение стоимости заемных средств в 2023 году → рост чистой процентной маржи на 0.66 п.п. до 5.98% → рост прибыли банков → рост акций финсектора",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2024_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Высокая инфляция (9.5% в 2024) → ужесточение ДКП → рост ставок → замедление экономики и кредитования → снижение корпоративных прибылей → падение широкого рынка",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2024_imoex_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление рубля в 2022 году → ажиотажный спрос и рост цен → увеличение комиссионных доходов банков (рост на 15.4% г/г в 2022) → рост прибыли → рост акций финсектора",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.14; Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2024_moexfn_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Инфляция 9.5% г/г в 2024 году (ускорение с 7.4% в 2023) → Банк России ужесточает ДКП → рост ставок → давление на чистую процентную маржу банков → снижение прибыли → падение акций финсектора",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2024_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки с 7.5% до 16% в 2023 году → рост стоимости привлеченных средств → снижение чистой процентной маржи банков (как показано в 2022 году: маржа снизилась на 0.1 п.п. при росте стоимости средств) → падение акций финсектора",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2024_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Снижение стоимости заемных средств в 2023 году → рост чистой процентной маржи на 0.66 п.п. до 5.98% → рост прибыли банков → рост акций финсектора",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2023, p.96",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2024_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Высокая инфляция (9.5% в 2024) → ужесточение ДКП → рост ставок → замедление экономики и кредитования → снижение корпоративных прибылей → падение широкого рынка",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2024_imoex_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление рубля в 2022 году → ажиотажный спрос и рост цен → увеличение комиссионных доходов банков (рост на 15.4% г/г в 2022) → рост прибыли → рост акций финсектора",
+    "source_company": "sberbank",
+    "source_year": 2024,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.14; Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2024_moexfn_ruble_emb",
+    "tested": false,
+    "results": []
+  }
+]

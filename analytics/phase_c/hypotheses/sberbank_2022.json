@@ -1,0 +1,202 @@
+[
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9.5% г/г в 2024 году и ужесточение ДКП Банка России (повышение ключевой ставки с 7.5% до 16% в 2023 году) оказывают давление на чистую процентную маржу банков (снижение NIM на 0.1 п.п. в 2022 году из-за роста стоимости привлеченных средств), что ведет к снижению прибыли и падению акций финсектора.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2022_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки ЦБ РФ (с 7.5% до 16% в 2023 году) увеличивает стоимость привлеченных средств банков (стоимость средств юрлиц и физлиц выросла, снизив чистую процентную маржу на 0.8 и 0.9 п.п. соответственно в 2022 году), что снижает чистую процентную маржу и прибыль, негативно влияя на акции финансового сектора.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.9,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2022_moexfn_rate_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление курса рубля в апреле 2022 года привело к ажиотажному спросу и росту инфляции до 17.8%, но последующее укрепление рубля способствовало замедлению инфляции до 11.9% к декабрю 2022 года. Укрепление рубля снижает инфляционное давление и стоимость фондирования для банков, что позитивно для их маржи и акций.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2022_moexfn_ruble_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Высокая инфляция (9.5% в 2024 году) и ужесточение денежно-кредитной политики (повышение ставки до 16%) сжимают потребительский спрос и кредитование, что негативно сказывается на деловой активности и прибылях компаний широкого рынка, снижая индекс IMOEX.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2022_imoex_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции в 2022 году (до 17.8% в апреле) и последующее ужесточение ДКП привели к сжатию кредитования и ухудшению потребительских настроений, что снижает кредитную активность и прибыль банков, негативно влияя на акции финсектора.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.75,
+    "feature_type": "keyword_z90",
+    "hypothesis_id": "sberbank_2022_moexfn_inflation_kw",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции до 9.5% г/г в 2024 году и ужесточение ДКП Банка России (повышение ключевой ставки с 7.5% до 16% в 2023 году) оказывают давление на чистую процентную маржу банков (снижение NIM на 0.1 п.п. в 2022 году из-за роста стоимости привлеченных средств), что ведет к снижению прибыли и падению акций финсектора.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.85,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2022_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "rate",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Повышение ключевой ставки ЦБ РФ (с 7.5% до 16% в 2023 году) увеличивает стоимость привлеченных средств банков (стоимость средств юрлиц и физлиц выросла, снизив чистую процентную маржу на 0.8 и 0.9 п.п. соответственно в 2022 году), что снижает чистую процентную маржу и прибыль, негативно влияя на акции финансового сектора.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.64; ? 2023, p.10",
+    "confidence": 0.9,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2022_moexfn_rate_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "ruble",
+    "lag_days": [
+      7,
+      14,
+      30
+    ],
+    "direction": "positive",
+    "rationale": "Ослабление курса рубля в апреле 2022 года привело к ажиотажному спросу и росту инфляции до 17.8%, но последующее укрепление рубля способствовало замедлению инфляции до 11.9% к декабрю 2022 года. Укрепление рубля снижает инфляционное давление и стоимость фондирования для банков, что позитивно для их маржи и акций.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.7,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2022_moexfn_ruble_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "IMOEX",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Высокая инфляция (9.5% в 2024 году) и ужесточение денежно-кредитной политики (повышение ставки до 16%) сжимают потребительский спрос и кредитование, что негативно сказывается на деловой активности и прибылях компаний широкого рынка, снижая индекс IMOEX.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2024, p.19; ? 2023, p.10",
+    "confidence": 0.8,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2022_imoex_inflation_emb",
+    "tested": false,
+    "results": []
+  },
+  {
+    "instrument": "MOEXFN",
+    "topic": "inflation",
+    "lag_days": [
+      30,
+      60,
+      90
+    ],
+    "direction": "negative",
+    "rationale": "Рост инфляции в 2022 году (до 17.8% в апреле) и последующее ужесточение ДКП привели к сжатию кредитования и ухудшению потребительских настроений, что снижает кредитную активность и прибыль банков, негативно влияя на акции финсектора.",
+    "source_company": "sberbank",
+    "source_year": 2022,
+    "source_page": 0,
+    "source_section": "Sberbank 2022, p.20",
+    "confidence": 0.75,
+    "feature_type": "embedding_z90",
+    "hypothesis_id": "sberbank_2022_moexfn_inflation_emb",
+    "tested": false,
+    "results": []
+  }
+]
