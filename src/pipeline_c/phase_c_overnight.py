@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
 import sys
 import time
 from datetime import datetime, timezone, timedelta
@@ -55,11 +56,48 @@ REPORT_DIR = OUT_DIR / "reports"
 REPORT_DIR.mkdir(exist_ok=True)
 HYPS_DIR   = OUT_DIR / "hypotheses"
 HYPS_DIR.mkdir(exist_ok=True)
+LOCK_FILE  = OUT_DIR / ".phase_c_lock"
 
 SLEEP_BETWEEN_ITERATIONS = 15 * 60   # 15 минут
 DEFAULT_STOP_HOUR = 5
 DEFAULT_STOP_MIN  = 30
-MAX_FAILURES_BEFORE_SKIP = 5         # пропустить пару после N провалов (было 3, увеличено)
+MAX_FAILURES_BEFORE_SKIP = 5
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Эксклюзивный лок — только один экземпляр одновременно
+# ──────────────────────────────────────────────────────────────────────────────
+
+def _pid_alive(pid: int) -> bool:
+    """Проверяет жив ли процесс с данным PID (кросс-платформенно)."""
+    try:
+        os.kill(pid, 0)
+        return True
+    except (ProcessLookupError, OSError):
+        return False
+
+
+def _acquire_lock() -> bool:
+    """Пытается занять лок. Возвращает True если успешно."""
+    if LOCK_FILE.exists():
+        try:
+            pid = int(LOCK_FILE.read_text().strip())
+            if _pid_alive(pid):
+                return False   # другой экземпляр живёт
+        except Exception:
+            pass               # протухший лок — перезаписываем
+    LOCK_FILE.write_text(str(os.getpid()))
+    return True
+
+
+def _release_lock() -> None:
+    try:
+        if LOCK_FILE.exists():
+            pid = int(LOCK_FILE.read_text().strip())
+            if pid == os.getpid():   # освобождаем только свой лок
+                LOCK_FILE.unlink()
+    except Exception:
+        pass
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -696,11 +734,27 @@ def main() -> None:
 
     stop_at = _stop_time_today()
 
+    # ── Эксклюзивный лок — один экземпляр одновременно ────────────────────
+    if not _acquire_lock():
+        pid = LOCK_FILE.read_text().strip()
+        print(f"[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] "
+              f"Phase C уже запущен (PID {pid}). Выход.", flush=True)
+        return
+
+    try:
+        _run_main(args, stop_at)
+    finally:
+        _release_lock()
+
+
+def _run_main(args, stop_at: datetime) -> None:
+    """Тело основного цикла — вызывается внутри лока."""
     _log("=" * 60)
     _log("Phase C — Overnight Ouroboros Loop")
     _log(f"Stop at: {stop_at.strftime('%Y-%m-%d %H:%M UTC')}")
     _log(f"Max iterations: {args.iterations or 'unlimited'}")
     _log(f"Sleep between: {args.sleep}s ({args.sleep//60}min)")
+    _log(f"Lock: {LOCK_FILE}")
     _log("=" * 60)
 
     # ── Step 0: Extract all hypotheses (once) ──────────────────────────────
@@ -747,7 +801,7 @@ def main() -> None:
 
         # Check stop conditions
         if now >= stop_at:
-            _log(f"Stop time reached ({args.stop_at}). Exiting.")
+            _log(f"Stop time reached ({stop_at.strftime('%H:%M UTC')}). Exiting.")
             break
         if args.iterations > 0 and iterations_done >= args.iterations:
             _log(f"Max iterations ({args.iterations}) reached. Exiting.")
