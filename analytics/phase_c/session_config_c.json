@@ -1,5 +1,5 @@
 {
-  "session_count": 109,
+  "session_count": 138,
   "company_scores": {
     "ouroboros_v5": {
       "signals": 1,
@@ -13,7 +13,7 @@
   "topic_scores": {
     "inflation": {
       "signals": 1,
-      "val_pass": 1
+      "val_pass": 2
     },
     "ruble": {
       "signals": 1,
@@ -70,12 +70,12 @@
       "sessions": 4
     },
     {
-      "instrument": "DXY",
-      "topic": "sanctions",
-      "lag": 14,
-      "ic": 0.143691,
-      "source": "systematic_v1/0/p.0",
-      "sessions": 2
+      "instrument": "USD_RUB",
+      "topic": "inflation",
+      "lag": 10,
+      "ic": 0.109997,
+      "source": "ouroboros_v10/0/p.0",
+      "sessions": 4
     }
   ],
   "skip_companies": [],
