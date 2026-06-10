@@ -1,5 +1,5 @@
 {
-  "session_count": 138,
+  "session_count": 295,
   "company_scores": {
     "ouroboros_v5": {
       "signals": 1,
@@ -13,7 +13,7 @@
   "topic_scores": {
     "inflation": {
       "signals": 1,
-      "val_pass": 2
+      "val_pass": 4
     },
     "ruble": {
       "signals": 1,
@@ -75,6 +75,30 @@
       "lag": 10,
       "ic": 0.109997,
       "source": "ouroboros_v10/0/p.0",
+      "sessions": 4
+    },
+    {
+      "instrument": "MSCI_INDIA",
+      "topic": "inflation",
+      "lag": 10,
+      "ic": 0.10547,
+      "source": "ouroboros_v21/0/p.0",
+      "sessions": 4
+    },
+    {
+      "instrument": "EUR_RUB",
+      "topic": "gold",
+      "lag": 21,
+      "ic": 0.140739,
+      "source": "ouroboros_v14/0/p.0",
+      "sessions": 4
+    },
+    {
+      "instrument": "EUR_RUB",
+      "topic": "inflation",
+      "lag": 10,
+      "ic": 0.109997,
+      "source": "ouroboros_v18/0/p.0",
       "sessions": 4
     }
   ],

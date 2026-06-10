@@ -376,6 +376,30 @@ def _systematic_hypotheses(
         _add(inst, topic, neighbors, "unknown",
              f"Warming candidate {inst}/{topic}/lag={lag} (IC={warm['ic']:.3f}) — пробуем соседей")
 
+    # ── E: Exhaustive sweep — все оставшиеся комбо пространства ─────────────
+    # Когда A-D исчерпаны, покрываем весь оставшийся (instrument, topic, lag)
+    # пространств детерминированно, батчами по SWEEP_BATCH за итерацию.
+    SWEEP_BATCH = 14
+    confirmed_topics_set = {s["topic"] for s in val_confirmed}
+    confirmed_inst_set   = {s["instrument"] for s in val_confirmed}
+    all_remaining = [
+        (inst, topic, lag)
+        for inst in sorted(VALID_INSTRUMENTS)
+        for topic in ALL_TOPICS
+        for lag in ALL_LAGS
+        if (inst, topic, lag) not in tested_combos
+        and (inst, topic, lag) not in failed_triples
+        and (inst, topic, lag) not in seen_combos
+    ]
+    # Приоритет: подтверждённые темы/инструменты идут первыми
+    priority_rem = [t for t in all_remaining
+                    if t[1] in confirmed_topics_set or t[0] in confirmed_inst_set]
+    rest_rem     = [t for t in all_remaining
+                    if t[1] not in confirmed_topics_set and t[0] not in confirmed_inst_set]
+    for inst, topic, lag in (priority_rem + rest_rem)[:SWEEP_BATCH]:
+        _add(inst, topic, [lag], "unknown",
+             f"Exhaustive sweep: {inst}/{topic}/lag={lag}")
+
     return hypotheses
 
 
@@ -490,13 +514,21 @@ def _ouroboros_generate(
         "\n".join(f"  {inst}/{topic}/lag={lag}" for inst, topic, lag in blocked_sorted)
     ) if blocked_sorted else ""
 
-    # Уже протестированные (inst, topic, lag) — тоже не нужны
-    tested_sample = sorted(tested_combos)[:30]
-    tested_text = (
-        "Уже протестированы (пропустить):\n" +
-        "\n".join(f"  {inst}/{topic}/lag={lag}" for inst, topic, lag in tested_sample)
-        + (f"\n  ... и ещё {len(tested_combos)-30} комбинаций" if len(tested_combos) > 30 else "")
-    ) if tested_sample else ""
+    # Нетестированные комбо — LLM должен выбирать именно из них
+    all_untested_combos = sorted([
+        (inst, topic, lag)
+        for inst in sorted(VALID_INSTRUMENTS)
+        for topic in ALL_TOPICS
+        for lag in ALL_LAGS
+        if (inst, topic, lag) not in tested_combos
+        and (inst, topic, lag) not in failed_triples
+    ])
+    untested_sample = all_untested_combos[:40]
+    untested_text = (
+        f"НЕТЕСТИРОВАННЫЕ комбинации ({len(all_untested_combos)} осталось — выбирай из них):\n" +
+        "\n".join(f"  {inst}/{topic}/lag={lag}" for inst, topic, lag in untested_sample)
+        + (f"\n  ... и ещё {len(all_untested_combos)-40}" if len(all_untested_combos) > 40 else "")
+    ) if all_untested_combos else "Все стандартные комбинации протестированы."
 
     prompt = f"""Это итерация {iteration} цикла Signal Mind Phase C.
 
@@ -506,17 +538,16 @@ def _ouroboros_generate(
 
 {blocked_text}
 
-{tested_text}
+{untested_text}
 
-Предложи 10-14 НОВЫХ гипотез. Правила:
-1. НЕ использовать заблокированные комбинации выше
-2. НЕ повторять уже протестированные комбинации
-3. Пробовать нестандартные лаги: 2, 3, 5, 10, 21, 45 дней
-4. Исследовать новые связи: какие инструменты ещё не тестировали с рабочими темами?
-5. Рассмотреть: DJ_SOUTH_AFRICA (gold работает), RUGOLD, MOEX10, DXY, MSCI_INDIA
-6. Обоснование обязательно — экономическая логика, не перебор
+Предложи 10-14 гипотез ТОЛЬКО из нетестированных комбинаций выше. Правила:
+1. НЕ использовать заблокированные комбинации
+2. ВЫБИРАТЬ только из нетестированных комбинаций — они указаны выше
+3. Приоритет — комбинации с подтверждёнными темами: gold, inflation, rate, oil, sanctions
+4. Приоритет — подтверждённые инструменты: DXY, USD_RUB, EUR_RUB, DJ_SOUTH_AFRICA
+5. Обоснование обязательно — экономическая логика для каждой гипотезы
 
-Фокус: ищем новые (instrument, topic, lag) тройки которых ещё не было.
+Фокус: из нетестированных комбинаций выбери самые перспективные экономически.
 """
 
     try:
