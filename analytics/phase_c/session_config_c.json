@@ -1,11 +1,15 @@
 {
-  "session_count": 295,
+  "session_count": 611,
   "company_scores": {
     "ouroboros_v5": {
       "signals": 1,
       "val_pass": 0
     },
     "ouroboros_v29": {
+      "signals": 1,
+      "val_pass": 0
+    },
+    "systematic_v5": {
       "signals": 1,
       "val_pass": 0
     }
@@ -16,6 +20,10 @@
       "val_pass": 4
     },
     "ruble": {
+      "signals": 1,
+      "val_pass": 0
+    },
+    "sanctions": {
       "signals": 1,
       "val_pass": 0
     }
@@ -100,6 +108,22 @@
       "ic": 0.109997,
       "source": "ouroboros_v18/0/p.0",
       "sessions": 4
+    },
+    {
+      "instrument": "MSCI_INDIA",
+      "topic": "banking",
+      "lag": 2,
+      "ic": 0.106222,
+      "source": "systematic_v27/0/p.0",
+      "sessions": 2
+    },
+    {
+      "instrument": "SP500",
+      "topic": "banking",
+      "lag": 7,
+      "ic": 0.09669,
+      "source": "systematic_v17/0/p.0",
+      "sessions": 6
     }
   ],
   "skip_companies": [],
