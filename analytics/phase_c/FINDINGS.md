@@ -86,3 +86,12 @@
 ## Сессия C_NIGHT_18_20260609_081949 (2026-06-09)
 
 - **EUR_RUB / inflation / lag=10**  IC=0.1100  M5_p=0.0267  src=ouroboros_v18/0/p.0  rationale: Инфляция в РФ давит на рубль, ослабляя его к евро. USD_RUB/inflation/lag=10 подтверждён — EUR_RUB должен реагировать аналогично, но с возможным сдвигом из-за кросс-курса EUR/USD.
+
+## Сессия C_NIGHT_27_20260611_014129 (2026-06-11)
+
+- **MSCI_INDIA / banking / lag=2**  IC=0.1062  M5_p=0.0006  src=systematic_v27/0/p.0  rationale: Exhaustive sweep: MSCI_INDIA/banking/lag=1
+
+## Сессия C_NIGHT_17_20260611_080741 (2026-06-11)
+
+- **SP500 / banking / lag=7**  IC=0.0967  M5_p=0.0120  src=systematic_v17/0/p.0  rationale: Exhaustive sweep: SP500/banking/lag=5
+- **SP500 / banking / lag=7**  IC=0.0967  M5_p=0.0120  src=ouroboros_v17/0/p.0  rationale: Банковский сектор чувствителен к ставкам и кредитным рискам. Ухудшение в banking (например, рост дефолтов или ужесточение регулирования) давит на SP500 с лагом 5-10 дней — время на осознание и распродажу.
