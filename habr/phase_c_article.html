@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Mind: 615 сессий, 1428 комбинаций, 0 сигналов</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #1a1d27;
+    --bg3: #242736;
+    --border: #2e3248;
+    --accent: #6c8ebf;
+    --accent2: #7fb069;
+    --accent3: #e8a838;
+    --danger: #e05c5c;
+    --text: #d4d8f0;
+    --text2: #8890b0;
+    --text3: #555d80;
+    --code-bg: #161924;
+    --max-w: 860px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    padding: 0 16px;
+  }
+  .container { max-width: var(--max-w); margin: 0 auto; padding: 48px 0 80px; }
+
+  .hero {
+    border-left: 3px solid var(--accent);
+    padding: 32px 0 32px 32px;
+    margin-bottom: 56px;
+  }
+  .hero-tag { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 12px; }
+  .hero h1 { font-size: 2rem; font-weight: 700; line-height: 1.25; color: #e8eaf6; margin-bottom: 16px; }
+  .hero .sub { color: var(--text2); font-size: 1.05rem; max-width: 620px; }
+  .hero .prev-link { margin-top: 20px; font-size: 13px; color: var(--text3); }
+  .hero .prev-link a { color: var(--accent); text-decoration: none; }
+
+  .stats-bar {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+    background: var(--border); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden; margin-bottom: 56px;
+  }
+  .stat { background: var(--bg2); padding: 20px 16px; text-align: center; }
+  .stat .n { font-size: 1.8rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .stat .n.zero { color: var(--danger); }
+  .stat .n.green { color: var(--accent2); }
+  .stat .l { font-size: 11px; color: var(--text2); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .part-header { display: flex; align-items: center; gap: 16px; margin: 64px 0 32px; }
+  .part-num { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; flex-shrink: 0; }
+  .part-header h2 { font-size: 1.5rem; font-weight: 700; color: #e8eaf6; }
+  .part-header .desc { font-size: 0.9rem; color: var(--text2); }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: #e0e4f8; margin: 40px 0 16px; }
+  h3::before { content: '— '; color: var(--accent); }
+
+  p { margin-bottom: 16px; color: var(--text); }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; margin: 24px 0; }
+  .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 600; margin-bottom: 16px; }
+
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px 24px; overflow-x: auto;
+    font-family: 'Consolas', 'Fira Code', monospace; font-size: 13px;
+    line-height: 1.6; color: #abb2d4; margin: 20px 0;
+  }
+  code { font-family: 'Consolas', 'Fira Code', monospace; font-size: 13px; }
+  p code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; color: #a5c8e8; }
+
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  th { background: var(--bg3); color: var(--accent); font-weight: 600; padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg3); }
+  .fail-mark { color: var(--danger); font-weight: 700; }
+  .ic-val { color: var(--accent3); font-weight: 600; }
+  .grade-d { color: var(--danger); font-size: 11px; font-weight: 700; }
+
+  .callout { border: 1px solid var(--border); border-left: 4px solid var(--accent); background: var(--bg2); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .callout strong { color: var(--accent); }
+  .callout.warn { border-left-color: var(--accent3); }
+  .callout.warn strong { color: var(--accent3); }
+  .callout.danger { border-left-color: var(--danger); }
+  .callout.danger strong { color: var(--danger); }
+  .callout.ok { border-left-color: var(--accent2); }
+  .callout.ok strong { color: var(--accent2); }
+
+  blockquote { border-left: 3px solid var(--border); padding: 16px 20px; margin: 24px 0; color: var(--text2); font-style: italic; font-size: 15px; background: var(--bg2); border-radius: 0 8px 8px 0; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+  .footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border); color: var(--text3); font-size: 13px; text-align: center; }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  /* Space grid */
+  .space-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 24px 0; }
+  .space-cell { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; }
+  .space-cell .sc-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); margin-bottom: 6px; }
+  .space-cell .sc-val { font-size: 1.5rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .space-cell .sc-list { font-size: 12px; color: var(--text2); margin-top: 6px; line-height: 1.6; }
+
+  /* Schedule */
+  .schedule { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin: 24px 0; }
+  .sched-step { background: var(--bg3); padding: 18px 14px; text-align: center; border-radius: 6px; }
+  .sched-step .time { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+  .sched-step .label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+  .sched-step .hours { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* Regime timeline */
+  .regime-bar { display: flex; gap: 0; margin: 24px 0; border-radius: 8px; overflow: hidden; height: 56px; }
+  .regime-seg { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px; }
+  .regime-seg .rl { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .regime-seg .rd { font-size: 10px; color: rgba(255,255,255,0.6); }
+  .r-train { background: rgba(108,142,191,0.25); border: 1px solid var(--accent); flex: 2; }
+  .r-buf1  { background: var(--bg3); flex: 0.5; }
+  .r-val   { background: rgba(232,168,56,0.2); border: 1px solid var(--accent3); flex: 1.5; }
+  .r-buf2  { background: var(--bg3); flex: 0.5; }
+  .r-test  { background: rgba(224,92,92,0.2); border: 1px solid var(--danger); flex: 1; }
+  .r-train .rl { color: var(--accent); }
+  .r-val   .rl { color: var(--accent3); }
+  .r-test  .rl { color: var(--danger); }
+
+  /* Grade badges */
+  .grade { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+  .grade-A { background: rgba(127,176,105,0.2); color: var(--accent2); }
+  .grade-D { background: rgba(224,92,92,0.2); color: var(--danger); }
+
+  /* LLM vs Sweep comparison */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .cmp-col { background: var(--bg3); border-radius: 8px; padding: 20px; }
+  .cmp-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: 700; }
+  .cmp-col.llm h4 { color: var(--accent); }
+  .cmp-col.sweep h4 { color: var(--accent3); }
+  .cmp-col ul { list-style: none; }
+  .cmp-col ul li { font-size: 13px; color: var(--text2); padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .cmp-col ul li:last-child { border-bottom: none; }
+
+  /* Summary table */
+  .phase-summary { width: 100%; border-collapse: collapse; margin: 24px 0; }
+  .phase-summary th { background: var(--bg3); color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 10px 14px; text-align: left; }
+  .phase-summary td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .phase-summary tr:last-child td { border-bottom: none; }
+  .phase-summary .ph-a td:first-child { color: var(--text3); }
+  .phase-summary .ph-b td:first-child { color: var(--accent); }
+  .phase-summary .ph-c td:first-child { color: var(--accent3); font-weight: 700; }
+
+  @media (max-width: 600px) {
+    .stats-bar { grid-template-columns: repeat(2,1fr); }
+    .space-grid { grid-template-columns: 1fr 1fr; }
+    .compare { grid-template-columns: 1fr; }
+    .schedule { grid-template-columns: 1fr; gap: 4px; }
+    .hero h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Signal Mind · Часть 3</div>
+  <h1>615 сессий, 1428 комбинаций, 0 сигналов —<br>и почему это правильный ответ</h1>
+  <p class="sub">Мы дали системе 12 дней и полное пространство поиска. Она прошла каждую комбинацию. Результат — ноль. Вот что это значит и что мы делаем дальше.</p>
+  <p class="prev-link">← <a href="#">Часть 2: «Как мы перестали себя обманывать»</a></p>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="n green">615</div>
+    <div class="l">Автономных сессий</div>
+  </div>
+  <div class="stat">
+    <div class="n">1428</div>
+    <div class="l">Комбинаций исчерпано</div>
+  </div>
+  <div class="stat">
+    <div class="n">12</div>
+    <div class="l">Дней без участия человека</div>
+  </div>
+  <div class="stat">
+    <div class="n zero">0/13</div>
+    <div class="l">Прошли финальный тест</div>
+  </div>
+</div>
+
+<!-- PART 1 -->
+<div class="part-header">
+  <div class="part-num">1</div>
+  <div>
+    <h2>Откуда взялась эта задача</h2>
+    <div class="desc">Что осталось после Phase B</div>
+  </div>
+</div>
+
+<p>В предыдущей статье мы получили два настоящих сигнала. Выстроили методологию: LLM генерирует гипотезы, статистика проверяет (M5 + M6), три непересекающихся окна, BH-коррекция на множественное тестирование.</p>
+
+<p>Это была хорошая методология. Но оставался один неудобный вопрос.</p>
+
+<div class="callout">
+  <strong>Мы покрыли всё пространство?</strong> В Phase B мы искали там где LLM считал интересным. Но LLM имеет привычки — возвращается к знакомым инструментам, игнорирует «скучные» темы, не замечает неочевидных лагов. Сколько комбинаций осталось непроверенными?
+</div>
+
+<p>Phase C отвечала ровно на этот вопрос. Мы зафиксировали пространство и прошли его полностью.</p>
+
+<!-- PART 2 -->
+<div class="part-header">
+  <div class="part-num">2</div>
+  <div>
+    <h2>Пространство поиска: 1428 комбинаций</h2>
+    <div class="desc">Что именно мы исчерпали</div>
+  </div>
+</div>
+
+<div class="space-grid">
+  <div class="space-cell">
+    <div class="sc-label">Инструменты</div>
+    <div class="sc-val">17</div>
+    <div class="sc-list">USD/RUB, EUR/RUB, Brent, Gold, Silver, S&P500, MSCI World, DXY, MSCI India, China H-Shares, FTSE China 50, DJ South Africa, IMOEX, MOEXFN, MOEXOG, MOEX10, RUGOLD</div>
+  </div>
+  <div class="space-cell">
+    <div class="sc-label">Темы</div>
+    <div class="sc-val">7</div>
+    <div class="sc-list">oil · rate · ruble · sanctions · inflation · banking · gold</div>
+  </div>
+  <div class="space-cell">
+    <div class="sc-label">Лаги</div>
+    <div class="sc-val">12</div>
+    <div class="sc-list">1, 2, 3, 5, 7, 10, 14, 21, 30, 45, 60, 90 дней</div>
+  </div>
+</div>
+
+<div class="callout ok">
+  <strong>17 × 7 × 12 = 1428 комбинаций.</strong> Цель Phase C — протестировать каждую. Ни одной пропущенной.
+</div>
+
+<p>Период данных — те же три окна что и в Phase B:</p>
+
+<div class="regime-bar">
+  <div class="regime-seg r-train">
+    <div class="rl">Train</div>
+    <div class="rd">2022 – 2023</div>
+  </div>
+  <div class="regime-seg r-buf1">
+    <div class="rd" style="font-size:9px;">буфер</div>
+  </div>
+  <div class="regime-seg r-val">
+    <div class="rl">Val</div>
+    <div class="rd">2024 – апр 2025</div>
+  </div>
+  <div class="regime-seg r-buf2">
+    <div class="rd" style="font-size:9px;">буфер</div>
+  </div>
+  <div class="regime-seg r-test">
+    <div class="rl">Test</div>
+    <div class="rd">май 2025 – июн 2026</div>
+  </div>
+</div>
+
+<p>Test период агент никогда не видел. Это принципиально: любой сигнал отобранный на Val проверяется на данных которых не существовало в момент отбора.</p>
+
+<!-- PART 3 -->
+<div class="part-header">
+  <div class="part-num">3</div>
+  <div>
+    <h2>Как мы автоматизировали 12 дней поиска</h2>
+    <div class="desc">Task Scheduler, lock file, 615 сессий без краша</div>
+  </div>
+</div>
+
+<p>Вручную 1428 комбинаций — это недели. Мы запустили автономный цикл через Windows Task Scheduler:</p>
+
+<div class="schedule">
+  <div class="sched-step">
+    <div class="time">22:00</div>
+    <div class="label">Ночная сессия</div>
+    <div class="hours">→ 05:30 · 7.5 ч</div>
+  </div>
+  <div class="sched-step">
+    <div class="time">07:00</div>
+    <div class="label">Утренняя сессия</div>
+    <div class="hours">→ 14:00 · 7 ч</div>
+  </div>
+  <div class="sched-step">
+    <div class="time">15:00</div>
+    <div class="label">Дневная сессия</div>
+    <div class="hours">→ 21:00 · 6 ч</div>
+  </div>
+</div>
+
+<p>Единственная защита от конфликтов — lock file. Если один экземпляр работает, следующий запуск просто не стартует:</p>
+
+<pre>LOCK_FILE = Path("db/phase_c.lock")
+
+def acquire_lock():
+    if LOCK_FILE.exists():
+        sys.exit(0)          # другой экземпляр уже работает
+    LOCK_FILE.write_text(str(os.getpid()))
+
+def release_lock():
+    LOCK_FILE.unlink(missing_ok=True)</pre>
+
+<p>Никаких дублей, никаких конфликтов записи в базу. Просто файл с PID.</p>
+
+<div class="card">
+  <div class="card-title">Статистика автономной работы</div>
+  <table>
+    <tr><th>Параметр</th><th>Значение</th></tr>
+    <tr><td>Дата старта</td><td>2 июня 2026</td></tr>
+    <tr><td>Дата закрытия</td><td>14 июня 2026</td></tr>
+    <tr><td>Продолжительность</td><td>12 дней</td></tr>
+    <tr><td>Автономных сессий</td><td><strong>615</strong></td></tr>
+    <tr><td>Крашей</td><td>0</td></tr>
+    <tr><td>Комбинаций покрыто</td><td>1428 / 1428 (100%)</td></tr>
+  </table>
+</div>
+
+<!-- PART 4 -->
+<div class="part-header">
+  <div class="part-num">4</div>
+  <div>
+    <h2>Проблема в середине пути</h2>
+    <div class="desc">Туннельное зрение LLM и как мы его исправили</div>
+  </div>
+</div>
+
+<p>Примерно на 300-й сессии pipeline встал. Ouroboros предлагал гипотезы — но всё что он предлагал уже было проверено. Агент ходил по кругу.</p>
+
+<h3>Диагноз: неправильная выборка из памяти</h3>
+
+<p>К тому моменту было протестировано 653 комбинации. Но в промпт мы передавали только <strong>30 последних</strong> — чтобы не раздувать контекст. LLM видел 30 из 653 и генерировал из той же области. Остальные 623 комбинации для него просто не существовали.</p>
+
+<div class="callout warn">
+  <strong>Типичная ловушка LLM-систем с внешней памятью:</strong> когда память велика — её нужно показывать выборочно. Неправильная выборка даёт туннельное зрение. Система «помнит» всё, но «видит» только угол.
+</div>
+
+<h3>Фикс: показывать нетестированное, не тестированное</h3>
+
+<pre>def _get_untested_hint(self, n=40):
+    all_combos = set(product(INSTRUMENTS, TOPICS, LAGS))
+    tested = {(r["instrument"], r["topic"], r["lag"])
+              for r in self.ledger}
+    untested = list(all_combos - tested)
+    return random.sample(untested, min(n, len(untested)))</pre>
+
+<p>Теперь агент видит 40 комбинаций куда ещё не ходил. Плюс добавили Strategy E — детерминированный перебор: 14 нетестированных комбо за итерацию, пока пространство не исчерпано.</p>
+
+<h3>Что нашёл sweep, что не нашёл бы LLM</h3>
+
+<div class="compare">
+  <div class="cmp-col llm">
+    <h4>Нашёл LLM самостоятельно</h4>
+    <ul>
+      <li>DXY / oil / lag=7</li>
+      <li>USD_RUB / gold / lag=21</li>
+      <li>DJ_SOUTH_AFRICA / gold / lag=21</li>
+      <li>EUR_RUB / inflation / lag=10</li>
+    </ul>
+  </div>
+  <div class="cmp-col sweep">
+    <h4>Нашёл только exhaustive sweep</h4>
+    <ul>
+      <li>MSCI_INDIA / banking / lag=2</li>
+      <li>SP500 / banking / lag=7</li>
+    </ul>
+  </div>
+</div>
+
+<p>Тема <code>banking</code> была в словаре с самого начала — но LLM ни разу её не предложил в контексте российских рынков. Это не очевидная гипотеза. Детерминированный sweep нашёл её именно потому, что не имеет интуиции.</p>
+
+<!-- PART 5 -->
+<div class="part-header">
+  <div class="part-num">5</div>
+  <div>
+    <h2>Результат: 13 val-сигналов, 0 на Test</h2>
+    <div class="desc">Полная таблица и что она означает</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Все 13 val-confirmed сигналов → Test evaluation</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Сигнал</th>
+        <th>IC val</th>
+        <th>Grade</th>
+        <th>IC test</th>
+        <th>M5p test</th>
+        <th>Прошёл</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>DXY / oil / lag=7</td><td class="ic-val">0.169</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.861</td><td class="fail-mark">✗</td></tr>
+      <tr><td>DXY / sanctions / lag=14</td><td class="ic-val">0.144</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.615</td><td class="fail-mark">✗</td></tr>
+      <tr><td>USD_RUB / gold / lag=21</td><td class="ic-val">0.141</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.661</td><td class="fail-mark">✗</td></tr>
+      <tr><td>EUR_RUB / gold / lag=21</td><td class="ic-val">0.141</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.661</td><td class="fail-mark">✗</td></tr>
+      <tr><td>DJ_SOUTH_AFRICA / inflation / lag=21</td><td class="ic-val">0.137</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.820</td><td class="fail-mark">✗</td></tr>
+      <tr><td>USD_RUB / inflation / lag=10</td><td class="ic-val">0.110</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.913</td><td class="fail-mark">✗</td></tr>
+      <tr><td>EUR_RUB / inflation / lag=10</td><td class="ic-val">0.110</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.913</td><td class="fail-mark">✗</td></tr>
+      <tr><td>MSCI_INDIA / banking / lag=2</td><td class="ic-val">0.106</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.731</td><td class="fail-mark">✗</td></tr>
+      <tr><td>MSCI_INDIA / inflation / lag=10</td><td class="ic-val">0.103</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.917</td><td class="fail-mark">✗</td></tr>
+      <tr><td>MOEXFN / rate / lag=7</td><td class="ic-val">0.100</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>1.000</td><td class="fail-mark">✗</td></tr>
+      <tr><td>SP500 / banking / lag=7</td><td class="ic-val">0.097</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.555</td><td class="fail-mark">✗</td></tr>
+      <tr><td>DJ_SOUTH_AFRICA / gold / lag=21</td><td class="ic-val">0.096</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.873</td><td class="fail-mark">✗</td></tr>
+      <tr><td>DJ_SOUTH_AFRICA / gold / lag=14</td><td class="ic-val">0.095</td><td><span class="grade grade-D">D</span></td><td>0.000</td><td>0.755</td><td class="fail-mark">✗</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>BH-FDR коррекция (q=0.10) — <strong>ни один сигнал не значим</strong>. Это финальный счёт.</p>
+
+<!-- PART 6 -->
+<div class="part-header">
+  <div class="part-num">6</div>
+  <div>
+    <h2>Почему ноль — это не провал</h2>
+    <div class="desc">Режимный сдвиг и что он означает</div>
+  </div>
+</div>
+
+<p>Первая реакция на <code>IC_test = 0.000</code> по всем 13 позициям — что-то сломалось. Мы проверили: данные корректны, логика верна, Test период никогда не видел агент.</p>
+
+<p>Сигналы просто не работают на Test. И вот почему это систематично, а не случайно.</p>
+
+<h3>Паттерн Grade D</h3>
+
+<p>Все 13 сигналов имеют одну структуру: <strong>Val pass (2024-2025), Train fail (2022-2023)</strong>. Ни один не прошёл оба периода. Связи появились после 2023 года в специфических условиях — санкционное давление, высокая ставка ЦБ, экстремальная инфляция.</p>
+
+<div class="card">
+  <div class="card-title">Три режима — три разных мира</div>
+  <table>
+    <tr><th>Период</th><th>Режим</th><th>Характеристика</th><th>Сигналов (Grade A/B)</th></tr>
+    <tr><td>Train 2022–2023</td><td>Кризис</td><td>Санкции, инфляция 15%+, IMOEX -50%</td><td>0</td></tr>
+    <tr><td>Val 2024–2025</td><td>Адаптация</td><td>Высокая ставка, стабилизация</td><td>13 (все Grade D)</td></tr>
+    <tr><td>Test 2025–2026</td><td>Новый режим</td><td>Смена условий</td><td>0 из 13 выжило</td></tr>
+  </table>
+</div>
+
+<div class="callout ok">
+  <strong>Hit rate 0.91% (13/1428) выше теоретического FDR 0.25%</strong> — сигналы реальные, не шум. Но ситуативные: они работали в конкретном режиме 2024-2025 и не пережили его смену.
+</div>
+
+<h3>Что это значит научно</h3>
+
+<p>Мы проверили 1428 комбинаций <code>(инструмент, тема, лаг)</code> с методологией M5+M6 на трёх независимых окнах. <strong>Нулевая гипотеза не отвергнута</strong>: в данном пространстве нет устойчивых межрежимных связей «новости → рынок».</p>
+
+<blockquote>Это не значит что сигналов «вообще нет». Это значит что в этих семи темах, этих семнадцати инструментах, при этих двенадцати лагах — нет. Пространство исчерпано честно.
+</blockquote>
+
+<!-- PART 7 -->
+<div class="part-header">
+  <div class="part-num">7</div>
+  <div>
+    <h2>Что дальше</h2>
+    <div class="desc">Три направления и почему каждое важно</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Направление 1 — Новые темы</div>
+  <p style="margin:0; font-size:14px; color:var(--text2)">Текущие 7 тем — словарь 2022-2023: нефть, санкции, инфляция. Режим 2025-2026 работает через другие категории. <strong style="color:var(--text)">Geopolitics, credit, trade, energy transition</strong> — не в нашем словаре. Phase D — с обновлённым пространством.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">Направление 2 — Rolling retraining</div>
+  <p style="margin:0; font-size:14px; color:var(--text2)">Все найденные Grade D сигналы ситуативны — но не бесполезны. Если переобучать модель каждый квартал на последних 12-18 месяцах, <strong style="color:var(--text)">Grade D превращается в рабочий инструмент</strong>: «сигнал работает сейчас, в текущем режиме». Статичная модель на 3-летней истории всегда будет отставать.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">Направление 3 — Детектор режима</div>
+  <p style="margin:0; font-size:14px; color:var(--text2)">Прежде чем искать сигналы — понять в каком режиме рынок. Простой детектор по волатильности, ставке ЦБ, динамике рубля — и <strong style="color:var(--text)">условный поиск</strong>: в режиме X работают гипотезы Y, в режиме Z — гипотезы W. Это меняет архитектуру, не только параметры.</p>
+</div>
+
+<!-- PART 8 — Summary -->
+<div class="part-header">
+  <div class="part-num">8</div>
+  <div>
+    <h2>Итог трёх фаз</h2>
+    <div class="desc">Честный счёт</div>
+  </div>
+</div>
+
+<table class="phase-summary">
+  <thead>
+    <tr>
+      <th>Фаза</th>
+      <th>Гипотез</th>
+      <th>Production сигналов</th>
+      <th>Что сломалось</th>
+      <th>Главный урок</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="ph-a">
+      <td>Phase A</td>
+      <td>~1 000</td>
+      <td>0 (артефакты)</td>
+      <td>LLM-судья, spurious corr на levels</td>
+      <td>Нужна независимая методология</td>
+    </tr>
+    <tr class="ph-b">
+      <td>Phase B</td>
+      <td>~5 000</td>
+      <td>2</td>
+      <td>Неполное покрытие пространства</td>
+      <td>z-score + три окна + BH-FDR</td>
+    </tr>
+    <tr class="ph-c">
+      <td><strong>Phase C</strong></td>
+      <td><strong>1428 (100%)</strong></td>
+      <td><strong>0</strong></td>
+      <td>Режимный сдвиг 2023/2025</td>
+      <td><strong>Нулевая гипотеза держится в данном пространстве</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <strong>Три цикла, чтобы честно ответить на один вопрос:</strong> есть ли в этих данных устойчивые сигналы? Ответ — в данном пространстве нет. Это не конец. Это точка откуда мы знаем куда идти.
+</div>
+
+<hr class="divider">
+
+<div class="footer">
+  <p>Код и данные: <a href="https://github.com/iRatG/signal_mind">github.com/iRatG/signal_mind</a></p>
+  <p style="margin-top:8px">← <a href="#">Часть 2: «Как мы перестали себя обманывать»</a></p>
+</div>
+
+</div>
+</body>
+</html>
