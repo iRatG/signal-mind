@@ -1,0 +1,10 @@
+[Unit]
+Description=News Pressure Radar daily regimen
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/.openclaw/workspace/signal-mind
+EnvironmentFile=-/root/.openclaw/.env
+ExecStart=/root/.openclaw/workspace/signal-mind/scripts/news_pressure_regimen_all.sh

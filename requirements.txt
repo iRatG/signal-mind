@@ -10,3 +10,7 @@ huggingface_hub>=0.23.0
 openai>=1.0.0
 warcio>=1.7.4
 newspaper4k>=0.9.3
+beautifulsoup4>=4.12.0
+trafilatura>=1.8.0
+PyYAML>=6.0
+python-dateutil>=2.8.0

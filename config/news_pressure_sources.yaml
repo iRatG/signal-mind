@@ -1,0 +1,45 @@
+# Source configuration for News Pressure Radar.
+#
+# Format placeholders:
+#   {iso}   -> YYYY-MM-DD
+#   {year}  -> YYYY
+#   {month} -> MM
+#   {day}   -> DD
+
+sources:
+  - name: kommersant
+    enabled: true
+    archive_pattern: "https://www.kommersant.ru/archive/news/day/{iso}"
+    article_patterns:
+      - "/doc/\\d+"
+
+  - name: interfax
+    enabled: true
+    archive_pattern: "https://www.interfax.ru/news/{year}/{month}/{day}/"
+    article_patterns:
+      - "/(russia|world|business|moscow)/\\d+$"
+
+  - name: lenta
+    enabled: true
+    archive_pattern: "https://lenta.ru/{year}/{month}/{day}/"
+    article_patterns:
+      - "/(news|articles|brief)/20\\d{2}/\\d{2}/\\d{2}/"
+
+  - name: vedomosti
+    enabled: true
+    archive_pattern: "https://www.vedomosti.ru/archive/{year}/{month}/{day}"
+    article_patterns:
+      - "/(business|economics|finance|politics|society|technology)/(news|articles)/"
+
+  - name: ria
+    enabled: true
+    archive_pattern: "https://ria.ru/{year}{month}{day}/"
+    article_patterns:
+      - "/20\\d{6}/[^/]+-\\d+\\.html$"
+
+  - name: rbc
+    enabled: false
+    archive_pattern: "https://www.rbc.ru/archive/{year}/{month}/{day}"
+    article_patterns:
+      - "/[a-z]+/[0-9a-f]{24}"
+    note: "www.rbc.ru currently returns Qrator 401/403 to this server; keep disabled until a stable API/feed path is found."

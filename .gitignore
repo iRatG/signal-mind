@@ -15,6 +15,8 @@ __pycache__/
 
 # Raw data (large files)
 statistic/
+data/news_pressure/
+src/parsers/vendor/
 
 # Jupyter
 .ipynb_checkpoints/
