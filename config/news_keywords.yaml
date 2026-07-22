@@ -1,0 +1,267 @@
+# English-only topic dictionary for foreign news sources: BBC, Guardian, Fox, CNN, etc.
+# The original Russian terms were translated/normalized to English because the
+# current archive sources are English-language sites.
+
+topics:
+  oil:
+    - oil
+    - crude oil
+    - crude
+    - brent
+    - urals
+    - opec
+    - petroleum
+    - energy market
+    - energy prices
+    - natural gas
+    - lng
+    - gas pipeline
+    - oil pipeline
+    - oil revenue
+    - gas revenue
+    - price cap
+    - oil embargo
+    - discount
+    - refinery
+    - fuel exports
+
+  rate:
+    - interest rate
+    - key rate
+    - policy rate
+    - central bank
+    - bank of russia
+    - cbr
+    - federal reserve
+    - fed
+    - ecb
+    - monetary policy
+    - rate cut
+    - rate hike
+    - bond yield
+    - treasury yield
+    - nabiullina
+
+  ruble:
+    - ruble
+    - rouble
+    - russian currency
+    - russian ruble
+    - usd/rub
+    - dollar
+    - us dollar
+    - currency market
+    - devaluation
+    - ruble devaluation
+    - ruble strengthening
+    - exchange rate
+
+  sanctions:
+    - sanction
+    - sanctions
+    - russia sanctions
+    - embargo
+    - export control
+    - import ban
+    - asset freeze
+    - frozen assets
+    - confiscation
+    - secondary sanctions
+    - restricted trade
+    - parallel imports
+    - import substitution
+    - hostile countries
+    - unfriendly countries
+
+  inflation:
+    - inflation
+    - cpi
+    - consumer prices
+    - price growth
+    - stagflation
+    - recession
+    - gdp
+    - budget deficit
+    - budget surplus
+    - public debt
+    - sovereign wealth fund
+    - national wealth fund
+    - trade balance
+    - exports
+    - imports
+
+  banking:
+    - bank
+    - banks
+    - banking
+    - banking sector
+    - financial sector
+    - credit market
+    - loan market
+    - sberbank
+    - sber
+    - vtb
+    - alfa bank
+    - bank sanctions
+    - fintech
+    - payment system
+    - fast payment system
+
+  gold:
+    - gold
+    - precious metal
+    - precious metals
+    - bullion
+    - xau
+    - gold price
+
+  markets:
+    - stock
+    - stocks
+    - equity
+    - equities
+    - stock market
+    - financial market
+    - market index
+    - benchmark index
+    - dividend
+    - ipo
+    - volatility
+    - moex
+    - moscow exchange
+    - rts index
+    - s&p 500
+    - sp500
+    - buyback
+    - delisting
+    - redomiciliation
+    - bond
+    - bonds
+
+  geopolitics:
+    - russia
+    - russian federation
+    - russian state
+    - russian authorities
+    - moscow
+    - kremlin
+    - ukraine
+    - war in ukraine
+    - russian invasion
+    - special military operation
+    - mobilization
+    - demobilization
+    - nato
+    - g7
+    - g20
+    - shanghai cooperation organisation
+    - shanghai cooperation organization
+    - sco
+    - brics
+    - negotiations
+    - ceasefire
+    - truce
+    - military conflict
+    - drone
+    - drones
+    - uav
+    - electronic warfare
+    - front line
+    - shelling
+    - missile strike
+    - air defense
+    - air defence
+    - counteroffensive
+    - offensive
+    - retreat
+    - evacuation
+    - frozen assets
+    - turn to the east
+
+  companies:
+    - gazprom
+    - rosneft
+    - lukoil
+    - novatek
+    - sberbank
+    - sber
+    - vtb
+    - alfa bank
+    - yandex
+    - vk
+    - mts
+    - rostelecom
+    - norilsk nickel
+    - nornickel
+    - rusal
+    - severstal
+    - nlmk
+    - aeroflot
+    - russian railways
+    - rosseti
+    - rosatom
+    - rostec
+
+  politics:
+    - putin
+    - mikhail mishustin
+    - mishustin
+    - elvira nabiullina
+    - nabiullina
+    - russian government
+    - state duma
+    - federation council
+    - nationalization
+    - privatisation
+    - privatization
+    - state corporation
+    - public procurement
+    - subsidized mortgage
+    - maternity capital
+    - national project
+    - federal budget
+    - regulation
+    - deoffshorization
+    - deoffshorisation
+
+  social:
+    - unemployment
+    - employment
+    - labor shortage
+    - labour shortage
+    - staff shortage
+    - wages
+    - salaries
+    - minimum wage
+    - subsistence minimum
+    - emigration
+    - relocation
+    - demography
+    - birth rate
+    - pension reform
+    - pension
+    - healthcare
+    - medicine
+
+  tech:
+    - artificial intelligence
+    - ai
+    - neural network
+    - machine learning
+    - software import substitution
+    - domestic software
+    - digital ruble
+    - digital rouble
+    - cbdc
+    - cryptocurrency
+    - crypto
+    - cyberattack
+    - cyber attack
+    - data leak
+    - sovereign internet
+    - runet
+    - marketplace
+    - wildberries
+    - ozon
+    - fintech
+    - qr payment

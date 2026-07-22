@@ -1,0 +1,33 @@
+# News archive loader runtime settings.
+# Edit this file instead of changing command-line flags.
+
+date_from: "2025-09-01"
+date_to: "2025-09-30"
+
+sources:
+  - bbc
+  - guardian
+  - aljazeera
+  - euronews
+
+keywords_file: "config/news_keywords.yaml"
+topics:
+  - all
+
+# archive = fast prefilter by archive title/summary
+# article = download every archive article, then match full text
+# both = archive prefilter OR full-text match
+match_scope: article
+
+# matched = save only articles with dictionary hits
+# all = save all scanned articles, but keep matched_keywords/matched_topics tags
+save_policy: all
+
+# Polite crawling delays, seconds.
+delay: 5
+archive_delay: 3
+
+# 0 means unlimited.
+max_articles: 0
+
+out: "data/news_2025_09_rf_context.jsonl"
