@@ -56,3 +56,19 @@
 - **Запуск:** `.venv/Scripts/python -m src.agent.agent 3`
 
 Полная архитектура: `memory/project_signal_mind.md`
+
+---
+
+## Agent skills
+
+### Issue tracker
+
+Local markdown. Wayfinder efforts live at `docs/wayfinder/<effort>/{map.md,tickets/}` (active effort: `news-pressure-radar`, codename MADPAC); everything else at `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five canonical roles (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`), used by the generic `.scratch/` tracker only. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context. No `CONTEXT.md`/`docs/adr/` yet — `/domain-modeling` creates them lazily. Until then, domain vocabulary lives in this file, `docs/wayfinder/news-pressure-radar/map.md`, and `memory/project_signal_mind.md`. See `docs/agents/domain.md`.
