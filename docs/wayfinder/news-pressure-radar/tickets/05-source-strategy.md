@@ -34,3 +34,9 @@ Produce a source policy:
 - available text depth by source: headline only, headline plus description/lead, or full article candidate;
 - minimum source diversity for each signal type;
 - future source backlog.
+
+## Forward Note (2026-07-31, captured while grilling Ticket 02 - Signal Ontology, not resolved)
+
+Airat wants the news-ingestion layer treated as a pluggable module behind a stable interface — today it's a handful of Russian news-site parsers, but the interface should be able to add RSS feeds, Telegram channels, or third-party datasets (e.g. Kaggle) without changing downstream analysis. He mentioned we may already have a ~6-year US news-background dataset somewhere and offered to locate it precisely later. This connects directly to the map's existing "Not yet specified" item — "whether to keep Russian-only scope or add foreign news sources for geopolitical context" — resolve both together when this ticket is claimed rather than deciding the interface shape without also deciding scope.
+
+Second forward note (2026-07-31, captured while grilling One-source anomaly on Ticket 02): Airat wants source categorization — state-aligned (РБК/Коммерсант/Ведомости), independent/opposition (e.g. Радио Свобода), foreign (tagged by country) — to feed the One-source anomaly vs Noise/routine split. His reasoning: a story reported only by an independent/opposition outlet, with state-aligned outlets silent, may reflect selective non-coverage rather than the story being unreal or unimportant — source count alone shouldn't downgrade it. This is exactly the "state media, opposition/independent media... what bias/noise it adds... whether source categories should become part of scoring" work already in this ticket's Research Scope — Ticket 02 only records the principle (source category is a modifier on top of the follow-up/market-corroboration check, not a replacement for it); the actual category definitions and scoring weight belong here.

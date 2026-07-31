@@ -25,6 +25,7 @@ Body sections, in this order: `## Question`, `## Why This Matters`, `## Decision
 - **Frontier**: scan `docs/wayfinder/<effort>/tickets/` for tickets that are `Status: open`, `Claim: unclaimed`, and unblocked (every ticket listed in `Blocked By:` is `Status: closed`).
 - **Claim**: set `Claim: claimed by <name>` and save before starting work.
 - **Resolve**: append the answer under `## Working Decision`, set `Status: closed`, then append a one-line decision summary + link to the map's "Decisions So Far" section.
+- **Grilling tickets additionally get a `## Grilling Transcript` section**, appended after `## Working Decision`: the actual questions asked (with the recommendation offered), and the answer given, close to how it was actually said — not only the synthesized conclusion above it. Airat asked for this explicitly on 2026-07-31: the synthesis can lose a phrase or framing he introduced (e.g. a term like "эталон"), and he wants the raw exchange recoverable from the ticket alone, without depending on chat history. Keep it readable, not a byte-for-byte transcript — trim filler, keep every distinct point and any term the human coined.
 - **Active effort**: `news-pressure-radar` (project codename MADPAC) at `docs/wayfinder/news-pressure-radar/`. Continue this map rather than starting a new one unless the user names a genuinely separate effort.
 
 For a brand-new wayfinder effort unrelated to MADPAC, still use `docs/wayfinder/<new-effort-slug>/` — not `.scratch/` — to keep one convention across the repo.

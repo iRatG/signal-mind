@@ -33,3 +33,13 @@ Create one concrete report prototype in Markdown with:
 ## Decision Shape
 
 The ticket resolves when Airat accepts one report shape as the target for OpenSpec.
+
+## Forward Note (2026-07-31, captured while grilling Ticket 01, not resolved)
+
+Airat sketched a three-section daily structure, richer than the Prototype Scope list above — reconcile the two when this ticket is actually claimed:
+
+1. **General** — what happened in the news, which index/instrument looked more correlated or volatile. Terminology for this section still needs picking (ties to Ticket 02 - Signal Ontology).
+2. **Process/technical** (decided 2026-07-31: lives OUTSIDE the daily product report — a separate internal log, candidate home `db/knowledge.md`, not a report section) — which of *our own* metrics fired or misfired this run, an evolutionary log of what's kept vs dropped in the method itself. This is Ticket 11's audit/iterate loop, deliberately kept out of the product surface so the daily report stays about news/market, not method-navel-gazing.
+3. **Overall progress** — a meta read on whether the system is advancing at all, "metrics of our functionality" rather than metrics of the market. Whether this stays in the daily report (as a short takeaway) or also moves out with #2 is still open — only #2's placement was decided so far.
+
+Weekly cadence (once added, see Ticket 01) could add a word-cloud / most-frequent-terms view across the week on top of the daily structure.

@@ -22,18 +22,25 @@ This map ends when the route from current spike to implementation spec is clear:
 - Market universe clarified on 2026-07-28: start with Moscow Exchange indices, sector indices, and ruble FX pairs against USD, EUR, and CNY. Individual stocks are out of the pilot unless a later ticket proves they are needed.
 - Meta-goal clarified on 2026-07-28: the project is also a training ground for a disciplined multi-agent process. The desired process is: clarify a foggy idea, write a technical/spec artifact, implement a spike, independently review quality, decide whether to accept or iterate, then preserve learnings.
 - Delivery is downstream from analysis. Telegram publication remains disabled until explicitly approved.
-- Use these skills in later sessions: `wayfinder`, `grill-me`, `grill-up`, `cultural-research-story` only if the work touches media/source research, and OpenSpec/spec-driven workflow once the map has enough decisions.
+- Use these skills in later sessions: `wayfinder`, `grilling`/`grill-me` (one question at a time — no `grill-up` skill exists in `mattpocock/skills`, confirmed against the upstream repo tree on 2026-07-31), `cultural-research-story` only if the work touches media/source research, and OpenSpec/spec-driven workflow once the map has enough decisions.
 - Work one decision ticket at a time. Research tickets may run in parallel; grilling tickets require Airat in the loop.
 - Known current status on 2026-07-28 UTC: daily run completed but `send_allowed=false` due to 1 quality flag; weekly has 7 quality flags; history has 1 quality flag.
+- Standing preferences clarified 2026-07-31:
+  - The coupling idea deliberately allows both causal directions — news pressure shaping market traces, and markets moving first with news tone/cadence (e.g. top-10 headlines/hour) shifting afterward. Direction and news-granularity are open questions, not a decision — they feed Ticket 01's "primary value" and Ticket 10's "news-first vs market-first vs both" question, not a standing assumption to build against yet.
+  - Airat weighs functionality and the shape of the implementation approach above code polish at this stage — this is a planning-heavy effort, not a production-hardening one.
+  - Working order is idea → plan → tools → implementation, in that order; don't let tooling setup or code get ahead of an unresolved decision ticket.
 
 ## Decisions So Far
 
-No wayfinder tickets are closed yet.
+- [Ticket 01 - Product Contract](tickets/01-product-contract.md) — solo/Airat-only, daily from day one, retrospective-only correlation framing (no directional forecasts), success measured by a backtested reference correlation rather than gut feel; report/quality-gate/metrics-core kept as three separate layers (Tickets 01+04 / 03 / 11).
+- [Ticket 02 - Signal Ontology](tickets/02-signal-ontology.md) — 6 canonical signal types (Main pressure, Rising impulse, Persistent background, Synchronized story, One-source anomaly, Noise/routine) each grounded in existing code, sharing 4 cross-cutting principles: versioned parameter registry, no empty modules, state transitions over permanent labels, and a reused news-plane×market-plane cross-check.
 
 ## Current Frontier
 
-- [Ticket 01 - Product Contract](tickets/01-product-contract.md)
-- [Ticket 02 - Signal Ontology](tickets/02-signal-ontology.md)
+- [Ticket 03 - Quality Gate Contract](tickets/03-quality-gate-contract.md)
+- [Ticket 05 - Source Strategy](tickets/05-source-strategy.md)
+- [Ticket 10 - Market Coupling Model](tickets/10-market-coupling-model.md)
+- [Ticket 11 - Agentic Delivery Process](tickets/11-agentic-delivery-process.md)
 - [Ticket 03 - Quality Gate Contract](tickets/03-quality-gate-contract.md)
 - [Ticket 05 - Source Strategy](tickets/05-source-strategy.md)
 - [Ticket 10 - Market Coupling Model](tickets/10-market-coupling-model.md)

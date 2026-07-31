@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MADPAC — как связаны Wayfinder, OpenSpec и репозиторий</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-page:   #f9f9f7;
+    --surface-card:   #fcfcfb;
+    --ink-primary:    #0b0b0b;
+    --ink-secondary:  #52514e;
+    --ink-muted:      #898781;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --accent:         #2a78d6;   /* series-1 blue: neutral "current stage" accent */
+    --accent-wash:    #eaf1fb;
+    --status-good:    #0ca30c;
+    --status-blocked: #898781;
+    --type-grilling:  #2a78d6;   /* categorical slot 1 */
+    --type-task:      #eb6834;   /* categorical slot 2 */
+    --type-research:  #1baf7a;   /* categorical slot 3 */
+    --type-prototype: #eda100;   /* categorical slot 4 */
+    --hl-blocks:      #eb6834;
+    --hl-blockedby:   #52514e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 0 0 80px;
+    background: var(--surface-page);
+    color: var(--ink-primary);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+  header.page {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--gridline);
+    margin-bottom: 40px;
+  }
+  header.page h1 { font-size: 26px; margin: 0 0 10px; letter-spacing: -0.01em; }
+  header.page p.lede { font-size: 16px; color: var(--ink-secondary); max-width: 74ch; margin: 0 0 16px; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12.5px; color: var(--ink-muted); }
+  .meta-row code { background: var(--surface-card); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; }
+
+  section { margin-bottom: 56px; }
+  h2 { font-size: 19px; margin: 0 0 6px; }
+  h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 8px; }
+  p.section-note { color: var(--ink-secondary); max-width: 78ch; margin: 0 0 24px; font-size: 14px; }
+
+  /* ---------- Pipeline strip ---------- */
+  .pipeline {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 0;
+    background: var(--surface-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 16px;
+    position: relative;
+  }
+  .pnode {
+    flex: 1 1 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px 6px;
+    gap: 6px;
+  }
+  .pnode .dot {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-page); border: 1.5px solid var(--ink-muted);
+    font-size: 14px; color: var(--ink-secondary);
+  }
+  .pnode.current .dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pnode .label { font-size: 12.5px; font-weight: 600; }
+  .pnode .sub { font-size: 11px; color: var(--ink-muted); }
+  .parrow { display: flex; align-items: center; color: var(--ink-muted); font-size: 16px; padding-top: 26px; }
+  .loopback {
+    flex-basis: 100%;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; margin-top: 6px; font-size: 12px; color: var(--ink-muted);
+  }
+  .loopback::before, .loopback::after { content: ""; height: 1px; background: var(--gridline); flex: 1; }
+
+  /* ---------- Layer cards ---------- */
+  .layer {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 0 20px;
+    background: var(--surface-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+  }
+  .layer .badge {
+    font-size: 22px; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .layer h3 { margin: 0 0 6px; font-size: 15.5px; }
+  .layer .paths { margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .layer .paths code {
+    font-size: 12px; background: var(--surface-page); border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px 7px;
+  }
+  .layer .rel { font-size: 12.5px; color: var(--ink-secondary); margin-top: 8px; }
+  .layer .rel b { color: var(--ink-primary); }
+  .layer-arrow { text-align: center; color: var(--ink-muted); font-size: 14px; margin: -2px 0; }
+
+  /* ---------- Ticket DAG ---------- */
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 0 0 20px; font-size: 12.5px; color: var(--ink-secondary); }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+  .legend .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .legend .ring { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 2px solid; background: transparent; }
+
+  .levels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; align-items: start; }
+  .level-col h4 {
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--ink-muted); margin: 0 0 10px; text-align: center;
+  }
+  .cards { display: flex; flex-direction: column; gap: 10px; }
+
+  .ticket {
+    background: var(--surface-card);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 11px;
+    cursor: default;
+    transition: box-shadow .12s, border-color .12s;
+  }
+  .ticket .row1 { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
+  .ticket .tid { font-weight: 700; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .ticket .status { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; }
+  .ticket .status.open { color: var(--status-good); }
+  .ticket .status.blocked { color: var(--status-blocked); }
+  .ticket .title { font-size: 13px; margin: 2px 0 6px; }
+  .ticket .typechip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10.5px; color: var(--ink-secondary); margin-bottom: 6px;
+  }
+  .ticket .typechip .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .ticket .edges { font-size: 10.5px; color: var(--ink-muted); line-height: 1.5; }
+  .ticket .edges b { color: var(--ink-secondary); font-weight: 600; }
+  .ticket .edges .chip {
+    display: inline-block; background: var(--surface-page); border: 1px solid var(--border);
+    border-radius: 3px; padding: 0 4px; margin: 1px 1px 0 0; font-variant-numeric: tabular-nums;
+  }
+
+  .ticket.hl-self { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-wash); }
+  .ticket.hl-blocks { border-color: var(--hl-blocks); box-shadow: 0 0 0 2px rgba(235,104,52,0.12); }
+  .ticket.hl-blockedby { border-color: var(--hl-blockedby); border-style: dashed; }
+
+  /* ---------- Callouts ---------- */
+  .callout {
+    background: #fff8ee;
+    border: 1px solid #f0d9a8;
+    border-left: 4px solid var(--status-blocked);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    font-size: 13.5px;
+  }
+  .callout h4 { margin: 0 0 6px; font-size: 13.5px; }
+  .callout code { background: rgba(11,11,11,0.05); border-radius: 3px; padding: 0 4px; font-size: 12.5px; }
+
+  footer.page {
+    border-top: 1px solid var(--gridline);
+    padding-top: 20px;
+    font-size: 13px;
+    color: var(--ink-secondary);
+  }
+  footer.page a { color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .levels { grid-template-columns: repeat(2, 1fr); }
+    .layer { grid-template-columns: 40px 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="page">
+    <h1>Как связаны файлы MADPAC: Wayfinder, OpenSpec и инструменты</h1>
+    <p class="lede">
+      Карта уровней абстракции для обучающего эффорта «научиться пользоваться openspec + wayfinder».
+      Показывает, что от чего зависит: от установленных скиллов — к конфигурации репозитория —
+      к карте решений — к спекам — к коду. Ничего из показанного здесь ещё не реализовано:
+      проект целиком в фазе планирования.
+    </p>
+    <div class="meta-row">
+      <span>Ветка: <code>madpac-openspec-wayfinder</code></span>
+      <span>Эффорт: <code>docs/wayfinder/news-pressure-radar/</code></span>
+      <span>Кодовое имя: <code>MADPAC</code></span>
+      <span>Состояние: 0 из 11 тикетов закрыто</span>
+    </div>
+  </header>
+
+  <section id="pipeline">
+    <h2><span class="num">1</span>Общий цикл (по design.md проекта)</h2>
+    <p class="section-note">
+      Сам проект уже сформулировал свой методологический цикл в
+      <code>openspec/changes/news-market-coupling-agentic-loop/proposal.md</code>:
+      «foggy human intent → wayfinder → spec → spike → audit → synthesis → memory → next cycle».
+      Ниже — тот же цикл, с меткой, где мы сейчас находимся.
+    </p>
+    <div class="pipeline">
+      <div class="pnode"><div class="dot">💭</div><div class="label">Смутная идея</div><div class="sub">Airat, разговор</div></div>
+      <div class="parrow">→</div>
+      <div class="pnode current"><div class="dot">🧭</div><div class="label">Wayfinder</div><div class="sub">мы здесь</div></div>
+      <div class="parrow">→</div>
+      <div class="pnode"><div class="dot">📄</div><div class="label">Mini-spec</div><div class="sub">узкий контракт</div></div>
+      <div class="parrow">→</div>
+      <div class="pnode"><div class="dot">🧪</div><div class="label">Spike</div><div class="sub">Runner-агент</div></div>
+      <div class="parrow">→</div>
+      <div class="pnode"><div class="dot">🔍</div><div class="label">Audit</div><div class="sub">Auditor-агент</div></div>
+      <div class="parrow">→</div>
+      <div class="pnode"><div class="dot">🧩</div><div class="label">Synthesis</div><div class="sub">Synthesizer</div></div>
+      <div class="parrow">→</div>
+      <div class="pnode"><div class="dot">💾</div><div class="label">Memory</div><div class="sub">docs/knowledge.md</div></div>
+      <div class="loopback">↩ следующий цикл возвращается к Wayfinder / новой смутной идее</div>
+    </div>
+  </section>
+
+  <section id="layers">
+    <h2><span class="num">2</span>Слои репозитория (кто от кого зависит)</h2>
+    <p class="section-note">
+      Тот же цикл, но в терминах реальных файлов и папок. Каждый слой читает конфигурацию слоя выше
+      и производит вход для слоя ниже. Стрелка вниз — «производит вход для»; стрелка вверх подразумевается
+      обратной связью через Memory (слой 5 обновляет знания, которые следующий цикл слоя 2 читает заново).
+    </p>
+
+    <div class="layer">
+      <div class="badge">L0</div>
+      <div>
+        <h3>Инструменты (устанавливаются один раз на машину)</h3>
+        <div class="paths">
+          <code>.agents/skills/*</code>
+          <code>.claude/skills/*</code>
+          <code>.claude/commands/opsx/*</code>
+          <code>skills-lock.json</code>
+        </div>
+        <div class="rel">
+          Ставится через <b><code>npx skills add mattpocock/skills</code></b> и <b><code>openspec init --tools claude</code></b>.
+          <code>.agents/skills/</code> закоммичен и переносится между машинами; <code>.claude/*</code> — локальные
+          симлинки/команды, в git не попадают (<code>.gitignore</code>), их нужно пересоздавать на каждой машине.
+        </div>
+      </div>
+    </div>
+    <div class="layer-arrow">↓ читается инструментами L0 при их первой настройке</div>
+
+    <div class="layer">
+      <div class="badge">L1</div>
+      <div>
+        <h3>Конфигурация репозитория (как обобщённые скиллы ведут себя именно здесь)</h3>
+        <div class="paths">
+          <code>CLAUDE.md</code>
+          <code>docs/agents/issue-tracker.md</code>
+          <code>docs/agents/triage-labels.md</code>
+          <code>docs/agents/domain.md</code>
+          <code>openspec/config.yaml</code>
+        </div>
+        <div class="rel">
+          Пишется один раз скиллом <b><code>/setup-matt-pocock-skills</code></b> (уже выполнено) и <b><code>openspec init</code></b>.
+          Говорит скиллам <code>to-tickets</code>, <code>to-spec</code>, <code>triage</code>, <code>qa</code>, куда писать тикеты
+          (<code>.scratch/</code>), а <code>/wayfinder</code> — что у этого репозитория уже есть своя карта и её путь другой.
+        </div>
+      </div>
+    </div>
+    <div class="layer-arrow">↓ задаёт путь, по которому /wayfinder читает и пишет карту</div>
+
+    <div class="layer">
+      <div class="badge">L2</div>
+      <div>
+        <h3>Wayfinder-карта (смутная идея → решения)</h3>
+        <div class="paths">
+          <code>docs/wayfinder/news-pressure-radar/map.md</code>
+          <code>tickets/01…11-*.md</code>
+          <code>agentic-research-loop-spec.md</code>
+          <code>external-skill-research.md</code>
+        </div>
+        <div class="rel">
+          Пишется/обновляется скиллами <b><code>/wayfinder</code></b> и <b><code>/grill-me</code></b> (или <code>/grilling</code>) —
+          по одному тикету за раз. Тикет <b>08 — OpenSpec Bridge</b> — явная точка передачи в L4: он прямо
+          спрашивает «как закрытые решения карты превратить в OpenSpec change».
+        </div>
+      </div>
+    </div>
+    <div class="layer-arrow">↓ закрытые тикеты (пока ни одного) становятся входом для mini-spec и/или OpenSpec</div>
+
+    <div class="layer">
+      <div class="badge">L3</div>
+      <div>
+        <h3>Mini-specs и runner-briefs (узкие тестируемые срезы)</h3>
+        <div class="paths">
+          <code>docs/wayfinder/news-pressure-radar/mini-specs/*.md</code>
+          <code>runner-briefs/*.md</code>
+        </div>
+        <div class="rel">
+          Не требует закрытия <em>всех</em> 11 тикетов — только тех решений карты, которые нужны для одного
+          узкого цикла. Жизненный цикл (см. <code>mini-specs/README.md</code>):
+          <code>draft → reviewed → runner brief → audit → synthesis → update/archive</code>.
+          Runner-brief — это буквально документ передачи отдельному агенту-исполнителю (L5).
+        </div>
+      </div>
+    </div>
+    <div class="layer-arrow">↓ параллельно карте — формальный durable-контракт для всего эффорта целиком</div>
+
+    <div class="layer">
+      <div class="badge">L4</div>
+      <div>
+        <h3>OpenSpec change (версионируемый контракт)</h3>
+        <div class="paths">
+          <code>openspec/changes/news-market-coupling-agentic-loop/proposal.md</code>
+          <code>design.md</code>
+          <code>tasks.md</code>
+          <code>specs/agentic-research-loop/spec.md</code>
+        </div>
+        <div class="rel">
+          Создаётся через <b><code>/opsx:propose</code></b> (здесь — написан вручную, раньше срока, см. раздел 4).
+          <code>proposal.md</code> — зачем и что меняется; <code>design.md</code> — принципы и роли агентов;
+          <code>tasks.md</code> — чек-лист реализации; <code>specs/…/spec.md</code> — формальные MUST/SHOULD-требования
+          со сценариями Given/When/Then.
+        </div>
+      </div>
+    </div>
+    <div class="layer-arrow">↓ tasks.md становится работой; после review — /opsx:archive</div>
+
+    <div class="layer">
+      <div class="badge">L5</div>
+      <div>
+        <h3>Реализация (пока не существует)</h3>
+        <div class="paths">
+          <code>src/…</code> <span style="color:var(--ink-muted)">(ещё не создано для этого эффорта)</span>
+        </div>
+        <div class="rel">
+          Появится через <b><code>/opsx:apply</code></b>, разбирающий <code>tasks.md</code>, или через отдельного
+          Runner-агента, выполняющего runner-brief. После независимого аудита и синтеза —
+          <b><code>/opsx:archive</code></b> переносит спек-дельту в постоянные <code>openspec/specs/</code> (пока пусто),
+          а вывод синтеза уходит в <code>memory/</code> и <code>docs/knowledge.md</code> — замыкая цикл на разделе 1.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tickets">
+    <h2><span class="num">3</span>Граф зависимостей 11 тикетов MADPAC</h2>
+    <p class="section-note">
+      Столбцы — топологические уровни (сколько шагов решений нужно пройти, прежде чем тикет разблокируется).
+      Наведите курсор на тикет: оранжевая рамка — что он разблокирует, серая пунктирная — от чего сам зависит.
+    </p>
+    <div class="legend">
+      <span class="item"><span class="swatch" style="background:var(--status-good)"></span>open — можно брать сейчас (фронтир)</span>
+      <span class="item"><span class="swatch" style="background:var(--status-blocked)"></span>blocked — ждёт другие тикеты</span>
+      <span class="item"><span class="ring" style="border-color:var(--hl-blocks)"></span>при наведении: разблокирует</span>
+      <span class="item"><span class="ring" style="border-color:var(--hl-blockedby); border-style:dashed"></span>при наведении: блокирующие</span>
+      <span class="item"><span class="swatch" style="background:var(--type-grilling)"></span>grilling</span>
+      <span class="item"><span class="swatch" style="background:var(--type-task)"></span>task</span>
+      <span class="item"><span class="swatch" style="background:var(--type-research)"></span>research</span>
+      <span class="item"><span class="swatch" style="background:var(--type-prototype)"></span>prototype</span>
+    </div>
+
+    <div class="levels" id="levels"></div>
+  </section>
+
+  <section id="gaps">
+    <h2><span class="num">4</span>Замеченные нестыковки (полезно для обучения)</h2>
+
+    <div class="callout">
+      <h4>⚠ Спек уже опередил тикеты</h4>
+      <p>
+        <code>openspec/changes/news-market-coupling-agentic-loop/tasks.md</code> уже содержит отмеченные пункты
+        вроде «resolve первый список инструментов», «resolve размер пула метрик = 10» — это решения,
+        которые по методологии должны были пройти через тикеты <code>05 — Source Strategy</code> и
+        <code>10 — Market Coupling Model</code>. Но оба тикета всё ещё <code>Status: open</code>,
+        <code>Claim: unclaimed</code>. То есть часть решений уже принята «в обход» формальной карты —
+        стоит либо задним числом закрыть эти тикеты со ссылкой на уже принятые решения, либо явно
+        пересмотреть их на карте.
+      </p>
+    </div>
+
+    <div class="callout">
+      <h4>⚠ Несимметричные рёбра в заголовках тикетов</h4>
+      <p>
+        Несколько тикетов объявляют <code>Blocks: …</code> в свою сторону, но тикет-получатель не отражает
+        это во встречной строке <code>Blocked By:</code>:
+      </p>
+      <ul style="margin:6px 0 0 18px; padding:0;">
+        <li><code>10</code> объявляет «Blocks: 06», но заголовок <code>06</code> не перечисляет <code>10</code>.</li>
+        <li><code>06</code>, <code>10</code>, <code>11</code> объявляют «Blocks: 08», но заголовок <code>08</code> перечисляет только 01/02/03/04/05/07.</li>
+        <li><code>11</code> объявляет «Blocks: 09», но заголовок <code>09</code> перечисляет только 06/08.</li>
+      </ul>
+      <p style="margin-top:8px;">
+        Граф на этой странице построен как объединение обеих сторон (наиболее полная картина).
+        Стоит поправить заголовки тикетов 06, 08 и 09, чтобы карта не расходилась сама с собой
+        по мере добавления новых тикетов (10 и 11 добавлены позже остальных).
+      </p>
+    </div>
+  </section>
+
+  <footer class="page">
+    Дальше — по <a href="map.md">map.md → Suggested Session Order</a>: сначала закрыть тикеты 01, 02, 03, 05, 10, 11
+    (все они во фронтире, столбец «Уровень 0»), и только потом браться за 04/06/07/08/09.
+    Ход и причины решений по установке инструментов сохранены в памяти сессии
+    (<code>project-madpac-wayfinder-openspec</code>, <code>reference-wayfinder-openspec-tooling</code>,
+    <code>feedback-repo-tool-wiring</code>).
+  </footer>
+</div>
+
+<script>
+  const TYPE_COLOR = {
+    grilling: 'var(--type-grilling)',
+    task: 'var(--type-task)',
+    research: 'var(--type-research)',
+    prototype: 'var(--type-prototype)'
+  };
+
+  // Edges reconciled from both "Blocks" and "Blocked By" headers across all 11 ticket files
+  // (see section 4 — some ticket headers are missing the reverse edge).
+  const TICKETS = [
+    { id: '01', title: 'Product Contract',          type: 'grilling',  status: 'open',    level: 0, blocks: ['04','07','08'] },
+    { id: '02', title: 'Signal Ontology',            type: 'grilling',  status: 'open',    level: 0, blocks: ['04','06','08'] },
+    { id: '03', title: 'Quality Gate Contract',      type: 'grilling',  status: 'open',    level: 0, blocks: ['06','07','08'] },
+    { id: '05', title: 'Source Strategy',            type: 'research',  status: 'open',    level: 0, blocks: ['06','08'] },
+    { id: '10', title: 'Market Coupling Model',      type: 'grilling',  status: 'open',    level: 0, blocks: ['06','08'] },
+    { id: '11', title: 'Agentic Delivery Process',   type: 'grilling',  status: 'open',    level: 0, blocks: ['08','09'] },
+    { id: '04', title: 'Report Prototype',           type: 'prototype', status: 'blocked', level: 1, blocks: ['07','08'] },
+    { id: '06', title: 'Evaluation Harness',         type: 'task',      status: 'blocked', level: 1, blocks: ['08','09'] },
+    { id: '07', title: 'Delivery Policy',            type: 'grilling',  status: 'blocked', level: 2, blocks: ['08'] },
+    { id: '08', title: 'OpenSpec Bridge',            type: 'task',      status: 'blocked', level: 3, blocks: ['09'] },
+    { id: '09', title: 'Repository Boundary',        type: 'grilling',  status: 'blocked', level: 4, blocks: [] },
+  ];
+
+  // derive blockedBy from blocks (reconciled, union of both directions)
+  const blockedBy = Object.fromEntries(TICKETS.map(t => [t.id, []]));
+  TICKETS.forEach(t => t.blocks.forEach(target => blockedBy[target].push(t.id)));
+
+  const levelsEl = document.getElementById('levels');
+  const byLevel = {};
+  TICKETS.forEach(t => { (byLevel[t.level] ??= []).push(t); });
+
+  for (let lvl = 0; lvl <= 4; lvl++) {
+    const col = document.createElement('div');
+    col.className = 'level-col';
+    const label = lvl === 0 ? 'Уровень 0 — фронтир' : `Уровень ${lvl}`;
+    col.innerHTML = `<h4>${label}</h4><div class="cards"></div>`;
+    const cardsEl = col.querySelector('.cards');
+
+    (byLevel[lvl] || []).forEach(t => {
+      const bl = blockedBy[t.id];
+      const card = document.createElement('div');
+      card.className = 'ticket';
+      card.id = 'ticket-' + t.id;
+      card.dataset.blocks = t.blocks.join(' ');
+      card.dataset.blockedby = bl.join(' ');
+
+      const statusLabel = t.status === 'open' ? '● open' : '○ blocked';
+      card.innerHTML = `
+        <div class="row1">
+          <span class="tid">Тикет ${t.id}</span>
+          <span class="status ${t.status}">${statusLabel}</span>
+        </div>
+        <div class="title">${t.title}</div>
+        <div class="typechip"><span class="dot" style="background:${TYPE_COLOR[t.type]}"></span>${t.type}</div>
+        <div class="edges">
+          ${t.blocks.length ? `<b>разблокирует:</b> ${t.blocks.map(id => `<span class="chip">${id}</span>`).join('')}<br>` : ''}
+          ${bl.length ? `<b>ждёт:</b> ${bl.map(id => `<span class="chip">${id}</span>`).join('')}` : '<span style="color:var(--status-good)">ничего не ждёт</span>'}
+        </div>
+      `;
+      cardsEl.appendChild(card);
+    });
+    levelsEl.appendChild(col);
+  }
+
+  document.querySelectorAll('.ticket').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.classList.add('hl-self');
+      card.dataset.blocks.split(' ').filter(Boolean).forEach(id => {
+        document.getElementById('ticket-' + id)?.classList.add('hl-blocks');
+      });
+      card.dataset.blockedby.split(' ').filter(Boolean).forEach(id => {
+        document.getElementById('ticket-' + id)?.classList.add('hl-blockedby');
+      });
+    });
+    card.addEventListener('mouseleave', () => {
+      document.querySelectorAll('.ticket').forEach(c =>
+        c.classList.remove('hl-self', 'hl-blocks', 'hl-blockedby'));
+    });
+  });
+</script>
+
+</body>
+</html>

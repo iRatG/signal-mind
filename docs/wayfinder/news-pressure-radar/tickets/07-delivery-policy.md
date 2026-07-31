@@ -29,3 +29,7 @@ Decide:
 ## Starting Assumption
 
 Start with Telegram DM to Airat only, daily, only when `send_allowed=true`; send blocked-status only after repeated failures or explicit request.
+
+## Forward Note (2026-07-31, captured while grilling Ticket 01, not resolved)
+
+Airat mentioned either email or Telegram as acceptable daily channels, without ranking one over the other — confirms the Starting Assumption's direction but doesn't lock the specific channel yet. Decide for real when this ticket is claimed.
