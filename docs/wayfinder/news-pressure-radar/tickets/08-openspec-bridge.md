@@ -4,7 +4,7 @@ Status: blocked
 Type: task
 Labels: `wayfinder:task`
 Claim: unclaimed
-Blocked By: Ticket 01 - Product Contract, Ticket 02 - Signal Ontology, Ticket 03 - Quality Gate Contract, Ticket 04 - Report Prototype, Ticket 05 - Source Strategy, Ticket 06 - Evaluation Harness, Ticket 07 - Delivery Policy (still open), Ticket 10 - Market Coupling Model, Ticket 12 - Historical Cluster Calibration Study (numeric sign-off only)
+Blocked By: Ticket 01 - Product Contract, Ticket 02 - Signal Ontology, Ticket 03 - Quality Gate Contract, Ticket 04 - Report Prototype, Ticket 05 - Source Strategy, Ticket 06 - Evaluation Harness, Ticket 07 - Delivery Policy (closed 2026-07-31), Ticket 10 - Market Coupling Model, Ticket 12 - Historical Cluster Calibration Study (numeric sign-off only — still open, the one real remaining blocker)
 Blocks: Ticket 09 - Repository Boundary
 
 ## Question

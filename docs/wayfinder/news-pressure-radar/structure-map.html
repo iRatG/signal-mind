@@ -333,8 +333,8 @@
       <span>Ветка: <code>madpac-openspec-wayfinder</code></span>
       <span>Эффорт: <code>docs/wayfinder/news-pressure-radar/</code></span>
       <span>Кодовое имя: <code>MADPAC</code></span>
-      <span>Состояние: 9 из 12 тикетов закрыто (01, 02, 03, 04, 05, 06, 07, 09, 10)</span>
-      <span>Обновлено: <code>2026-07-31</code> (седьмая сессия дня — закрыт Тикет 09, вне очереди графа зависимостей)</span>
+      <span>Состояние: 10 из 12 тикетов закрыто (01, 02, 03, 04, 05, 06, 07, 09, 10, 11)</span>
+      <span>Обновлено: <code>2026-07-31</code> (восьмая сессия дня — закрыт Тикет 11, последний чисто решенческий тикет)</span>
     </div>
     <button class="story-cta" id="startStory">▶ Разобрать по шагам (11 шагов, ~5 минут)</button>
     <span class="story-hint">Или просто листайте страницу вниз — все объяснения остаются на месте, шаги — просто фонарик поверх них.</span>
@@ -709,14 +709,16 @@
     Порядок из <a href="map.md">map.md → Suggested Session Order</a>, обновлённый на сегодня:
     <del>01 Product Contract</del>, <del>02 Signal Ontology</del>, <del>03 Quality Gate Contract</del>,
     <del>05 Source Strategy</del>, <del>10 Market Coupling Model</del>, <del>04 Report Prototype</del>,
-    <del>06 Evaluation Harness</del>, <del>07 Delivery Policy</del>, <del>09 Repository Boundary</del>
-    — девять закрыты 2026-07-31. Тикет 09 закрыт седьмой сессией дня <b>вне очереди формального графа</b>
-    (был <code>blocked</code> по 08, Айрат сам попросил гриллить сейчас) — решение: MADPAC уходит в
-    отдельный репозиторий, порядок физического переноса — сначала Тикет 12 (снапшот из <code>hf_news.db</code>),
-    затем один чистый <code>git filter-repo</code> перенос. Дальше: <b>11 — Agentic Delivery Process</b>
-    (несёт механику champion/challenger из тикета 06 и `K`-порог из тикета 07), Тикет 12 — параллельно,
-    когда удобно, без живого grilling — и теперь ещё и прямой триггер физического исполнения Тикета 09.
-    Затем 08 (OpenSpec Bridge).
+    <del>06 Evaluation Harness</del>, <del>07 Delivery Policy</del>, <del>09 Repository Boundary</del>,
+    <del>11 Agentic Delivery Process</del> — десять закрыты 2026-07-31. Тикет 11 — последний чисто
+    решенческий тикет: <b>wayfinder → grilling → openspec остаются неизменным ядром</b> проекта; все
+    остальные навыки (<code>implement</code>, <code>tdd</code>, <code>code-review</code>,
+    <code>diagnosing-bugs</code>, <code>handoff</code>) подключаются только после того, как OpenSpec
+    выдаст реальный <code>tasks.md</code>. Модельный сплит — временной, не по типу вызова: Claude Code
+    строит и расширяет систему всегда, DeepSeek подключается как дежурная модель только когда часть
+    системы уже работает. Осталось <b>только 12 — Historical Cluster Calibration</b> (без живого grilling,
+    первое реальное применение <code>implement</code>) — затем физический перенос Тикета 09 в
+    <code>github.com/iRatG/madpac</code>, затем 08 (OpenSpec Bridge).
     Ход и причины решений сохранены в памяти сессии
     (<code>project_madpac_wayfinder_openspec</code>, <code>reference_wayfinder_openspec_tooling</code>,
     <code>feedback_repo_tool_wiring</code>, <code>feedback_grilling_full_transcript</code>,
@@ -764,7 +766,7 @@
     { id: '03', title: 'Quality Gate Contract',        type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['06','07','08'] },
     { id: '05', title: 'Source Strategy',              type: 'research',  status: 'closed',   today: true,  level: 0, blocks: ['06','08'] },
     { id: '10', title: 'Market Coupling Model',        type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['06','08'] },
-    { id: '11', title: 'Agentic Delivery Process',     type: 'grilling',  status: 'open',     today: false, level: 0, blocks: [] },
+    { id: '11', title: 'Agentic Delivery Process',     type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: [] },
     { id: '12', title: 'Historical Cluster Calibration',type: 'prototype',status: 'open',     today: true,  level: 0, blocks: ['08'] },
     { id: '04', title: 'Report Prototype',             type: 'prototype', status: 'closed',   today: false, level: 1, blocks: ['07','08'] },
     { id: '06', title: 'Evaluation Harness',           type: 'task',      status: 'closed',   today: false, level: 1, blocks: ['08'] },
