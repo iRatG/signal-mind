@@ -4,6 +4,8 @@ Status: draft
 Created: 2026-07-28
 Project: MADPAC
 
+**Status note (2026-07-31):** this mini-spec predates [Ticket 10 - Market Coupling Model](../tickets/10-market-coupling-model.md), which has since been grilled live with Airat from a clean slate (this draft was not used as an input). Ticket 10 is now authoritative. Corrections: the instrument list below is missing `EUR/RUB` and undercounts sector candidates — Ticket 10 decided instruments are registry-driven (all MOEX ISS API candidates loaded, an `active_in_pilot_v0` flag marks the v0 subset), not a fixed 5-item list. The 10-metric pool, one-quarter calibration depth, and control-window specifics below were never actually grilled — Ticket 10 confirmed only the *principle* (several metrics, raw vector, no hard gate); treat the specifics here as an unconfirmed candidate menu for calibration/build time, not a decision.
+
 ## Objective
 
 Run the first manual research cycle for MADPAC's News-Market Coupling layer.
@@ -29,11 +31,12 @@ Wayfinder/Grill decisions -> OpenSpec draft -> accepted mini-spec -> Runner brie
 
 Market data:
 
-- selected instruments:
+- selected instruments — registry-driven per Ticket 10, not a fixed list; v0-active subset:
   - `IMOEX` / broad Moscow Exchange index;
   - oil and gas sector index;
   - financial sector index;
   - `USD/RUB`;
+  - `EUR/RUB`;
   - `CNY/RUB`;
 - approximately one year of daily observations;
 - close price or equivalent daily value.

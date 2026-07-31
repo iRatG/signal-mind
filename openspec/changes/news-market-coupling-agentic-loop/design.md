@@ -141,6 +141,8 @@ Implementation should favor functional Python transformations with explicit inpu
 
 ## First Pilot: Market-First Anomaly Backtrace v0
 
+**Status note (2026-07-31):** this section predates [Ticket 10 - Market Coupling Model](../../../docs/wayfinder/news-pressure-radar/tickets/10-market-coupling-model.md) being grilled live with Airat (this draft was written 2026-07-28, before the disciplined wayfinder→grill process existed). Ticket 10 is now the authoritative source — it was grilled from a clean slate, deliberately without treating this draft as a default answer. Where this section agrees with Ticket 10, treat it as independent confirmation; where it conflicts or adds unconfirmed specifics, Ticket 10 wins. Corrections applied below; items Ticket 10 left as future calibration/build work (not grilled) are marked explicitly rather than presented as decided.
+
 Question:
 
 ```text
@@ -150,22 +152,15 @@ When MOEX indices or ruble FX pairs show rare moves, what news pressure appeared
 Initial constraints:
 
 - one year of market data;
-- 5 first instruments:
-  - `IMOEX` / broad Moscow Exchange index;
-  - oil and gas sector index;
-  - financial sector index;
-  - `USD/RUB`;
-  - `CNY/RUB`;
-- initial pool of 10 anomaly metrics, rather than one fixed threshold;
-- metric selection may be instrument-specific rather than universal;
-- raw metric vectors are stored first; hard ensemble/voting rules come only after calibration;
-- metric/baseline calibration should not look deeper than one quarter in v0;
-- compare shorter contexts where useful: day, week, month, two months, quarter;
-- v0 control windows: random days in the same quarter plus adjacent calm days near the event;
-- existing headlines first;
-- descriptions/leads only after a signal appears;
-- no full-text dependency in the first run;
-- no causal claims.
+- instrument universe is **registry-driven, not a fixed code list** (Ticket 10 decision) — seeded from all MOEX ISS API candidates (`IMOEX`, `RTSI`, 10 sector indices, 3 FX pairs), with an `active_in_pilot_v0` flag marking the actual v0 subset. Corrected from this draft's original 5-instrument list, which omitted `EUR/RUB` and undercounted sector candidates. v0-active subset: `IMOEX` + oil & gas + financial sector indices (candidates, final set confirmed at implementation time) + all 3 FX pairs (`USD/RUB`, `EUR/RUB`, `CNY/RUB`); `RTSI` inactive (duplicates `IMOEX` in dollar terms);
+- pool of several anomaly metrics, evaluated as a raw vector rather than one fixed threshold or hard N-of-M gate (confirmed by Ticket 10) — **the specific count of 10 and the exact metric list below are this draft's candidate pool, not something Airat grilled**; treat as a starting menu for calibration/build work, not a locked decision;
+- metric selection may be instrument-specific rather than universal (confirmed by Ticket 10 — extended by Airat to possibly topic-specific too);
+- raw metric vectors are stored first; hard ensemble/voting rules come only after calibration (confirmed by Ticket 10);
+- metric/baseline calibration should not look deeper than one quarter in v0 — **candidate from this draft, not grilled in Ticket 10; revisit at calibration/build time**;
+- compare shorter contexts where useful: day, week, month, two months, quarter — same status, candidate not grilled;
+- v0 control windows: random days in the same quarter plus adjacent calm days near the event — same status, candidate not grilled;
+- existing headlines first; descriptions/leads only where already collected; full text only for a small set of ambiguous strong-anomaly candidates (confirmed by Ticket 10, staged text-depth policy);
+- no causal claims (confirmed — inherited project-wide from Ticket 01, not a new decision).
 
 ## Review Model
 

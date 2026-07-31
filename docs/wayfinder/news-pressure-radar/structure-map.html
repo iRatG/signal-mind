@@ -16,21 +16,26 @@
     --border:         rgba(11,11,11,0.10);
     --accent:         #2a78d6;   /* series-1 blue: neutral "current stage" accent */
     --accent-wash:    #eaf1fb;
-    --status-good:    #0ca30c;
-    --status-blocked: #898781;
+    --status-good:      #0ca30c;
+    --status-blocked:   #898781;
+    --status-closed:    #0b0b0b;
+    --status-progress:  #7c4fe0;
+    --status-progress-wash: rgba(124,79,224,0.14);
     --type-grilling:  #2a78d6;   /* categorical slot 1 */
     --type-task:      #eb6834;   /* categorical slot 2 */
     --type-research:  #1baf7a;   /* categorical slot 3 */
     --type-prototype: #eda100;   /* categorical slot 4 */
     --hl-blocks:      #eb6834;
     --hl-blockedby:   #52514e;
+    --today-bg:       #fff2d9;
+    --today-ink:      #9a6a00;
   }
 
   * { box-sizing: border-box; }
 
   body {
     margin: 0;
-    padding: 0 0 80px;
+    padding: 0 0 140px;
     background: var(--surface-page);
     color: var(--ink-primary);
     font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -45,15 +50,65 @@
   }
   header.page h1 { font-size: 26px; margin: 0 0 10px; letter-spacing: -0.01em; }
   header.page p.lede { font-size: 16px; color: var(--ink-secondary); max-width: 74ch; margin: 0 0 16px; }
-  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12.5px; color: var(--ink-muted); }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 18px; }
   .meta-row code { background: var(--surface-card); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; }
 
-  section { margin-bottom: 56px; }
+  .story-cta {
+    font: inherit; font-size: 13.5px; font-weight: 600; color: #fff;
+    background: var(--accent); border: none; border-radius: 7px;
+    padding: 10px 16px; cursor: pointer;
+  }
+  .story-cta:hover { filter: brightness(1.08); }
+  .story-hint { display: block; margin-top: 8px; font-size: 12.5px; color: var(--ink-muted); }
+
+  section { margin-bottom: 56px; scroll-margin-top: 24px; transition: opacity .35s ease, filter .35s ease; }
   h2 { font-size: 19px; margin: 0 0 6px; }
   h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 8px; }
   p.section-note { color: var(--ink-secondary); max-width: 78ch; margin: 0 0 24px; font-size: 14px; }
 
+  /* ---------- Story mode: dim / spotlight ---------- */
+  body.story-on header.page,
+  body.story-on section,
+  body.story-on footer.page { scroll-margin-top: 90px; }
+  .story-dim { opacity: .22; filter: grayscale(70%) blur(.3px); pointer-events: none; }
+  .story-lit { opacity: 1; filter: none; }
+  .story-focus {
+    position: relative; z-index: 3;
+    box-shadow: 0 0 0 3px var(--accent), 0 10px 28px rgba(11,11,11,0.14) !important;
+    border-radius: 8px;
+  }
+
+  .storybar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: var(--surface-card); border-top: 1px solid var(--border);
+    box-shadow: 0 -6px 24px rgba(11,11,11,0.08);
+    padding: 14px 20px; display: none;
+  }
+  body.story-on .storybar { display: block; }
+  .storybar-inner { max-width: 1180px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .storybar .cap { flex: 1 1 340px; min-width: 260px; }
+  .storybar .cap h5 { margin: 0 0 3px; font-size: 13.5px; }
+  .storybar .cap p { margin: 0; font-size: 13px; color: var(--ink-secondary); line-height: 1.45; }
+  .storybar .controls { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+  .storybar button {
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    border-radius: 6px; padding: 7px 12px; border: 1px solid var(--border); background: var(--surface-page);
+  }
+  .storybar button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .storybar button:disabled { opacity: .35; cursor: default; }
+  .storybar .exit { background: transparent; border-color: transparent; color: var(--ink-muted); }
+  .storybar .step-count { font-size: 11.5px; color: var(--ink-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .resume-story {
+    position: fixed; right: 22px; bottom: 22px; z-index: 15;
+    background: var(--ink-primary); color: #fff; border: none; border-radius: 999px;
+    padding: 10px 16px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(11,11,11,0.25);
+  }
+  body.story-on .resume-story { display: none; }
+
   /* ---------- Pipeline strip ---------- */
+  .pipeline-wrap { position: relative; }
   .pipeline {
     display: flex;
     align-items: stretch;
@@ -83,15 +138,37 @@
   .pnode.current .dot { background: var(--accent); border-color: var(--accent); color: #fff; }
   .pnode .label { font-size: 12.5px; font-weight: 600; }
   .pnode .sub { font-size: 11px; color: var(--ink-muted); }
-  .parrow { display: flex; align-items: center; color: var(--ink-muted); font-size: 16px; padding-top: 26px; }
-  .loopback {
-    flex-basis: 100%;
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px; margin-top: 6px; font-size: 12px; color: var(--ink-muted);
+  .parrow { display: flex; align-items: center; color: var(--accent); font-size: 16px; padding-top: 26px; animation: flow 1.8s ease-in-out infinite; }
+  @keyframes flow { 0%,100% { transform: translateX(-2px); opacity: .55; } 50% { transform: translateX(2px); opacity: 1; } }
+
+  .loop-svg-strip { display: block; width: 100%; height: 34px; margin-top: -4px; }
+  .loop-svg-strip path { fill: none; stroke: var(--ink-muted); stroke-width: 1.6; stroke-dasharray: 5 5; animation: dash-flow 1.4s linear infinite; }
+  @keyframes dash-flow { to { stroke-dashoffset: -20; } }
+  .loopback-label { text-align: center; font-size: 11.5px; color: var(--ink-muted); margin-top: 2px; }
+
+  .callout-mini {
+    margin-top: 14px; font-size: 12.5px; color: var(--ink-secondary);
+    background: var(--accent-wash); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px;
   }
-  .loopback::before, .loopback::after { content: ""; height: 1px; background: var(--gridline); flex: 1; }
+
+  /* ---------- Mini loop (today's session) ---------- */
+  .mini-loop { background: var(--surface-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 16px 8px; margin-bottom: 18px; position: relative; }
+
+  .iteration-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin-bottom: 22px; }
+  .iter-chip {
+    background: var(--surface-card); border: 1.5px solid var(--border); border-radius: 9px;
+    padding: 10px 13px; min-width: 150px; flex: 1 1 150px;
+  }
+  .iter-chip .n { font-size: 11px; color: var(--ink-muted); font-weight: 700; }
+  .iter-chip .tt { font-size: 13px; font-weight: 600; margin: 3px 0 5px; }
+  .iter-chip .st { font-size: 11.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+  .iter-chip.done { border-color: var(--status-closed); }
+  .iter-chip.now { border-color: var(--status-progress); box-shadow: 0 0 0 2px var(--status-progress-wash); animation: pulse-progress 2.2s ease-in-out infinite; }
+  .iter-arrow { flex: 0 0 auto; color: var(--accent); font-size: 18px; padding: 0 6px; animation: flow 1.8s ease-in-out infinite; }
+  @keyframes pulse-progress { 0%,100% { box-shadow: 0 0 0 2px var(--status-progress-wash); } 50% { box-shadow: 0 0 0 5px var(--status-progress-wash); } }
 
   /* ---------- Layer cards ---------- */
+  .layer-group { margin-bottom: 30px; }
   .layer {
     display: grid;
     grid-template-columns: 64px 1fr;
@@ -118,10 +195,15 @@
   .layer-arrow { text-align: center; color: var(--ink-muted); font-size: 14px; margin: -2px 0; }
 
   /* ---------- Ticket DAG ---------- */
-  .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 0 0 20px; font-size: 12.5px; color: var(--ink-secondary); }
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 0 0 8px; font-size: 12.5px; color: var(--ink-secondary); }
+  .legend.row2 { margin-bottom: 20px; }
   .legend .item { display: flex; align-items: center; gap: 6px; }
   .legend .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
   .legend .ring { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 2px solid; background: transparent; }
+  .legend .today-sample {
+    font-size: 10px; font-weight: 700; color: var(--today-ink); background: var(--today-bg);
+    border-radius: 4px; padding: 1px 6px;
+  }
 
   .levels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; align-items: start; }
   .level-col h4 {
@@ -143,12 +225,19 @@
   .ticket .status { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; }
   .ticket .status.open { color: var(--status-good); }
   .ticket .status.blocked { color: var(--status-blocked); }
+  .ticket .status.closed { color: var(--status-closed); }
+  .ticket .status.progress { color: var(--status-progress); }
   .ticket .title { font-size: 13px; margin: 2px 0 6px; }
+  .ticket .typerow { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
   .ticket .typechip {
     display: inline-flex; align-items: center; gap: 4px;
-    font-size: 10.5px; color: var(--ink-secondary); margin-bottom: 6px;
+    font-size: 10.5px; color: var(--ink-secondary);
   }
   .ticket .typechip .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .ticket .badge-today {
+    font-size: 10px; font-weight: 700; color: var(--today-ink); background: var(--today-bg);
+    border-radius: 4px; padding: 1px 6px;
+  }
   .ticket .edges { font-size: 10.5px; color: var(--ink-muted); line-height: 1.5; }
   .ticket .edges b { color: var(--ink-secondary); font-weight: 600; }
   .ticket .edges .chip {
@@ -159,6 +248,32 @@
   .ticket.hl-self { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-wash); }
   .ticket.hl-blocks { border-color: var(--hl-blocks); box-shadow: 0 0 0 2px rgba(235,104,52,0.12); }
   .ticket.hl-blockedby { border-color: var(--hl-blockedby); border-style: dashed; }
+  .ticket.is-progress { border-color: var(--status-progress); box-shadow: 0 0 0 2px var(--status-progress-wash); animation: pulse-progress 2.2s ease-in-out infinite; }
+
+  /* ---------- Feedback loop diagram ---------- */
+  .fb-diagram { display: flex; gap: 24px; align-items: stretch; }
+  .fb-main { flex: 1 1 auto; display: flex; flex-direction: column; gap: 0; min-width: 0; }
+  .fb-rail { flex: 0 0 46px; position: relative; }
+  .fb-rail svg { width: 46px; height: 100%; display: block; }
+  .fb-rail path { fill: none; stroke: var(--status-progress); stroke-width: 2; stroke-dasharray: 6 6; animation: dash-flow 1.2s linear infinite; }
+
+  .fb-target-row {
+    display: flex; flex-wrap: wrap; gap: 8px; background: var(--today-bg); border: 1px solid #f0d9a8;
+    border-radius: 9px; padding: 10px 12px; margin-bottom: 6px;
+  }
+  .fb-target-row .cap { flex-basis: 100%; font-size: 11.5px; font-weight: 700; color: var(--today-ink); margin-bottom: 2px; }
+  .fb-target-row .chip {
+    font-size: 12px; font-weight: 600; background: #fff; border: 1px solid #f0d9a8; border-radius: 6px; padding: 3px 9px;
+  }
+
+  .fb-arrow-down { text-align: center; color: var(--ink-muted); font-size: 15px; padding: 4px 0; animation: flow 1.8s ease-in-out infinite; }
+
+  .fb-box {
+    background: var(--surface-card); border: 1.5px solid var(--border); border-radius: 9px; padding: 12px 15px;
+  }
+  .fb-box .tag { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 4px; }
+  .fb-box p { margin: 0; font-size: 13.5px; color: var(--ink-secondary); }
+  .fb-box p b { color: var(--ink-primary); }
 
   /* ---------- Callouts ---------- */
   .callout {
@@ -170,6 +285,7 @@
     margin-bottom: 14px;
     font-size: 13.5px;
   }
+  .callout.fresh { border-left-color: var(--status-progress); }
   .callout h4 { margin: 0 0 6px; font-size: 13.5px; }
   .callout code { background: rgba(11,11,11,0.05); border-radius: 3px; padding: 0 4px; font-size: 12.5px; }
 
@@ -180,30 +296,48 @@
     color: var(--ink-secondary);
   }
   footer.page a { color: var(--accent); }
+  footer.page del { color: var(--ink-muted); }
 
   @media (max-width: 900px) {
     .levels { grid-template-columns: repeat(2, 1fr); }
     .layer { grid-template-columns: 40px 1fr; }
+    .fb-diagram { flex-direction: column; }
+    .fb-rail { display: none; }
   }
 </style>
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-muted)"></path>
+    </marker>
+    <marker id="arrow-progress" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--status-progress)"></path>
+    </marker>
+  </defs>
+</svg>
+
 <div class="wrap">
-  <header class="page">
-    <h1>Как связаны файлы MADPAC: Wayfinder, OpenSpec и инструменты</h1>
+  <header class="page" id="hero">
+    <h1>Как связаны файлы MADPAC: карта, тикеты и код</h1>
     <p class="lede">
       Карта уровней абстракции для обучающего эффорта «научиться пользоваться openspec + wayfinder».
       Показывает, что от чего зависит: от установленных скиллов — к конфигурации репозитория —
-      к карте решений — к спекам — к коду. Ничего из показанного здесь ещё не реализовано:
-      проект целиком в фазе планирования.
+      к карте решений — к спекам — к коду. И отдельно показывает то, о чём чаще всего спрашивают:
+      где здесь петли, кто на кого ссылается назад, и почему процесс иногда возвращается
+      к уже, казалось бы, закрытым решениям.
     </p>
     <div class="meta-row">
       <span>Ветка: <code>madpac-openspec-wayfinder</code></span>
       <span>Эффорт: <code>docs/wayfinder/news-pressure-radar/</code></span>
       <span>Кодовое имя: <code>MADPAC</code></span>
-      <span>Состояние: 0 из 11 тикетов закрыто</span>
+      <span>Состояние: 4 из 12 тикетов закрыто, 1 в работе прямо сейчас</span>
+      <span>Обновлено: <code>2026-07-31</code></span>
     </div>
+    <button class="story-cta" id="startStory">▶ Разобрать по шагам (11 шагов, ~5 минут)</button>
+    <span class="story-hint">Или просто листайте страницу вниз — все объяснения остаются на месте, шаги — просто фонарик поверх них.</span>
   </header>
 
   <section id="pipeline">
@@ -212,158 +346,229 @@
       Сам проект уже сформулировал свой методологический цикл в
       <code>openspec/changes/news-market-coupling-agentic-loop/proposal.md</code>:
       «foggy human intent → wayfinder → spec → spike → audit → synthesis → memory → next cycle».
-      Ниже — тот же цикл, с меткой, где мы сейчас находимся.
+      Ниже — тот же цикл, с меткой, где мы сейчас находимся. Мы всё ещё внутри «Wayfinder» —
+      ни один спайк ещё не запускался, — но <em>внутри</em> самого Wayfinder есть свой,
+      меньший цикл. О нём — следующий блок.
     </p>
-    <div class="pipeline">
-      <div class="pnode"><div class="dot">💭</div><div class="label">Смутная идея</div><div class="sub">Airat, разговор</div></div>
-      <div class="parrow">→</div>
-      <div class="pnode current"><div class="dot">🧭</div><div class="label">Wayfinder</div><div class="sub">мы здесь</div></div>
-      <div class="parrow">→</div>
-      <div class="pnode"><div class="dot">📄</div><div class="label">Mini-spec</div><div class="sub">узкий контракт</div></div>
-      <div class="parrow">→</div>
-      <div class="pnode"><div class="dot">🧪</div><div class="label">Spike</div><div class="sub">Runner-агент</div></div>
-      <div class="parrow">→</div>
-      <div class="pnode"><div class="dot">🔍</div><div class="label">Audit</div><div class="sub">Auditor-агент</div></div>
-      <div class="parrow">→</div>
-      <div class="pnode"><div class="dot">🧩</div><div class="label">Synthesis</div><div class="sub">Synthesizer</div></div>
-      <div class="parrow">→</div>
-      <div class="pnode"><div class="dot">💾</div><div class="label">Memory</div><div class="sub">docs/knowledge.md</div></div>
-      <div class="loopback">↩ следующий цикл возвращается к Wayfinder / новой смутной идее</div>
+    <div class="pipeline-wrap">
+      <div class="pipeline">
+        <div class="pnode"><div class="dot">💭</div><div class="label">Смутная идея</div><div class="sub">Airat, разговор</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode current"><div class="dot">🧭</div><div class="label">Wayfinder</div><div class="sub">мы здесь</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">📄</div><div class="label">Mini-spec</div><div class="sub">узкий контракт</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">🧪</div><div class="label">Spike</div><div class="sub">Runner-агент</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">🔍</div><div class="label">Audit</div><div class="sub">Auditor-агент</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">🧩</div><div class="label">Synthesis</div><div class="sub">Synthesizer</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">💾</div><div class="label">Memory</div><div class="sub">docs/knowledge.md</div></div>
+      </div>
+      <svg class="loop-svg-strip" viewBox="0 0 100 20" preserveAspectRatio="none">
+        <path d="M97,2 C 70,18 30,18 3,2" marker-end="url(#arrow-muted)"></path>
+      </svg>
+      <div class="loopback-label">↩ следующий оборот этого большого цикла возвращается к Wayfinder или к новой смутной идее</div>
+    </div>
+  </section>
+
+  <section id="loop-today">
+    <h2><span class="num">2</span>Внутренний цикл: как мы закрывали тикеты сегодня</h2>
+    <p class="section-note">
+      Внутри блока «Wayfinder» из раздела 1 есть свой, куда более короткий цикл — он повторяется
+      один раз на каждый тикет карты. Именно эту петлю мы прошли сегодня (2026-07-31) четыре раза
+      целиком и начали пятый оборот. Это и есть то самое «зацикливание» и «движение мысли» буквально —
+      не метафора, а то, что реально произошло за сессию.
+    </p>
+
+    <div class="mini-loop">
+      <div class="pipeline">
+        <div class="pnode"><div class="dot">📋</div><div class="label">Тикет открыт</div><div class="sub">в карте</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">❓</div><div class="label">Grilling</div><div class="sub">вопрос за вопросом</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">✍</div><div class="label">Working Decision</div><div class="sub">записано в тикет</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">✅</div><div class="label">Тикет закрыт</div><div class="sub">map.md обновлён</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">👉</div><div class="label">Следующий выбран</div><div class="sub">по фронтиру</div></div>
+      </div>
+      <svg class="loop-svg-strip" viewBox="0 0 100 20" preserveAspectRatio="none">
+        <path d="M97,2 C 70,18 30,18 3,2" marker-end="url(#arrow-muted)"></path>
+      </svg>
+      <div class="loopback-label">↩ «следующий выбран» возвращает нас к «тикет открыт» — но уже для другого тикета</div>
+    </div>
+
+    <div class="iteration-strip">
+      <div class="iter-chip done"><div class="n">① оборот</div><div class="tt">01 — Product Contract</div><div class="st" style="color:var(--status-closed)">✓ закрыт</div></div>
+      <div class="iter-arrow">→</div>
+      <div class="iter-chip done"><div class="n">② оборот</div><div class="tt">02 — Signal Ontology</div><div class="st" style="color:var(--status-closed)">✓ закрыт</div></div>
+      <div class="iter-arrow">→</div>
+      <div class="iter-chip done"><div class="n">③ оборот</div><div class="tt">03 — Quality Gate</div><div class="st" style="color:var(--status-closed)">✓ закрыт, породил тикет 12</div></div>
+      <div class="iter-arrow">→</div>
+      <div class="iter-chip done"><div class="n">④ оборот</div><div class="tt">05 — Source Strategy</div><div class="st" style="color:var(--status-closed)">✓ закрыт, расширил тикет 12</div></div>
+      <div class="iter-arrow">→</div>
+      <div class="iter-chip now"><div class="n">⑤ оборот</div><div class="tt">10 — Market Coupling</div><div class="st" style="color:var(--status-progress)">◐ в работе сейчас</div></div>
+    </div>
+
+    <div class="callout-mini">
+      Карта (<code>map.md</code>) — это память между оборотами: без неё каждый следующий тикет
+      начинался бы с чистого листа. Именно map.md несёт вперёд, что уже решено, что стало
+      фронтиром, и почему приоритет поменялся (см. раздел «Current Frontier» в map.md — сегодня
+      он поставил тикет 10 <em>перед</em> 04 и 06, хотя формальный граф зависимостей этого не требует).
     </div>
   </section>
 
   <section id="layers">
-    <h2><span class="num">2</span>Слои репозитория (кто от кого зависит)</h2>
+    <h2><span class="num">3</span>Слои репозитория (кто от кого зависит)</h2>
     <p class="section-note">
       Тот же цикл, но в терминах реальных файлов и папок. Каждый слой читает конфигурацию слоя выше
       и производит вход для слоя ниже. Стрелка вниз — «производит вход для»; стрелка вверх подразумевается
       обратной связью через Memory (слой 5 обновляет знания, которые следующий цикл слоя 2 читает заново).
     </p>
 
-    <div class="layer">
-      <div class="badge">L0</div>
-      <div>
-        <h3>Инструменты (устанавливаются один раз на машину)</h3>
-        <div class="paths">
-          <code>.agents/skills/*</code>
-          <code>.claude/skills/*</code>
-          <code>.claude/commands/opsx/*</code>
-          <code>skills-lock.json</code>
-        </div>
-        <div class="rel">
-          Ставится через <b><code>npx skills add mattpocock/skills</code></b> и <b><code>openspec init --tools claude</code></b>.
-          <code>.agents/skills/</code> закоммичен и переносится между машинами; <code>.claude/*</code> — локальные
-          симлинки/команды, в git не попадают (<code>.gitignore</code>), их нужно пересоздавать на каждой машине.
+    <div class="layer-group" id="layer-01">
+      <div class="layer">
+        <div class="badge">L0</div>
+        <div>
+          <h3>Инструменты (устанавливаются один раз на машину)</h3>
+          <div class="paths">
+            <code>.agents/skills/*</code>
+            <code>.claude/skills/*</code>
+            <code>.claude/commands/opsx/*</code>
+            <code>skills-lock.json</code>
+          </div>
+          <div class="rel">
+            Ставится через <b><code>npx skills add mattpocock/skills</code></b> и <b><code>openspec init --tools claude</code></b>.
+            <code>.agents/skills/</code> закоммичен и переносится между машинами; <code>.claude/*</code> — локальные
+            симлинки/команды, в git не попадают (<code>.gitignore</code>), их нужно пересоздавать на каждой машине.
+          </div>
         </div>
       </div>
-    </div>
-    <div class="layer-arrow">↓ читается инструментами L0 при их первой настройке</div>
+      <div class="layer-arrow">↓ читается инструментами L0 при их первой настройке</div>
 
-    <div class="layer">
-      <div class="badge">L1</div>
-      <div>
-        <h3>Конфигурация репозитория (как обобщённые скиллы ведут себя именно здесь)</h3>
-        <div class="paths">
-          <code>CLAUDE.md</code>
-          <code>docs/agents/issue-tracker.md</code>
-          <code>docs/agents/triage-labels.md</code>
-          <code>docs/agents/domain.md</code>
-          <code>openspec/config.yaml</code>
-        </div>
-        <div class="rel">
-          Пишется один раз скиллом <b><code>/setup-matt-pocock-skills</code></b> (уже выполнено) и <b><code>openspec init</code></b>.
-          Говорит скиллам <code>to-tickets</code>, <code>to-spec</code>, <code>triage</code>, <code>qa</code>, куда писать тикеты
-          (<code>.scratch/</code>), а <code>/wayfinder</code> — что у этого репозитория уже есть своя карта и её путь другой.
+      <div class="layer">
+        <div class="badge">L1</div>
+        <div>
+          <h3>Конфигурация репозитория (как обобщённые скиллы ведут себя именно здесь)</h3>
+          <div class="paths">
+            <code>CLAUDE.md</code>
+            <code>docs/agents/issue-tracker.md</code>
+            <code>docs/agents/triage-labels.md</code>
+            <code>docs/agents/domain.md</code>
+            <code>openspec/config.yaml</code>
+          </div>
+          <div class="rel">
+            Пишется один раз скиллом <b><code>/setup-matt-pocock-skills</code></b> (уже выполнено) и <b><code>openspec init</code></b>.
+            Говорит скиллам <code>to-tickets</code>, <code>to-spec</code>, <code>triage</code>, <code>qa</code>, куда писать тикеты
+            (<code>.scratch/</code>), а <code>/wayfinder</code> — что у этого репозитория уже есть своя карта и её путь другой.
+          </div>
         </div>
       </div>
     </div>
     <div class="layer-arrow">↓ задаёт путь, по которому /wayfinder читает и пишет карту</div>
 
-    <div class="layer">
-      <div class="badge">L2</div>
-      <div>
-        <h3>Wayfinder-карта (смутная идея → решения)</h3>
-        <div class="paths">
-          <code>docs/wayfinder/news-pressure-radar/map.md</code>
-          <code>tickets/01…11-*.md</code>
-          <code>agentic-research-loop-spec.md</code>
-          <code>external-skill-research.md</code>
-        </div>
-        <div class="rel">
-          Пишется/обновляется скиллами <b><code>/wayfinder</code></b> и <b><code>/grill-me</code></b> (или <code>/grilling</code>) —
-          по одному тикету за раз. Тикет <b>08 — OpenSpec Bridge</b> — явная точка передачи в L4: он прямо
-          спрашивает «как закрытые решения карты превратить в OpenSpec change».
-        </div>
-      </div>
-    </div>
-    <div class="layer-arrow">↓ закрытые тикеты (пока ни одного) становятся входом для mini-spec и/или OpenSpec</div>
-
-    <div class="layer">
-      <div class="badge">L3</div>
-      <div>
-        <h3>Mini-specs и runner-briefs (узкие тестируемые срезы)</h3>
-        <div class="paths">
-          <code>docs/wayfinder/news-pressure-radar/mini-specs/*.md</code>
-          <code>runner-briefs/*.md</code>
-        </div>
-        <div class="rel">
-          Не требует закрытия <em>всех</em> 11 тикетов — только тех решений карты, которые нужны для одного
-          узкого цикла. Жизненный цикл (см. <code>mini-specs/README.md</code>):
-          <code>draft → reviewed → runner brief → audit → synthesis → update/archive</code>.
-          Runner-brief — это буквально документ передачи отдельному агенту-исполнителю (L5).
+    <div class="layer-group" id="layer-2">
+      <div class="layer">
+        <div class="badge">L2</div>
+        <div>
+          <h3>Wayfinder-карта (смутная идея → решения)</h3>
+          <div class="paths">
+            <code>docs/wayfinder/news-pressure-radar/map.md</code>
+            <code>tickets/01…12-*.md</code>
+            <code>agentic-research-loop-spec.md</code>
+            <code>external-skill-research.md</code>
+            <code>research/05-source-strategy-findings.md</code>
+          </div>
+          <div class="rel">
+            Пишется/обновляется скиллами <b><code>/wayfinder</code></b> и <b><code>/grill-me</code></b> (или <code>/grilling</code>) —
+            по одному тикету за раз. Сама эта HTML-страница — не часть карты, а её проекция для чтения; каждый раз,
+            когда меняется <code>map.md</code>, эту страницу стоит перегенерировать заново, иначе она начнёт врать.
+            Тикет <b>08 — OpenSpec Bridge</b> — явная точка передачи в L4: он прямо
+            спрашивает «как закрытые решения карты превратить в OpenSpec change».
+          </div>
         </div>
       </div>
     </div>
-    <div class="layer-arrow">↓ параллельно карте — формальный durable-контракт для всего эффорта целиком</div>
+    <div class="layer-arrow">↓ закрытые тикеты (4 из 12 на сегодня) становятся входом для mini-spec и/или OpenSpec</div>
 
-    <div class="layer">
-      <div class="badge">L4</div>
-      <div>
-        <h3>OpenSpec change (версионируемый контракт)</h3>
-        <div class="paths">
-          <code>openspec/changes/news-market-coupling-agentic-loop/proposal.md</code>
-          <code>design.md</code>
-          <code>tasks.md</code>
-          <code>specs/agentic-research-loop/spec.md</code>
-        </div>
-        <div class="rel">
-          Создаётся через <b><code>/opsx:propose</code></b> (здесь — написан вручную, раньше срока, см. раздел 4).
-          <code>proposal.md</code> — зачем и что меняется; <code>design.md</code> — принципы и роли агентов;
-          <code>tasks.md</code> — чек-лист реализации; <code>specs/…/spec.md</code> — формальные MUST/SHOULD-требования
-          со сценариями Given/When/Then.
+    <div class="layer-group" id="layer-345">
+      <div class="layer">
+        <div class="badge">L3</div>
+        <div>
+          <h3>Mini-specs и runner-briefs (узкие тестируемые срезы)</h3>
+          <div class="paths">
+            <code>docs/wayfinder/news-pressure-radar/mini-specs/*.md</code>
+            <code>runner-briefs/*.md</code>
+          </div>
+          <div class="rel">
+            Не требует закрытия <em>всех</em> 12 тикетов — только тех решений карты, которые нужны для одного
+            узкого цикла. Жизненный цикл (см. <code>mini-specs/README.md</code>):
+            <code>draft → reviewed → runner brief → audit → synthesis → update/archive</code>.
+            Runner-brief — это буквально документ передачи отдельному агенту-исполнителю (L5).
+          </div>
         </div>
       </div>
-    </div>
-    <div class="layer-arrow">↓ tasks.md становится работой; после review — /opsx:archive</div>
+      <div class="layer-arrow">↓ параллельно карте — формальный durable-контракт для всего эффорта целиком</div>
 
-    <div class="layer">
-      <div class="badge">L5</div>
-      <div>
-        <h3>Реализация (пока не существует)</h3>
-        <div class="paths">
-          <code>src/…</code> <span style="color:var(--ink-muted)">(ещё не создано для этого эффорта)</span>
+      <div class="layer">
+        <div class="badge">L4</div>
+        <div>
+          <h3>OpenSpec change (версионируемый контракт)</h3>
+          <div class="paths">
+            <code>openspec/changes/news-market-coupling-agentic-loop/proposal.md</code>
+            <code>design.md</code>
+            <code>tasks.md</code>
+            <code>specs/agentic-research-loop/spec.md</code>
+          </div>
+          <div class="rel">
+            Создаётся через <b><code>/opsx:propose</code></b> (здесь — написан вручную, раньше срока, см. раздел 6).
+            <code>proposal.md</code> — зачем и что меняется; <code>design.md</code> — принципы и роли агентов;
+            <code>tasks.md</code> — чек-лист реализации; <code>specs/…/spec.md</code> — формальные MUST/SHOULD-требования
+            со сценариями Given/When/Then. Внимание: <code>tasks.md</code> уже отмечает решённым инструментальный список
+            и порог метрик для модели рыночной связи — а Тикет 10, которому эти решения принадлежат, ещё <em>открыт</em>.
+            Подробнее в разделе 6.
+          </div>
         </div>
-        <div class="rel">
-          Появится через <b><code>/opsx:apply</code></b>, разбирающий <code>tasks.md</code>, или через отдельного
-          Runner-агента, выполняющего runner-brief. После независимого аудита и синтеза —
-          <b><code>/opsx:archive</code></b> переносит спек-дельту в постоянные <code>openspec/specs/</code> (пока пусто),
-          а вывод синтеза уходит в <code>memory/</code> и <code>docs/knowledge.md</code> — замыкая цикл на разделе 1.
+      </div>
+      <div class="layer-arrow">↓ tasks.md становится работой; после review — /opsx:archive</div>
+
+      <div class="layer">
+        <div class="badge">L5</div>
+        <div>
+          <h3>Реализация (пока не существует)</h3>
+          <div class="paths">
+            <code>src/…</code> <span style="color:var(--ink-muted)">(ещё не создано для этого эффорта)</span>
+          </div>
+          <div class="rel">
+            Появится через <b><code>/opsx:apply</code></b>, разбирающий <code>tasks.md</code>, или через отдельного
+            Runner-агента, выполняющего runner-brief. После независимого аудита и синтеза —
+            <b><code>/opsx:archive</code></b> переносит спек-дельту в постоянные <code>openspec/specs/</code> (пока пусто),
+            а вывод синтеза уходит в <code>memory/</code> и <code>docs/knowledge.md</code> — замыкая цикл на разделе 1.
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <section id="tickets">
-    <h2><span class="num">3</span>Граф зависимостей 11 тикетов MADPAC</h2>
+    <h2><span class="num">4</span>Граф зависимостей 12 тикетов MADPAC</h2>
     <p class="section-note">
       Столбцы — топологические уровни (сколько шагов решений нужно пройти, прежде чем тикет разблокируется).
       Наведите курсор на тикет: оранжевая рамка — что он разблокирует, серая пунктирная — от чего сам зависит.
+      Тикет с фиолетовой пульсирующей рамкой — тот, над которым идёт работа прямо сейчас.
     </p>
     <div class="legend">
-      <span class="item"><span class="swatch" style="background:var(--status-good)"></span>open — можно брать сейчас (фронтир)</span>
-      <span class="item"><span class="swatch" style="background:var(--status-blocked)"></span>blocked — ждёт другие тикеты</span>
+      <span class="item"><span class="swatch" style="background:var(--status-closed)"></span>✓ closed — решение принято</span>
+      <span class="item"><span class="swatch" style="background:var(--status-good)"></span>● open — можно брать сейчас (фронтир)</span>
+      <span class="item"><span class="swatch" style="background:var(--status-progress)"></span>◐ in progress — в работе сейчас</span>
+      <span class="item"><span class="swatch" style="background:var(--status-blocked)"></span>○ blocked — ждёт другие тикеты</span>
+    </div>
+    <div class="legend row2">
       <span class="item"><span class="ring" style="border-color:var(--hl-blocks)"></span>при наведении: разблокирует</span>
       <span class="item"><span class="ring" style="border-color:var(--hl-blockedby); border-style:dashed"></span>при наведении: блокирующие</span>
+      <span class="item"><span class="today-sample">сегодня</span>изменилось в сессии 2026-07-31</span>
       <span class="item"><span class="swatch" style="background:var(--type-grilling)"></span>grilling</span>
       <span class="item"><span class="swatch" style="background:var(--type-task)"></span>task</span>
       <span class="item"><span class="swatch" style="background:var(--type-research)"></span>research</span>
@@ -373,48 +578,138 @@
     <div class="levels" id="levels"></div>
   </section>
 
-  <section id="gaps">
-    <h2><span class="num">4</span>Замеченные нестыковки (полезно для обучения)</h2>
+  <section id="feedback-loop">
+    <h2><span class="num">5</span>Живой пример петли: тикет 03 → тикет 12 → назад в 02/03/05/10</h2>
+    <p class="section-note">
+      Раздел 2 показал общую форму цикла. Здесь — конкретный, уже произошедший пример того самого
+      «зацикливания», о котором вы спрашивали: не абстракция, а реальная ветка внутри сегодняшней сессии.
+    </p>
 
-    <div class="callout">
-      <h4>⚠ Спек уже опередил тикеты</h4>
+    <div class="fb-diagram">
+      <div class="fb-main">
+        <div class="fb-target-row">
+          <div class="cap">Уже принятые решения, которые эта петля будет донастраивать позже</div>
+          <span class="chip">Тикет 02 — Signal Ontology (closed)</span>
+          <span class="chip">Тикет 03 — Quality Gate (closed)</span>
+          <span class="chip">Тикет 05 — Source Strategy (closed)</span>
+          <span class="chip">Тикет 10 — Market Coupling (в работе)</span>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Шаг 1 · во время grilling тикета 03</div>
+          <p>Тикеты 02 и 03 ввели числовые пороги на глаз: квартиль скорости для «Rising impulse»,
+          <code>persistence&gt;=14d</code>, <code>source_spread&gt;=3/4</code>, деление отчёта 30%/50% по исключениям.
+          <b>Айрат отказался утверждать очередные проценты вслепую</b> и попросил отдельное, разовое
+          эмпирическое исследование архива вместо спора внутри самого тикета 03.</p>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Шаг 2 · ответвление</div>
+          <p>Рождается <b>Тикет 12 — Historical Cluster Calibration Study</b>: разовый «скелет» аналитики,
+          который проходит по 2–3+ годам архива и выводит обоснованные, а не угаданные, границы кластеров.</p>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Шаг 3 · сегодня, при закрытии тикета 05</div>
+          <p>Активный набор источников вырос с 5 до 14. Это меняет объём и состав данных, которые тикет 12
+          должен покрыть — не только англоязычный архив <code>hf_news.db</code>, но и новый набор из 14
+          русскоязычных источников, глубиной около года. <b>Тикет 12 расширен</b> прямо в тексте тикета 05.</p>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box" style="border-style:dashed; border-color:var(--status-progress);">
+          <div class="tag" style="color:var(--status-progress)">Шаг 4 · ещё не произошло</div>
+          <p>Когда тикет 12 будет выполнен, его результат вернётся короткими «addenda»
+          в уже <b>закрытые</b> тикеты 02, 03, 05 и в открытый тикет 10 — туда, где были угаданные числа.</p>
+        </div>
+      </div>
+      <div class="fb-rail" aria-hidden="true">
+        <svg viewBox="0 0 46 100" preserveAspectRatio="none">
+          <path d="M4,98 C 46,70 46,25 20,4" marker-end="url(#arrow-progress)"></path>
+        </svg>
+      </div>
+    </div>
+
+    <div class="callout-mini">
+      Обратите внимание: <code>closed</code> здесь не значит «никогда больше не тронем». Это значит
+      «достаточно решено, чтобы двигаться дальше» — и петля сознательно оставляет крючок для возврата,
+      когда появятся эмпирические данные. Это не сбой процесса, а его задуманная часть.
+    </div>
+  </section>
+
+  <section id="gaps">
+    <h2><span class="num">6</span>Что до сих пор не сходится (полезно для обучения)</h2>
+
+    <div class="callout fresh">
+      <h4>⚠ Спек уже опередил тикет 10 (раньше — опережал тикет 05, но тот уже закрыт)</h4>
       <p>
         <code>openspec/changes/news-market-coupling-agentic-loop/tasks.md</code> уже содержит отмеченные пункты
-        вроде «resolve первый список инструментов», «resolve размер пула метрик = 10» — это решения,
-        которые по методологии должны были пройти через тикеты <code>05 — Source Strategy</code> и
-        <code>10 — Market Coupling Model</code>. Но оба тикета всё ещё <code>Status: open</code>,
-        <code>Claim: unclaimed</code>. То есть часть решений уже принята «в обход» формальной карты —
-        стоит либо задним числом закрыть эти тикеты со ссылкой на уже принятые решения, либо явно
-        пересмотреть их на карте.
+        вроде «resolve выбор 3 или 5 инструментов», «resolve точный список инструментов», «resolve размер
+        пула метрик = 10», «resolve первый метод контрольного окна» — это решения, которые по методологии
+        должны пройти через <code>Тикет 10 — Market Coupling Model</code>. Но тикет 10 всё ещё
+        <code>Status: open</code> (в работе, не закрыт). То есть часть решений уже принята «в обход»
+        формальной карты — стоит либо задним числом закрыть тикет 10 со ссылкой на уже принятые пункты
+        <code>tasks.md</code>, либо явно свести их воедино при закрытии.
       </p>
     </div>
 
     <div class="callout">
-      <h4>⚠ Несимметричные рёбра в заголовках тикетов</h4>
+      <h4>⚠ Несимметричные рёбра в заголовках тикетов — не исправлены с прошлой сессии</h4>
       <p>
-        Несколько тикетов объявляют <code>Blocks: …</code> в свою сторону, но тикет-получатель не отражает
-        это во встречной строке <code>Blocked By:</code>:
+        Несмотря на то, что четыре тикета закрылись сегодня, эти три несостыковки в заголовках
+        <code>Blocks</code> / <code>Blocked By</code> остались как были:
       </p>
       <ul style="margin:6px 0 0 18px; padding:0;">
         <li><code>10</code> объявляет «Blocks: 06», но заголовок <code>06</code> не перечисляет <code>10</code>.</li>
-        <li><code>06</code>, <code>10</code>, <code>11</code> объявляют «Blocks: 08», но заголовок <code>08</code> перечисляет только 01/02/03/04/05/07.</li>
+        <li><code>06</code>, <code>10</code>, <code>11</code> объявляют «Blocks: 08», но заголовок <code>08</code> перечисляет только 01/02/03/04/05/07/12.</li>
         <li><code>11</code> объявляет «Blocks: 09», но заголовок <code>09</code> перечисляет только 06/08.</li>
       </ul>
       <p style="margin-top:8px;">
-        Граф на этой странице построен как объединение обеих сторон (наиболее полная картина).
-        Стоит поправить заголовки тикетов 06, 08 и 09, чтобы карта не расходилась сама с собой
-        по мере добавления новых тикетов (10 и 11 добавлены позже остальных).
+        Урок здесь не в самих рёбрах, а в том, что <b>закрытие тикета не чинит ссылки на него в других
+        файлах само по себе</b> — это отдельное, ручное действие, про которое легко забыть.
+        Граф на этой странице по-прежнему строится как объединение обеих сторон (наиболее полная картина).
+      </p>
+    </div>
+
+    <div class="callout">
+      <h4>⚠ Тикет 11 сам не уверен, что блокирует</h4>
+      <p>
+        Заголовок <code>Тикета 11</code> объявляет «Blocks: 08, 09». Но раздел «Current Frontier» самого
+        <code>map.md</code>, написанный сегодня, прямо говорит про тикет 11: «meta-process ticket; nothing
+        else in the graph blocks on it». Это противоречие внутри одной и той же карты: заголовок тикета
+        и прозаический анализ приоритетов расходятся в том, действительно ли 11 что-то блокирует.
+        Стоит решить это явно при взятии тикета 11 в работу, а не тащить дальше.
       </p>
     </div>
   </section>
 
-  <footer class="page">
-    Дальше — по <a href="map.md">map.md → Suggested Session Order</a>: сначала закрыть тикеты 01, 02, 03, 05, 10, 11
-    (все они во фронтире, столбец «Уровень 0»), и только потом браться за 04/06/07/08/09.
-    Ход и причины решений по установке инструментов сохранены в памяти сессии
-    (<code>project-madpac-wayfinder-openspec</code>, <code>reference-wayfinder-openspec-tooling</code>,
-    <code>feedback-repo-tool-wiring</code>).
+  <footer class="page" id="footer">
+    Порядок из <a href="map.md">map.md → Suggested Session Order</a>, обновлённый на сегодня:
+    <del>01 Product Contract</del>, <del>02 Signal Ontology</del>, <del>03 Quality Gate Contract</del>,
+    <del>05 Source Strategy</del> — все закрыты 2026-07-31. Дальше: <b>10 — Market Coupling Model</b>
+    (в работе сейчас), затем 04 — Report Prototype, затем 06 — Evaluation Harness, затем 11, затем 07,
+    и только потом 08 → 09. Тикет 12 идёт параллельно, когда удобно, без живого grilling.
+    Ход и причины решений сохранены в памяти сессии
+    (<code>project_madpac_wayfinder_openspec</code>, <code>reference_wayfinder_openspec_tooling</code>,
+    <code>feedback_repo_tool_wiring</code>, <code>feedback_grilling_full_transcript</code>,
+    <code>user_role_madpac_collaboration</code>).
   </footer>
+</div>
+
+<button class="resume-story" id="resumeStory" style="display:none;">🧭 Разбор по шагам</button>
+
+<div class="storybar" id="storybar">
+  <div class="storybar-inner">
+    <div class="cap">
+      <h5 id="capTitle"></h5>
+      <p id="capText"></p>
+    </div>
+    <div class="controls">
+      <span class="step-count" id="stepCount"></span>
+      <button id="prevStep">← Назад</button>
+      <button class="primary" id="nextStep">Далее →</button>
+      <button class="exit" id="exitStory">Выйти ✕</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -425,20 +720,28 @@
     prototype: 'var(--type-prototype)'
   };
 
-  // Edges reconciled from both "Blocks" and "Blocked By" headers across all 11 ticket files
-  // (see section 4 — some ticket headers are missing the reverse edge).
+  const STATUS_META = {
+    closed:   { icon: '✓', label: 'closed' },
+    open:     { icon: '●', label: 'open' },
+    progress: { icon: '◐', label: 'in progress' },
+    blocked:  { icon: '○', label: 'blocked' }
+  };
+
+  // Edges reconciled from both "Blocks" and "Blocked By" headers across all 12 ticket files
+  // (see section 6 — some ticket headers are missing the reverse edge).
   const TICKETS = [
-    { id: '01', title: 'Product Contract',          type: 'grilling',  status: 'open',    level: 0, blocks: ['04','07','08'] },
-    { id: '02', title: 'Signal Ontology',            type: 'grilling',  status: 'open',    level: 0, blocks: ['04','06','08'] },
-    { id: '03', title: 'Quality Gate Contract',      type: 'grilling',  status: 'open',    level: 0, blocks: ['06','07','08'] },
-    { id: '05', title: 'Source Strategy',            type: 'research',  status: 'open',    level: 0, blocks: ['06','08'] },
-    { id: '10', title: 'Market Coupling Model',      type: 'grilling',  status: 'open',    level: 0, blocks: ['06','08'] },
-    { id: '11', title: 'Agentic Delivery Process',   type: 'grilling',  status: 'open',    level: 0, blocks: ['08','09'] },
-    { id: '04', title: 'Report Prototype',           type: 'prototype', status: 'blocked', level: 1, blocks: ['07','08'] },
-    { id: '06', title: 'Evaluation Harness',         type: 'task',      status: 'blocked', level: 1, blocks: ['08','09'] },
-    { id: '07', title: 'Delivery Policy',            type: 'grilling',  status: 'blocked', level: 2, blocks: ['08'] },
-    { id: '08', title: 'OpenSpec Bridge',            type: 'task',      status: 'blocked', level: 3, blocks: ['09'] },
-    { id: '09', title: 'Repository Boundary',        type: 'grilling',  status: 'blocked', level: 4, blocks: [] },
+    { id: '01', title: 'Product Contract',            type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['04','07','08'] },
+    { id: '02', title: 'Signal Ontology',              type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['04','06','08'] },
+    { id: '03', title: 'Quality Gate Contract',        type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['06','07','08'] },
+    { id: '05', title: 'Source Strategy',              type: 'research',  status: 'closed',   today: true,  level: 0, blocks: ['06','08'] },
+    { id: '10', title: 'Market Coupling Model',        type: 'grilling',  status: 'progress', today: true,  level: 0, blocks: ['06','08'] },
+    { id: '11', title: 'Agentic Delivery Process',     type: 'grilling',  status: 'open',     today: false, level: 0, blocks: ['08','09'] },
+    { id: '12', title: 'Historical Cluster Calibration',type: 'prototype',status: 'open',     today: true,  level: 0, blocks: ['08'] },
+    { id: '04', title: 'Report Prototype',             type: 'prototype', status: 'open',     today: true,  level: 1, blocks: ['07','08'] },
+    { id: '06', title: 'Evaluation Harness',           type: 'task',      status: 'open',     today: true,  level: 1, blocks: ['08','09'] },
+    { id: '07', title: 'Delivery Policy',              type: 'grilling',  status: 'blocked',  today: false, level: 2, blocks: ['08'] },
+    { id: '08', title: 'OpenSpec Bridge',              type: 'task',      status: 'blocked',  today: false, level: 3, blocks: ['09'] },
+    { id: '09', title: 'Repository Boundary',          type: 'grilling',  status: 'blocked',  today: false, level: 4, blocks: [] },
   ];
 
   // derive blockedBy from blocks (reconciled, union of both directions)
@@ -458,20 +761,23 @@
 
     (byLevel[lvl] || []).forEach(t => {
       const bl = blockedBy[t.id];
+      const meta = STATUS_META[t.status];
       const card = document.createElement('div');
-      card.className = 'ticket';
+      card.className = 'ticket' + (t.status === 'progress' ? ' is-progress' : '');
       card.id = 'ticket-' + t.id;
       card.dataset.blocks = t.blocks.join(' ');
       card.dataset.blockedby = bl.join(' ');
 
-      const statusLabel = t.status === 'open' ? '● open' : '○ blocked';
       card.innerHTML = `
         <div class="row1">
           <span class="tid">Тикет ${t.id}</span>
-          <span class="status ${t.status}">${statusLabel}</span>
+          <span class="status ${t.status}">${meta.icon} ${meta.label}</span>
         </div>
         <div class="title">${t.title}</div>
-        <div class="typechip"><span class="dot" style="background:${TYPE_COLOR[t.type]}"></span>${t.type}</div>
+        <div class="typerow">
+          <div class="typechip"><span class="dot" style="background:${TYPE_COLOR[t.type]}"></span>${t.type}</div>
+          ${t.today ? '<span class="badge-today">сегодня</span>' : ''}
+        </div>
         <div class="edges">
           ${t.blocks.length ? `<b>разблокирует:</b> ${t.blocks.map(id => `<span class="chip">${id}</span>`).join('')}<br>` : ''}
           ${bl.length ? `<b>ждёт:</b> ${bl.map(id => `<span class="chip">${id}</span>`).join('')}` : '<span style="color:var(--status-good)">ничего не ждёт</span>'}
@@ -496,6 +802,114 @@
       document.querySelectorAll('.ticket').forEach(c =>
         c.classList.remove('hl-self', 'hl-blocks', 'hl-blockedby'));
     });
+  });
+
+  // ---------- Story mode: guided step-through, teacher voice ----------
+  const BLOCK_IDS = ['hero', 'pipeline', 'loop-today', 'layers', 'tickets', 'feedback-loop', 'gaps', 'footer'];
+
+  const STEPS = [
+    { block: 'hero', title: 'Что это за страница', text:
+      'Эта карта — не тикеты сами по себе, а слепок того, как устроено мышление вокруг проекта MADPAC: ' +
+      'смутная идея → карта решений → спека → код — и как эти слои сегодня выглядят на самом деле. ' +
+      'Идём по шагам, я объясню каждый блок.' },
+    { block: 'pipeline', title: 'Общий цикл проекта', text:
+      'Это макро-цикл всего проекта из его собственного design.md. Мы всё ещё на стадии Wayfinder — ' +
+      'ни один спайк ещё не запускался. Пунктирная дуга внизу — это возврат в начало после Memory: ' +
+      'следующий большой оборот снова начинается со смутной идеи или с Wayfinder.' },
+    { block: 'loop-today', title: 'Меньший цикл, спрятанный внутри Wayfinder', text:
+      'Вот конкретное "зацикливание": для каждого тикета мы проходим один и тот же малый цикл — ' +
+      'открыть → расспросить → записать решение → закрыть и обновить карту → выбрать следующий. ' +
+      'Сегодня мы прошли его 4 раза целиком (тикеты 01, 02, 03, 05) и начали пятый раз (тикет 10).' },
+    { block: 'layers', focus: '#layer-01', title: 'Слои 0–1: инструменты и настройка репозитория', text:
+      'Самый нижний слой почти не меняется день ото дня: скиллы устанавливаются один раз на машину (L0), ' +
+      'а CLAUDE.md и конфиги openspec говорят этим скиллам, как вести себя именно в этом репозитории (L1).' },
+    { block: 'layers', focus: '#layer-2', title: 'Слой 2 — сама карта, и эта страница внутри неё', text:
+      'map.md и файлы тикетов — это единственное место, где реально принимаются решения. ' +
+      'Эта HTML-страница не часть карты, а её проекция для чтения: если map.md меняется, ' +
+      'страницу нужно перегенерировать заново, иначе она начнёт врать.' },
+    { block: 'layers', focus: '#layer-345', title: 'Слои 3–5: спека и код — местами уже забежали вперёд', text:
+      'Mini-specs и OpenSpec-change живут параллельно карте. Проблема здесь конкретная: ' +
+      'tasks.md уже отметил решённым список рыночных инструментов и размер пула метрик — ' +
+      'а тикет 10, которому эти решения принадлежат по методологии, всё ещё открыт. Подробности — в шаге про раздел 6.' },
+    { block: 'tickets', title: '12 тикетов, кто кого ждёт', text:
+      'Столбцы — уровни: сколько решений нужно закрыть, прежде чем тикет разблокируется. ' +
+      'Четыре тикета (01, 02, 03, 05) уже закрыты сегодня; 04 и 06 стали доступны как побочный эффект их закрытия. ' +
+      'Наведите курсор на любой тикет — увидите его связи.' },
+    { block: 'tickets', focus: '#ticket-10', title: 'Почему следующий именно тикет 10', text:
+      'Формальный граф не требует тикет 10 раньше 04 или 06. Но у тикета 06 есть замечание: его метрика успеха ' +
+      '(«бэктестированная референсная корреляция») не имеет смысла без модели рыночной связи — то есть без тикета 10. ' +
+      'Это скрытая зависимость, которую граф не показывает, а карта — проговаривает.' },
+    { block: 'feedback-loop', title: 'Живая петля: тикет 03 родил тикет 12', text:
+      'Вот пример настоящего "зацикливания" в этом проекте: во время grilling тикета 03 Айрат отказался ' +
+      'утверждать очередные проценты на глаз — это породило тикет 12. Закрытие тикета 05 сегодня расширило его охват. ' +
+      'А когда тикет 12 будет готов, его выводы вернутся обратно в уже закрытые тикеты 02, 03, 05 и в тикет 10.' },
+    { block: 'gaps', title: 'Что до сих пор не сходится', text:
+      'Три несостыковки в заголовках Blocks/Blocked By остались с прошлой сессии — закрытие тикета само по себе ' +
+      'не чинит ссылки на него в других файлах. Плюс новая деталь: тикет 11 сам не уверен, блокирует ли он что-то — ' +
+      'его заголовок и прозаический анализ карты друг другу противоречат.' },
+    { block: 'footer', title: 'Что дальше', text:
+      'Тикеты 01, 02, 03, 05 закрыты. Тикет 10 — в работе прямо сейчас. Дальше по очереди: 04, 06, 11, 07, ' +
+      'а тикет 12 идёт параллельно в любой удобный момент. Именно в таком порядке эту карту стоит открывать в следующий раз.' },
+  ];
+
+  let storyIndex = 0;
+
+  const captionTitle = document.getElementById('capTitle');
+  const captionText  = document.getElementById('capText');
+  const stepCount     = document.getElementById('stepCount');
+  const prevBtn       = document.getElementById('prevStep');
+  const nextBtn       = document.getElementById('nextStep');
+
+  function applyStep(i) {
+    const step = STEPS[i];
+    BLOCK_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle('story-lit', id === step.block);
+      el.classList.toggle('story-dim', id !== step.block);
+    });
+    document.querySelectorAll('.story-focus').forEach(e => e.classList.remove('story-focus'));
+    if (step.focus) {
+      document.querySelectorAll(step.focus).forEach(e => e.classList.add('story-focus'));
+    }
+    const scrollTarget = step.focus ? document.querySelector(step.focus) : document.getElementById(step.block);
+    scrollTarget?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    captionTitle.textContent = step.title;
+    captionText.textContent = step.text;
+    stepCount.textContent = `${i + 1} / ${STEPS.length}`;
+    prevBtn.disabled = i === 0;
+    nextBtn.textContent = i === STEPS.length - 1 ? 'Готово ✕' : 'Далее →';
+  }
+
+  function enterStory() {
+    document.body.classList.add('story-on');
+    storyIndex = 0;
+    applyStep(storyIndex);
+  }
+
+  function exitStory() {
+    document.body.classList.remove('story-on');
+    BLOCK_IDS.forEach(id => document.getElementById(id)?.classList.remove('story-dim', 'story-lit'));
+    document.querySelectorAll('.story-focus').forEach(e => e.classList.remove('story-focus'));
+    document.getElementById('resumeStory').style.display = 'inline-block';
+  }
+
+  document.getElementById('startStory').addEventListener('click', enterStory);
+  document.getElementById('resumeStory').addEventListener('click', enterStory);
+  document.getElementById('exitStory').addEventListener('click', exitStory);
+  document.getElementById('prevStep').addEventListener('click', () => {
+    if (storyIndex > 0) { storyIndex--; applyStep(storyIndex); }
+  });
+  document.getElementById('nextStep').addEventListener('click', () => {
+    if (storyIndex < STEPS.length - 1) { storyIndex++; applyStep(storyIndex); }
+    else { exitStory(); }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (!document.body.classList.contains('story-on')) return;
+    if (e.key === 'Escape') exitStory();
+    if (e.key === 'ArrowRight') document.getElementById('nextStep').click();
+    if (e.key === 'ArrowLeft') document.getElementById('prevStep').click();
   });
 </script>
 

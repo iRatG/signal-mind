@@ -4,6 +4,8 @@ Status: draft
 Created: 2026-07-28
 Project: MADPAC
 
+**Status note (2026-07-31):** predates [Ticket 10 - Market Coupling Model](../tickets/10-market-coupling-model.md), grilled live 2026-07-31 without using this brief as an input. Ticket 10 is authoritative; corrections below fix the instrument-list mismatch (missing `EUR/RUB`). The specific 10-metric list and control-window details were never grilled — Ticket 10 confirmed only "several metrics, raw vector, no hard gate" as a principle. Do not launch this brief as-is; it needs a pass against Ticket 10's actual Working Decision before any Runner agent uses it.
+
 ## Role Boundary
 
 You are the Hypothesis Runner for the first MADPAC News-Market Coupling cycle.
@@ -34,12 +36,13 @@ The cycle tests candidate correspondence, not causality.
 
 ## Instruments
 
-Use the first instrument universe:
+Use the first instrument universe (registry-driven per Ticket 10 — read instrument rows from the registry table filtered by `active_in_pilot_v0`, do not hardcode this list in code):
 
 - `IMOEX` / broad Moscow Exchange index;
 - oil and gas sector index;
 - financial sector index;
 - `USD/RUB`;
+- `EUR/RUB`;
 - `CNY/RUB`.
 
 If exact local symbols differ, record the mapping and uncertainty instead of guessing silently.
