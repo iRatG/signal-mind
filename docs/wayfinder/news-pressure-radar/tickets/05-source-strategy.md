@@ -137,6 +137,12 @@ Airat's answer: confirmed together with Meduza in the same answer — "Ради�
 Recommendation offered: yes — don't spend grilling time on unconfirmed technical details for the other four.
 Airat's answer: "Да, пока так, не надо всех прям добавлять. Если будем терять, не добирать объём новостей, тогда будем придумывать что-то другое. Хорошо? Пока в бэклог."
 
+## Forward Note (2026-07-31, captured while grilling Ticket 06 - Evaluation Harness, not resolved)
+
+Surfaced while discussing Ticket 06's эталон calibration anchors (known economic-calendar events — CB rate decisions, Rosstat releases, quarterly earnings/audit reports, MOEX corporate events — used as "known-answer test" checkpoints for the statistical method). Airat: "нам надо кстати ещё добавить это точно источник биржу московскую, потому что там тоже нужно... она тоже часто очень экономические новости даёт очень конкретного точного толку, и к ним тоже скорее всего привязана какое-либо событие... но точно нужно добавить... 100% давайте добавим."
+
+**Proposed addition, not yet formally decided as a 15th active source:** MOEX (Moscow Exchange) itself as a **news** source — its own corporate/economic announcements and press releases — distinct from its existing role as the market-data API (Ticket 10, `iss.moex.com`). Needs the same feasibility check the other 14 sources went through before this ticket closed (RSS/API route, terms-of-use check, reachability) — not yet verified. Whoever next touches source strategy should treat this as a concrete candidate to formally add, not just backlog speculation.
+
 **Q8.** Should international wire services (Bloomberg being the only one with a confirmed-live free public RSS) be added now for geopolitical context, or should the project stay Russian-only?
 Recommendation offered: stay Russian-only — the NLP/clustering layer is tuned for Russian, and Bloomberg specifically is markets-focused English content, not a general geopolitical wire; park English sources in backlog as a future separate pipeline.
 Airat's answer: "Да, давай пока только российские данные, только русский язык, лучше пока для начала использовать это."

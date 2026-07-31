@@ -4,7 +4,7 @@ Status: open
 Type: grilling
 Labels: `wayfinder:grilling`
 Claim: unclaimed
-Blocks: Ticket 08 - OpenSpec Bridge, Ticket 09 - Repository Boundary
+Blocks: none formally (meta-process ticket — informs Ticket 08 - OpenSpec Bridge and Ticket 09 - Repository Boundary, especially the champion/challenger shadow-run mechanics inherited from Ticket 06, but neither ticket's own `Blocked By` lists it as a hard dependency; corrected 2026-07-31 to match `map.md`'s Current Frontier, which already treated this as non-blocking)
 
 ## Question
 

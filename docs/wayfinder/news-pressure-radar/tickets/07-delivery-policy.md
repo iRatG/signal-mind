@@ -1,10 +1,10 @@
 # Ticket 07 - Delivery Policy
 
-Status: blocked
+Status: open
 Type: grilling
 Labels: `wayfinder:grilling`
 Claim: unclaimed
-Blocked By: Ticket 01 - Product Contract, Ticket 03 - Quality Gate Contract, Ticket 04 - Report Prototype
+Blocked By: Ticket 01 - Product Contract, Ticket 03 - Quality Gate Contract, Ticket 04 - Report Prototype (all three closed 2026-07-31 — this ticket is now unblocked)
 Blocks: Ticket 08 - OpenSpec Bridge
 
 ## Question
