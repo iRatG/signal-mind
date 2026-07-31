@@ -1,0 +1,31 @@
+# Ticket 12 - Historical Cluster Calibration Study
+
+Status: open
+Type: prototype
+Labels: `wayfinder:prototype`
+Claim: unclaimed
+Blocks: Ticket 08 - OpenSpec Bridge
+
+## Question
+
+What do real, multi-year cluster-size, persistence, and source-spread distributions look like in historical news archives — and what do they actually justify for the numeric thresholds Tickets 02, 03, 05, and 10 currently guess at?
+
+## Why This Matters
+
+Tickets 02 and 03 introduced several numeric thresholds (velocity quartile for Rising impulse, `persistence>=14d`, `source_spread>=3/4`, a proposed 30%/50% quality-gate exclusion split, per-flag severity levels) as reasonable starting assumptions, not measured facts. While grilling Ticket 03, Airat pushed back on picking further arbitrary percentages and asked for a one-off empirical study over the multi-year archive first — his words (paraphrased): a "skeleton" analytics module that runs once, trains itself over 2-3+ years of data, and produces explicit, well-grounded cluster boundaries, kept as a separate piece of work rather than argued over inside Ticket 03's own conversation.
+
+This is distinct from Ticket 11's forward-note that "recalibrating thresholds from accumulated operational logs is a separate future module" — that note is about an ongoing loop over data *this system generates going forward*, which doesn't exist yet. This ticket is a one-time bootstrap from *pre-existing raw archive data*, run before the system has any operational history of its own. Keep the two separate so they don't get conflated later.
+
+## Decision Shape
+
+- **Source data.** `db/hf_news.db` is the only multi-year full-text archive available (READ-ONLY per `CLAUDE.md` — this study only ever reads it, copying into `signal_mind.duckdb` or a scratch table for analysis, never writing back). It is overwhelmingly a single English-language financial-news corpus (`src/parsers/hf_news_loader.py`, `Brianferrell787/financial-news-multisource`, `date >= 2021-01-01`), ~2.52M articles, stopping around 2025-09-06 (`GAP_START` in `src/parsers/gdelt_loader.py`). The `ru_archive:`-prefixed rows are a much smaller, separate backfill (order ~28k articles) covering only the post-gap tail (~2025-09 onward) from the same 5 RU sites the live collector uses — not a matched multi-year Russian series. Confirm exact per-source-prefix row/date breakdown with a read-only query before quoting any number as final.
+- **Actual usable window.** ~2021-01 to ~2025-09 for English (~4.5 years, not 6); the Russian slice is at most a few months of real coverage. Decide explicitly whether the study runs English-only (full window, wrong language for the production RU pipeline), Russian-only (right language, far too little history for a real distribution), or both — reported separately, with the language/window mismatch stated up front rather than blended into one headline number.
+- **Algorithm fit.** The production Union-Find/jaccard clustering (`analytics/news_pressure_cluster.py`, defaults `min_shared_tokens=2`, `jaccard_threshold=0.24`, `max_token_df=320`) is tuned for short normalized headlines from `data/news_pressure/news_pressure.db`, not the full article `text` field in `hf_news.db` — token-frequency statistics differ sharply between headlines and article bodies. Decide: (a) reuse the algorithm unmodified as a first pass and record the mismatch as a caveat on every resulting number, (b) derive a headline-equivalent field (title/lead) from `hf_news.db` before clustering, or (c) run a simpler frequency/co-occurrence pass suited to full text, since this is a one-off calibration script rather than a second production path. Note `src/agent/news_precompute.py`'s existing 7-fixed-keyword `news_daily` bucketing exists in the repo but is not a candidate — it's fixed-keyword counting, not natural cluster discovery, and answers a different question.
+- **Output artifact.** One report (Markdown + a backing data table), not new production code or a scheduled job: cluster-size histogram, persistence-in-days histogram, and source-spread histogram, broken out per month/quarter across the usable window, with an explicit before/after comparison against the currently-proposed values in Ticket 02 (velocity quartile, `persistence>=14d`, `source_spread>=3/4`) and Ticket 03 (30%/50% exclusion caps, per-flag severity table).
+- **Scope boundary vs. Ticket 11.** Explicitly out of scope: any mechanism to re-run this against the system's own future operational logs. That stays Ticket 11's separate future recalibration module.
+- **Dependency graph placement.** Does not block Tickets 02, 03, 05, or 10 from closing with today's provisional numbers. It blocks Ticket 08 - OpenSpec Bridge only — that ticket is where decisions freeze into a durable spec, and ungrounded numeric thresholds should not ship as "final" without at least one pass against real historical distributions.
+- **Follow-up mechanic.** Closing this ticket does not automatically reopen Tickets 02/03/05/10 as new grilling sessions. Its Working Decision records the empirical findings; each affected ticket then gets a short "Revision" addendum (same append-only pattern as forward-notes) pointing at this ticket's numbers, confirmed or adjusted by Airat in a lightweight pass rather than a full re-grill — unless a finding's delta from the guessed value is large enough to warrant one.
+
+## Starting Assumption
+
+Run English-only first — it's the only genuinely multi-year slice available — and report source composition and date coverage explicitly before drawing any conclusion. Treat any Russian-specific number from this study as provisional until the live RU 5-site collector (`data/news_pressure/news_pressure.db`) itself accumulates enough history to check "cluster size in production" against "cluster size in this study" directly; that is the real fix for the language mismatch, not a one-off study alone.

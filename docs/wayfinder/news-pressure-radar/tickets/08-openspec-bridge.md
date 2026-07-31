@@ -4,7 +4,7 @@ Status: blocked
 Type: task
 Labels: `wayfinder:task`
 Claim: unclaimed
-Blocked By: Ticket 01 - Product Contract, Ticket 02 - Signal Ontology, Ticket 03 - Quality Gate Contract, Ticket 04 - Report Prototype, Ticket 05 - Source Strategy, Ticket 07 - Delivery Policy
+Blocked By: Ticket 01 - Product Contract, Ticket 02 - Signal Ontology, Ticket 03 - Quality Gate Contract, Ticket 04 - Report Prototype, Ticket 05 - Source Strategy, Ticket 07 - Delivery Policy, Ticket 12 - Historical Cluster Calibration Study
 Blocks: Ticket 09 - Repository Boundary
 
 ## Question
