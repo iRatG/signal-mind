@@ -29,6 +29,7 @@ This map ends when the route from current spike to implementation spec is clear:
   - The coupling idea deliberately allows both causal directions — news pressure shaping market traces, and markets moving first with news tone/cadence (e.g. top-10 headlines/hour) shifting afterward. Direction and news-granularity are open questions, not a decision — they feed Ticket 01's "primary value" and Ticket 10's "news-first vs market-first vs both" question, not a standing assumption to build against yet.
   - Airat weighs functionality and the shape of the implementation approach above code polish at this stage — this is a planning-heavy effort, not a production-hardening one.
   - Working order is idea → plan → tools → implementation, in that order; don't let tooling setup or code get ahead of an unresolved decision ticket.
+- **Session resume point (2026-07-31, commit `894bc43`, pushed to `origin/madpac-openspec-wayfinder`):** Tickets 01 and 02 closed this session — see their `## Working Decision` + `## Grilling Transcript` for the full record, not just the one-line gists below. Next session should claim [Ticket 03 - Quality Gate Contract](tickets/03-quality-gate-contract.md) first (see `## Current Frontier`), and check Tickets 04, 05, 06, 07, 10, 11 for forward-notes left mid-interview before re-deciding anything on them from scratch.
 
 ## Decisions So Far
 
@@ -37,11 +38,7 @@ This map ends when the route from current spike to implementation spec is clear:
 
 ## Current Frontier
 
-- [Ticket 03 - Quality Gate Contract](tickets/03-quality-gate-contract.md)
-- [Ticket 05 - Source Strategy](tickets/05-source-strategy.md)
-- [Ticket 10 - Market Coupling Model](tickets/10-market-coupling-model.md)
-- [Ticket 11 - Agentic Delivery Process](tickets/11-agentic-delivery-process.md)
-- [Ticket 03 - Quality Gate Contract](tickets/03-quality-gate-contract.md)
+- [Ticket 03 - Quality Gate Contract](tickets/03-quality-gate-contract.md) — **resume here next session**
 - [Ticket 05 - Source Strategy](tickets/05-source-strategy.md)
 - [Ticket 10 - Market Coupling Model](tickets/10-market-coupling-model.md)
 - [Ticket 11 - Agentic Delivery Process](tickets/11-agentic-delivery-process.md)
@@ -76,9 +73,9 @@ This map ends when the route from current spike to implementation spec is clear:
 
 ## Suggested Session Order
 
-1. Resolve [Ticket 01 - Product Contract](tickets/01-product-contract.md) with `grill-me`.
-2. Resolve [Ticket 02 - Signal Ontology](tickets/02-signal-ontology.md) with domain modeling.
-3. Resolve [Ticket 03 - Quality Gate Contract](tickets/03-quality-gate-contract.md) using current run failures as examples.
+1. ~~Resolve [Ticket 01 - Product Contract](tickets/01-product-contract.md) with `grill-me`.~~ Closed 2026-07-31.
+2. ~~Resolve [Ticket 02 - Signal Ontology](tickets/02-signal-ontology.md) with domain modeling.~~ Closed 2026-07-31.
+3. **← Next.** Resolve [Ticket 03 - Quality Gate Contract](tickets/03-quality-gate-contract.md) using current run failures as examples.
 4. Resolve [Ticket 05 - Source Strategy](tickets/05-source-strategy.md) with research.
 5. Resolve [Ticket 10 - Market Coupling Model](tickets/10-market-coupling-model.md) before any market-code implementation.
 6. Resolve [Ticket 11 - Agentic Delivery Process](tickets/11-agentic-delivery-process.md) so the project teaches the workflow, not only the market idea.
