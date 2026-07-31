@@ -1,10 +1,10 @@
 # Ticket 06 - Evaluation Harness
 
-Status: blocked
+Status: open
 Type: task
 Labels: `wayfinder:task`
 Claim: unclaimed
-Blocked By: Ticket 02 - Signal Ontology, Ticket 03 - Quality Gate Contract, Ticket 05 - Source Strategy
+Blocked By: Ticket 02 - Signal Ontology, Ticket 03 - Quality Gate Contract, Ticket 05 - Source Strategy (all three closed 2026-07-31 — this ticket is now formally unblocked, though its forward note ties the "reference correlation" work to Ticket 10 closing first — see below)
 Blocks: Ticket 08 - OpenSpec Bridge, Ticket 09 - Repository Boundary
 
 ## Question

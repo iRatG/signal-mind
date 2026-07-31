@@ -1,10 +1,10 @@
 # Ticket 04 - Report Prototype
 
-Status: blocked
+Status: open
 Type: prototype
 Labels: `wayfinder:prototype`
 Claim: unclaimed
-Blocked By: Ticket 01 - Product Contract, Ticket 02 - Signal Ontology
+Blocked By: Ticket 01 - Product Contract, Ticket 02 - Signal Ontology (both closed 2026-07-31 — this ticket is now unblocked)
 Blocks: Ticket 07 - Delivery Policy, Ticket 08 - OpenSpec Bridge
 
 ## Question
