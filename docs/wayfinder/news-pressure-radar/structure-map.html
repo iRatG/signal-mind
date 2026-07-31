@@ -333,8 +333,8 @@
       <span>Ветка: <code>madpac-openspec-wayfinder</code></span>
       <span>Эффорт: <code>docs/wayfinder/news-pressure-radar/</code></span>
       <span>Кодовое имя: <code>MADPAC</code></span>
-      <span>Состояние: 7 из 12 тикетов закрыто (01, 02, 03, 04, 05, 06, 10)</span>
-      <span>Обновлено: <code>2026-07-31</code> (пятая сессия дня — закрыт Тикет 06)</span>
+      <span>Состояние: 9 из 12 тикетов закрыто (01, 02, 03, 04, 05, 06, 07, 09, 10)</span>
+      <span>Обновлено: <code>2026-07-31</code> (седьмая сессия дня — закрыт Тикет 09, вне очереди графа зависимостей)</span>
     </div>
     <button class="story-cta" id="startStory">▶ Разобрать по шагам (11 шагов, ~5 минут)</button>
     <span class="story-hint">Или просто листайте страницу вниз — все объяснения остаются на месте, шаги — просто фонарик поверх них.</span>
@@ -377,9 +377,11 @@
     <h2><span class="num">2</span>Внутренний цикл: как мы закрывали тикеты сегодня</h2>
     <p class="section-note">
       Внутри блока «Wayfinder» из раздела 1 есть свой, куда более короткий цикл — он повторяется
-      один раз на каждый тикет карты. Именно эту петлю мы прошли сегодня (2026-07-31) семь раз
-      целиком, за пять отдельных сессий. Это и есть то самое «зацикливание» и «движение мысли» буквально —
-      не метафора, а то, что реально произошло за день.
+      один раз на каждый тикет карты. Именно эту петлю мы прошли сегодня (2026-07-31) девять раз
+      целиком, за семь отдельных сессий. Это и есть то самое «зацикливание» и «движение мысли» буквально —
+      не метафора, а то, что реально произошло за день. Восьмой и девятый обороты (07 и 09) — особый
+      случай: 09 был пройден <b>вне очереди</b> формального графа зависимостей, потому что Айрат сам
+      попросил гриллить его раньше, чем разблокировал бы граф — см. врезку ниже и раздел 6.
     </p>
 
     <div class="mini-loop">
@@ -413,15 +415,19 @@
       <div class="iter-arrow">→</div>
       <div class="iter-chip done"><div class="n">⑥ оборот</div><div class="tt">04 — Report Prototype</div><div class="st" style="color:var(--status-closed)">✓ закрыт</div></div>
       <div class="iter-arrow">→</div>
-      <div class="iter-chip now"><div class="n">⑦ оборот</div><div class="tt">06 — Evaluation Harness</div><div class="st" style="color:var(--status-closed)">✓ закрыт — самая долгая сессия, 9 подвопросов</div></div>
+      <div class="iter-chip done"><div class="n">⑦ оборот</div><div class="tt">06 — Evaluation Harness</div><div class="st" style="color:var(--status-closed)">✓ закрыт — самая долгая сессия, 9 подвопросов</div></div>
+      <div class="iter-arrow">→</div>
+      <div class="iter-chip done"><div class="n">⑧ оборот</div><div class="tt">07 — Delivery Policy</div><div class="st" style="color:var(--status-closed)">✓ закрыт — 9 вопросов, две вложенные деревьев решений</div></div>
+      <div class="iter-arrow">→</div>
+      <div class="iter-chip now"><div class="n">⑨ оборот</div><div class="tt">09 — Repository Boundary</div><div class="st" style="color:var(--status-closed)">✓ закрыт вне очереди — MADPAC уходит в свой репозиторий</div></div>
     </div>
 
     <div class="callout-mini">
       Карта (<code>map.md</code>) — это память между оборотами: без неё каждый следующий тикет
       начинался бы с чистого листа. Именно map.md несёт вперёд, что уже решено, что стало
-      фронтиром, и почему приоритет поменялся (см. раздел «Current Frontier» в map.md — сегодня
-      он последовательно ставил 10 <em>перед</em> 04 и 06, хотя формальный граф зависимостей этого
-      не требовал, а затем, после закрытия 06, поставил 07 перед 11 и 12).
+      фронтиром, и почему приоритет поменялся (см. раздел «Current Frontier» в map.md — в разные
+      сессии дня он ставил 10 <em>перед</em> 04 и 06, затем 07 перед 11 и 12, а затем сам Айрат
+      попросил пройти 09 раньше формального графа — вне очереди, но не случайно).
     </div>
   </section>
 
@@ -648,18 +654,34 @@
     <h2><span class="num">6</span>Что до сих пор не сходится (полезно для обучения)</h2>
 
     <div class="callout fresh">
-      <h4>⚠ Спек снова отстаёт — теперь от тикета 06, не от тикета 10</h4>
+      <h4>🔀 Тикет 09 пройден вне очереди формального графа — сознательно, не по ошибке</h4>
+      <p>
+        Формально <code>09 — Repository Boundary</code> был <code>blocked</code> Тикетом 08
+        (OpenSpec Bridge, всё ещё открыт). В шестой сессии Айрат сам поднял вопрос границы
+        репозитория раньше графа и явно отложил выбор на следующую сессию, не выбрав ни один из
+        трёх предложенных вариантов. В седьмой сессии выбор был переспрошен заново (не додуман
+        за него) — Айрат выбрал «гриллить сейчас». Итог: MADPAC уходит в собственный репозиторий;
+        по пути обнаружился ключевой архитектурный принцип — <b>граница git-репозитория и связность
+        с источником данных — разные оси</b> (перепроверено grep'ом, а не принято на слово: код MADPAC
+        уже не обращается к внутренностям <code>signal-mind</code>). Это второй раз в проекте, когда
+        тикет решён раньше формального графа — стоит помнить, что граф зависимостей — это порядок
+        по умолчанию, а не абсолютный запрет, когда у Айрата есть на то реальная причина.
+      </p>
+    </div>
+
+    <div class="callout">
+      <h4>⚠ Спек отстаёт всё сильнее — уже от трёх тикетов подряд (06, 07, 09)</h4>
       <p>
         Тикет 10 закрылся ещё в третьей сессии дня, и его расхождения с черновиком
         <code>openspec/changes/news-market-coupling-agentic-loop/</code> уже сверены (статус-заметки
         добавлены в <code>design.md</code>/mini-spec/runner-brief, список инструментов поправлен;
         нерешённые чекбоксы <code>tasks.md</code> — размер пула метрик, метод контрольного окна,
         глубина калибровки — намеренно <b>оставлены неотмеченными</b>, так как это были предложения
-        старого черновика, а не то, что реально проговорили с Айратом). Но пятая сессия закрыла тикет 06
+        старого черновика, а не то, что реально проговорили с Айратом). Пятая сессия закрыла тикет 06
         с тремя крупными новыми механизмами — <b>Metric Card, Decision Block, champion/challenger</b> —
-        и ни один из них пока не попал в спек вообще. Это тот же паттерн отставания спека от карты,
-        просто на новом витке: чем дольше карта опережает спек, тем больше объём работы у будущего
-        Тикета 08 (OpenSpec Bridge).
+        шестая закрыла тикет 07 (три delivery-поверхности, 3-уровневая функция доставки), седьмая —
+        тикет 09 (решение об отделении репозитория) — и ни один из этих трёх пока не попал в спек вообще.
+        Чем дольше карта опережает спек, тем больше объём работы у будущего Тикета 08 (OpenSpec Bridge).
       </p>
     </div>
 
@@ -687,13 +709,18 @@
     Порядок из <a href="map.md">map.md → Suggested Session Order</a>, обновлённый на сегодня:
     <del>01 Product Contract</del>, <del>02 Signal Ontology</del>, <del>03 Quality Gate Contract</del>,
     <del>05 Source Strategy</del>, <del>10 Market Coupling Model</del>, <del>04 Report Prototype</del>,
-    <del>06 Evaluation Harness</del> — все семь закрыты 2026-07-31. Дальше: <b>07 — Delivery Policy</b>
-    (следующая сессия), затем 11 — Agentic Delivery Process (теперь несёт механику champion/challenger
-    из тикета 06), и только потом 08 → 09. Тикет 12 идёт параллельно, когда удобно, без живого grilling.
+    <del>06 Evaluation Harness</del>, <del>07 Delivery Policy</del>, <del>09 Repository Boundary</del>
+    — девять закрыты 2026-07-31. Тикет 09 закрыт седьмой сессией дня <b>вне очереди формального графа</b>
+    (был <code>blocked</code> по 08, Айрат сам попросил гриллить сейчас) — решение: MADPAC уходит в
+    отдельный репозиторий, порядок физического переноса — сначала Тикет 12 (снапшот из <code>hf_news.db</code>),
+    затем один чистый <code>git filter-repo</code> перенос. Дальше: <b>11 — Agentic Delivery Process</b>
+    (несёт механику champion/challenger из тикета 06 и `K`-порог из тикета 07), Тикет 12 — параллельно,
+    когда удобно, без живого grilling — и теперь ещё и прямой триггер физического исполнения Тикета 09.
+    Затем 08 (OpenSpec Bridge).
     Ход и причины решений сохранены в памяти сессии
     (<code>project_madpac_wayfinder_openspec</code>, <code>reference_wayfinder_openspec_tooling</code>,
     <code>feedback_repo_tool_wiring</code>, <code>feedback_grilling_full_transcript</code>,
-    <code>user_role_madpac_collaboration</code>).
+    <code>user_role_madpac_collaboration</code>, <code>feedback_decision_trees_grounded_in_mechanism</code>).
   </footer>
 </div>
 
@@ -738,12 +765,12 @@
     { id: '05', title: 'Source Strategy',              type: 'research',  status: 'closed',   today: true,  level: 0, blocks: ['06','08'] },
     { id: '10', title: 'Market Coupling Model',        type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['06','08'] },
     { id: '11', title: 'Agentic Delivery Process',     type: 'grilling',  status: 'open',     today: false, level: 0, blocks: [] },
-    { id: '12', title: 'Historical Cluster Calibration',type: 'prototype',status: 'open',     today: false, level: 0, blocks: ['08'] },
-    { id: '04', title: 'Report Prototype',             type: 'prototype', status: 'closed',   today: true,  level: 1, blocks: ['07','08'] },
-    { id: '06', title: 'Evaluation Harness',           type: 'task',      status: 'closed',   today: true,  level: 1, blocks: ['08','09'] },
-    { id: '07', title: 'Delivery Policy',              type: 'grilling',  status: 'open',     today: true,  level: 2, blocks: ['08'] },
-    { id: '08', title: 'OpenSpec Bridge',              type: 'task',      status: 'blocked',  today: false, level: 3, blocks: ['09'] },
-    { id: '09', title: 'Repository Boundary',          type: 'grilling',  status: 'blocked',  today: false, level: 4, blocks: [] },
+    { id: '12', title: 'Historical Cluster Calibration',type: 'prototype',status: 'open',     today: true,  level: 0, blocks: ['08'] },
+    { id: '04', title: 'Report Prototype',             type: 'prototype', status: 'closed',   today: false, level: 1, blocks: ['07','08'] },
+    { id: '06', title: 'Evaluation Harness',           type: 'task',      status: 'closed',   today: false, level: 1, blocks: ['08'] },
+    { id: '07', title: 'Delivery Policy',              type: 'grilling',  status: 'closed',   today: false, level: 2, blocks: ['08'] },
+    { id: '08', title: 'OpenSpec Bridge',              type: 'task',      status: 'blocked',  today: false, level: 3, blocks: [] },
+    { id: '09', title: 'Repository Boundary',          type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: [] },
   ];
 
   // derive blockedBy from blocks (reconciled, union of both directions)
@@ -821,8 +848,8 @@
     { block: 'loop-today', title: 'Меньший цикл, спрятанный внутри Wayfinder', text:
       'Вот конкретное "зацикливание": для каждого тикета мы проходим один и тот же малый цикл — ' +
       'открыть → расспросить → записать решение → закрыть и обновить карту → выбрать следующий. ' +
-      'Сегодня мы прошли его 7 раз целиком за пять сессий: 01, 02, 03, 05, 10, 04 и, наконец, ' +
-      '06 — самая длинная сессия дня, 9 подвопросов на одном тикете.' },
+      'Сегодня мы прошли его 9 раз целиком за семь сессий: 01, 02, 03, 05, 10, 04, 06, 07 и, наконец, ' +
+      '09 — единственный из всех пройденный вне очереди формального графа, по прямой просьбе Айрата.' },
     { block: 'layers', focus: '#layer-01', title: 'Слои 0–1: инструменты и настройка репозитория', text:
       'Самый нижний слой почти не меняется день ото дня: скиллы устанавливаются один раз на машину (L0), ' +
       'а CLAUDE.md и конфиги openspec говорят этим скиллам, как вести себя именно в этом репозитории (L1).' },
@@ -848,14 +875,15 @@
       'утверждать очередные проценты на глаз — это породило тикет 12. Закрытие тикета 05 расширило его охват, ' +
       'а закрытие тикета 06 добавило ещё одну зацепку — известные календарные якоря (ставка ЦБ и подобное) тоже ' +
       'нуждаются в достаточной исторической глубине, которую как раз и должен обеспечить тикет 12.' },
-    { block: 'gaps', title: 'Что до сих пор не сходится (и что починили сегодня)', text:
-      'Три несостыковки Blocks/Blocked By, которые эта страница ловила две сессии подряд, наконец исправлены ' +
-      'в самих файлах тикетов — не только на этой странице. Но появилась новая, свежая версия того же паттерна: ' +
-      'OpenSpec-черновик снова отстаёт от карты, теперь из-за тикета 06, а не тикета 10.' },
+    { block: 'gaps', title: 'Что до сих пор не сходится (и что произошло по-новому сегодня)', text:
+      'Три несостыковки Blocks/Blocked By, пойманные ранее, давно исправлены в самих файлах тикетов. Новое: ' +
+      'тикет 09 был решён вне очереди формального графа — сознательно, по прямому запросу Айрата, не по ошибке. ' +
+      'А OpenSpec-черновик тем временем отстаёт всё сильнее — уже от тикетов 06, 07 и 09 разом.' },
     { block: 'footer', title: 'Что дальше', text:
-      'Семь тикетов закрыты: 01, 02, 03, 04, 05, 06, 10. Дальше по очереди: 07 — Delivery Policy, ' +
-      'затем 11 — Agentic Delivery Process (теперь несёт механику champion/challenger из тикета 06), ' +
-      'а тикет 12 идёт параллельно в любой удобный момент. Именно в таком порядке эту карту стоит открывать в следующий раз.' },
+      'Девять тикетов закрыты: 01, 02, 03, 04, 05, 06, 07, 09, 10. Тикет 09 (граница репозитория) решён ' +
+      'вне очереди — MADPAC уходит в свой репозиторий, но физически переносится только после тикета 12. ' +
+      'Дальше по очереди: 11 — Agentic Delivery Process, тикет 12 — параллельно в любой удобный момент ' +
+      '(и теперь ещё и прямой триггер переноса), а затем 08 — OpenSpec Bridge.' },
   ];
 
   let storyIndex = 0;
