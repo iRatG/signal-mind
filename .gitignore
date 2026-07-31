@@ -26,5 +26,8 @@ src/parsers/vendor/
 .DS_Store
 Thumbs.db
 
+# Local reference/mockup material, not for version control
+dashboard/
+
 # Claude Code local settings (contains personal data)
 .claude/
