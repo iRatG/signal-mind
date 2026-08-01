@@ -1,0 +1,30 @@
+[
+  {
+    "ym": "2023-01",
+    "row_count": 30461,
+    "tokenized_count": 30455,
+    "unique_tokens": 19435,
+    "usable_tokens": 11139,
+    "pair_count": 4969848,
+    "cluster_count": 13693,
+    "largest_cluster": 3728,
+    "t_fetch_s": 147.18,
+    "t_tokenize_s": 0.98,
+    "t_cluster_s": 16.19,
+    "t_total_s": 164.36
+  },
+  {
+    "ym": "2022-06",
+    "row_count": 55378,
+    "tokenized_count": 55112,
+    "unique_tokens": 32609,
+    "usable_tokens": 19604,
+    "pair_count": 11307941,
+    "cluster_count": 28033,
+    "largest_cluster": 2676,
+    "t_fetch_s": 138.98,
+    "t_tokenize_s": 1.45,
+    "t_cluster_s": 37.37,
+    "t_total_s": 177.8
+  }
+]

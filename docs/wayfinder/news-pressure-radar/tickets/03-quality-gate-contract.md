@@ -74,4 +74,8 @@ Airat's answer: rejected picking a number by guesswork. He proposed instead a se
 
 **Q5.** Should `llm_fallback_heuristic` be a real flag, and at what severity?
 Recommendation offered: yes, and severity (b)/exclude — a heuristic label is materially less trustworthy than an LLM interpretation, and a cluster with unconfirmed interpretation shouldn't sit in the "main signal" bucket unflagged.
+
+## Revision (2026-08-01, from Ticket 12 - Historical Cluster Calibration Study)
+
+The Q4 exclusion-share thresholds (30%/50%) were **not evaluated** by Ticket 12 — that requires running `quality_flags()`'s actual logic (unsupported-number checks, single-source-persistent, etc.) against the historical archive, which was out of scope for what Ticket 12 actually ran (cluster-size/persistence/source_spread distributions only, not quality-flag simulation). Also worth noting: the "6 years, American and Russian databases" framing referenced above in Q4 is now further corrected — the real composition is 14 distinct sub-datasets (56% `fnspid_news`), not a single named corpus; see [Ticket 12's findings report](../calibration/findings-report.md) for the full breakdown. The 30%/50% question remains genuinely open — a future session should either run the quality-flag simulation or make a reasoned starting-value decision without it, but not silently inherit an unvalidated guess.
 Airat's answer: "да. согласен."

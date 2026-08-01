@@ -168,4 +168,8 @@ Airat's answer: on the numeric deferral: "Мы примем решение то�
 Recommendation offered: yes — reserve the shape, don't design Telegram/dataset logic until it's actually needed.
 Airat's answer: "Да. Сейчас просто парсим с новостного сайта или RSS, если он доступен. Расширение данных из Telegram, из БД будем закладывать на будущее. Сейчас для прототипа мы берём, по сути, что лежит в открытом прямом доступе и легко достать."
 
+## Revision (2026-08-01, from Ticket 12 - Historical Cluster Calibration Study)
+
+Q12's deferred `source_spread` recalibration ran, but **could not be completed for the reason anticipated in Ticket 10's session** (see Ticket 10's own revision note): the historical archive available to Ticket 12 (`db/hf_news.db`) only carries 3 of the current 14 Russian sources (interfax, lenta, kommersant) over 9 months, so no 14-source empirical number exists yet. What the Russian pass on that limited slice showed (provisional, not the final answer): `source_spread>=3` (i.e. "hit all 3 available sources") was reached by 27% of clusters; persistence-14d was reached by 17.2%. Airat's own condition from Q12 — "на основе данных... эмпирически" — still isn't satisfiable for the full 14-source set until the live collector accumulates real history, exactly as anticipated. Full detail: [Ticket 12's findings report](../calibration/findings-report.md).
+
 Final synthesis of the full Working Decision was read back to Airat in one pass before closing; confirmed: "да, давай, мы всё обсудили. Всё верно. Все зоны закрыли в этом тикете."

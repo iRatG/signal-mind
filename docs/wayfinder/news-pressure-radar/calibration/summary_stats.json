@@ -1,0 +1,205 @@
+{
+  "english": {
+    "n": 47068,
+    "volume": {
+      "min": 5,
+      "mean": 22.1,
+      "max": 9004,
+      "pct": {
+        "50": 8,
+        "75": 24,
+        "90": 36,
+        "95": 45,
+        "99": 104
+      }
+    },
+    "persistence": {
+      "min": 1,
+      "mean": 4.3,
+      "max": 31,
+      "pct": {
+        "50": 3,
+        "75": 5,
+        "90": 9,
+        "95": 14,
+        "99": 28
+      }
+    },
+    "source_spread": {
+      "min": 1,
+      "mean": 1.74,
+      "max": 97,
+      "pct": {
+        "50": 1,
+        "75": 2,
+        "90": 4,
+        "95": 5,
+        "99": 9
+      }
+    },
+    "share_persist_ge14": 0.0527,
+    "share_spread_ge3": 0.1678,
+    "share_spread_ge4": 0.1069,
+    "by_quarter": {
+      "2021-Q1": {
+        "n": 2994,
+        "mean_volume": 17.5,
+        "max_volume": 4144
+      },
+      "2021-Q2": {
+        "n": 2902,
+        "mean_volume": 17.6,
+        "max_volume": 5582
+      },
+      "2021-Q3": {
+        "n": 2826,
+        "mean_volume": 18.5,
+        "max_volume": 6368
+      },
+      "2021-Q4": {
+        "n": 3073,
+        "mean_volume": 17.6,
+        "max_volume": 4809
+      },
+      "2022-Q1": {
+        "n": 3311,
+        "mean_volume": 18.2,
+        "max_volume": 7917
+      },
+      "2022-Q2": {
+        "n": 3521,
+        "mean_volume": 18.3,
+        "max_volume": 8217
+      },
+      "2022-Q3": {
+        "n": 3632,
+        "mean_volume": 18.0,
+        "max_volume": 9004
+      },
+      "2022-Q4": {
+        "n": 3439,
+        "mean_volume": 17.6,
+        "max_volume": 8277
+      },
+      "2023-Q1": {
+        "n": 2070,
+        "mean_volume": 22.4,
+        "max_volume": 8061
+      },
+      "2023-Q2": {
+        "n": 2441,
+        "mean_volume": 20.6,
+        "max_volume": 8533
+      },
+      "2023-Q3": {
+        "n": 5547,
+        "mean_volume": 23.4,
+        "max_volume": 5142
+      },
+      "2023-Q4": {
+        "n": 8846,
+        "mean_volume": 32.0,
+        "max_volume": 5692
+      },
+      "2024-Q1": {
+        "n": 21,
+        "mean_volume": 32.0,
+        "max_volume": 246
+      },
+      "2024-Q2": {
+        "n": 25,
+        "mean_volume": 11.6,
+        "max_volume": 31
+      },
+      "2024-Q3": {
+        "n": 18,
+        "mean_volume": 8.3,
+        "max_volume": 23
+      },
+      "2024-Q4": {
+        "n": 65,
+        "mean_volume": 14.3,
+        "max_volume": 124
+      },
+      "2025-Q1": {
+        "n": 93,
+        "mean_volume": 36.4,
+        "max_volume": 1804
+      },
+      "2025-Q2": {
+        "n": 1004,
+        "mean_volume": 32.4,
+        "max_volume": 8305
+      },
+      "2025-Q3": {
+        "n": 1240,
+        "mean_volume": 26.8,
+        "max_volume": 7371
+      }
+    }
+  },
+  "russian": {
+    "n": 267,
+    "volume": {
+      "min": 5,
+      "mean": 36.1,
+      "max": 976,
+      "pct": {
+        "50": 7,
+        "75": 14,
+        "90": 32,
+        "95": 81,
+        "99": 775
+      }
+    },
+    "persistence": {
+      "min": 1,
+      "mean": 8.7,
+      "max": 31,
+      "pct": {
+        "50": 5,
+        "75": 9,
+        "90": 22,
+        "95": 30,
+        "99": 31
+      }
+    },
+    "source_spread": {
+      "min": 1,
+      "mean": 1.89,
+      "max": 3,
+      "pct": {
+        "50": 2,
+        "75": 3,
+        "90": 3,
+        "95": 3,
+        "99": 3
+      }
+    },
+    "share_persist_ge14": 0.1723,
+    "share_spread_ge3": 0.2697,
+    "share_spread_ge4": 0.0,
+    "by_quarter": {
+      "2025-Q3": {
+        "n": 31,
+        "mean_volume": 34.9,
+        "max_volume": 775
+      },
+      "2025-Q4": {
+        "n": 108,
+        "mean_volume": 33.0,
+        "max_volume": 839
+      },
+      "2026-Q1": {
+        "n": 80,
+        "mean_volume": 44.2,
+        "max_volume": 976
+      },
+      "2026-Q2": {
+        "n": 48,
+        "mean_volume": 30.0,
+        "max_volume": 410
+      }
+    }
+  }
+}

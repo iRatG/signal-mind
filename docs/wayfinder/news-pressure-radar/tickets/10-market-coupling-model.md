@@ -117,3 +117,7 @@ Mid-session tangent, captured but not part of this ticket's decision: Airat rais
 Airat's answer: "все хорошо." Confirmed as-is, no changes.
 
 Also confirmed mid-session (not tied to one specific question): a general "idea buffer" convention is needed for tangents that don't map to one ticket — created `docs/wayfinder/news-pressure-radar/idea-buffer.md` this session per Airat's request ("главное чтобы ты понимал куда это поместить... если к тикету не относится, просто записать это точно").
+
+## Revision (2026-08-01, from Ticket 12 - Historical Cluster Calibration Study)
+
+The anomaly-metric pool (Q3-area decisions on this ticket) and velocity-quartile threshold both remain **uncalibrated** — Ticket 12 clusters headlines independently per calendar month (matching production windowing), so it produced no cross-month time series to derive a velocity threshold from. This is a real gap, not a guess to fill in silently — whoever next touches velocity calibration needs either a cross-month linked view of this same historical data, or to wait for the live pipeline's own operational history. Separately, Ticket 12 found the historical archive's English corpus (`hf_news.db`, 56% one sub-dataset with no recoverable per-outlet identity) is not a reliable source for calibrating any `source_spread`-based metric — confirms this ticket's own earlier reasoning that Russian production history, not the English archive, is the real fix for source-diversity thresholds. Full detail: [Ticket 12's findings report](../calibration/findings-report.md).
