@@ -53,10 +53,28 @@ This map ends when the route from current spike to implementation spec is clear:
 
 ## Current Frontier
 
-All 12 tickets are closed as of 2026-08-01. Nothing left to decide — only compilation and execution work remains:
+All 12 tickets are closed as of 2026-08-01. Nothing left to decide — only compilation and execution work remains. See `## Next Session Plan` below for the concrete step-by-step.
 
-1. **[Ticket 08 - OpenSpec Bridge](tickets/08-openspec-bridge.md) — next.** Fully unblocked now that Ticket 12 has produced its numeric findings. Compile all 12 closed tickets' decisions into `proposal.md`/`design.md`/`tasks.md`/spec deltas, per Ticket 11's settled skill mapping (`to-spec`/`openspec-propose`).
-2. [Ticket 09 - Repository Boundary](tickets/09-repository-boundary.md)'s physical extraction — Ticket 12's snapshot is now materialized, which per Ticket 09's own Working Decision is the trigger to run the one-time history-preserving `git filter-repo` cut-over into `github.com/iRatG/madpac`. Can run before or after Ticket 08 — the two are independent now.
+## Next Session Plan (written 2026-08-01, do Ticket 08 before Ticket 09)
+
+**Order rationale:** compile the spec while everything still lives in one repo with full history, then move it all across in one clean cut — not split the repo first and reconcile compilation work across two checkouts afterward.
+
+**Step 1 — [Ticket 08 - OpenSpec Bridge](tickets/08-openspec-bridge.md).**
+1. Read all 12 tickets' `## Working Decision` sections directly (not just this map's one-line gists) as the source of truth.
+2. Reconcile against the pre-existing draft at `openspec/changes/news-market-coupling-agentic-loop/` (created 2026-07-28, predates the disciplined grill process) — per the precedent set during Ticket 10's own session, treat that draft as something to correct/update, never as a default answer to a question a ticket already settled differently.
+3. Use the `to-spec` or `openspec-propose` skill to generate/update `proposal.md`, `design.md`, `tasks.md`, and spec deltas — this compiles already-settled decisions, it does not redecide anything.
+4. Give Airat a lightweight review pass on the compiled artifact before calling it final (compiling can still introduce transcription drift even when nothing new is being decided).
+5. Close Ticket 08.
+
+**Step 2 — [Ticket 09 - Repository Boundary](tickets/09-repository-boundary.md) physical extraction.**
+1. **Do not run `git filter-repo` on this live working checkout.** Clone a fresh mirror first (`git clone --mirror`) and operate on that, so `signal-mind`'s own history is never at risk if something goes wrong mid-extraction.
+2. Paths to preserve, per Ticket 09's own Working Decision (verbatim list, re-verified 2026-08-01): `docs/wayfinder/news-pressure-radar/` (covers Ticket 12's `calibration/` output too), `openspec/changes/news-market-coupling-agentic-loop/`, `analytics/news_pressure_cluster.py`, `scripts/news_pressure_regimen.py`, `data/news_pressure/`, and Ticket 12's own script `analytics/hf_news_calibration.py`.
+3. **Real gap, flag before running rather than silently guess:** `analytics/news_pressure_snapshot.py` (the tokenizer Ticket 12's calibration script reused) and `config/news_pressure_sources.yaml` are NOT in Ticket 09's explicit path list, but are functionally part of the same MADPAC pipeline. Ask Airat whether to add them before extraction — omitting them could leave the new repo's code unable to actually run.
+4. Run `git filter-repo` against the confirmed path list on the mirror clone.
+5. Push the filtered history to `github.com/iRatG/madpac` (already created, private, currently README-only from the eighth session).
+6. Verify by cloning the new repo fresh and confirming a few sample files' history is intact and the code at least imports cleanly.
+7. Give the new repo its own fresh `CLAUDE.md` — explicitly decided that the old protected-files list does not carry over (those files belong to `signal-mind`, not MADPAC).
+8. **Not yet decided, flag for Airat:** what happens to the original paths inside `signal-mind` afterward — leave them as a historical artifact, or remove them once the extraction is verified. Ticket 09's Working Decision doesn't say; don't assume either way.
 
 ## Blocked Tickets
 
