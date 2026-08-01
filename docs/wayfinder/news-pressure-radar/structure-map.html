@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MADPAC — как связаны Wayfinder, OpenSpec и репозиторий</title>
+<title>MADPAC — архитектура: скиллы, роли агентов, обратные связи</title>
 <style>
   :root {
     color-scheme: light;
@@ -29,6 +29,7 @@
     --hl-blockedby:   #52514e;
     --today-bg:       #fff2d9;
     --today-ink:      #9a6a00;
+    --wall-ink:       #b03a2e;
   }
 
   * { box-sizing: border-box; }
@@ -107,7 +108,7 @@
   }
   body.story-on .resume-story { display: none; }
 
-  /* ---------- Pipeline strip ---------- */
+  /* ---------- Pipeline strip (reused for: macro cycle, skill pipeline, altitude lanes) ---------- */
   .pipeline-wrap { position: relative; }
   .pipeline {
     display: flex;
@@ -136,6 +137,8 @@
     font-size: 14px; color: var(--ink-secondary);
   }
   .pnode.current .dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pnode.wall .dot { background: #fff5f4; border-color: var(--wall-ink); color: var(--wall-ink); }
+  .pnode.wall .label { color: var(--wall-ink); }
   .pnode .label { font-size: 12.5px; font-weight: 600; }
   .pnode .sub { font-size: 11px; color: var(--ink-muted); }
   .parrow { display: flex; align-items: center; color: var(--accent); font-size: 16px; padding-top: 26px; animation: flow 1.8s ease-in-out infinite; }
@@ -151,13 +154,18 @@
     background: var(--accent-wash); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px;
   }
 
+  /* ---------- Lane label + pipeline, for the "three altitudes" section ---------- */
+  .lane { margin-bottom: 16px; }
+  .lane .lane-label { font-size: 12.5px; font-weight: 700; color: var(--ink-secondary); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .lane .lane-label .lchip { font-size: 10.5px; font-weight: 700; background: var(--surface-page); border: 1px solid var(--border); border-radius: 4px; padding: 1px 7px; color: var(--ink-muted); }
+
   /* ---------- Mini loop (today's session) ---------- */
   .mini-loop { background: var(--surface-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 16px 8px; margin-bottom: 18px; position: relative; }
 
   .iteration-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin-bottom: 22px; }
   .iter-chip {
     background: var(--surface-card); border: 1.5px solid var(--border); border-radius: 9px;
-    padding: 10px 13px; min-width: 150px; flex: 1 1 150px;
+    padding: 10px 13px; min-width: 138px; flex: 1 1 138px;
   }
   .iter-chip .n { font-size: 11px; color: var(--ink-muted); font-weight: 700; }
   .iter-chip .tt { font-size: 13px; font-weight: 600; margin: 3px 0 5px; }
@@ -193,6 +201,19 @@
   .layer .rel { font-size: 12.5px; color: var(--ink-secondary); margin-top: 8px; }
   .layer .rel b { color: var(--ink-primary); }
   .layer-arrow { text-align: center; color: var(--ink-muted); font-size: 14px; margin: -2px 0; }
+
+  /* ---------- Satellite skill chips (gated skills) ---------- */
+  .gate-box { background: var(--surface-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-top: 14px; }
+  .gate-box .gate-title { font-size: 12.5px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .gate-box .gate-title .lockstate { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+  .gate-box .gate-title .lockstate.open { color: #0ca30c; background: rgba(12,163,12,0.10); }
+  .satellite-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sat-chip {
+    background: var(--surface-page); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; font-size: 12.5px; min-width: 130px; flex: 1 1 130px;
+  }
+  .sat-chip b { display: block; font-size: 13px; margin-bottom: 2px; }
+  .sat-chip .lens { font-size: 11px; color: var(--ink-muted); }
 
   /* ---------- Ticket DAG ---------- */
   .legend { display: flex; flex-wrap: wrap; gap: 18px; margin: 0 0 8px; font-size: 12.5px; color: var(--ink-secondary); }
@@ -244,13 +265,14 @@
     display: inline-block; background: var(--surface-page); border: 1px solid var(--border);
     border-radius: 3px; padding: 0 4px; margin: 1px 1px 0 0; font-variant-numeric: tabular-nums;
   }
+  .ticket .note { font-size: 10.5px; color: var(--status-progress); margin-top: 5px; font-style: italic; }
 
   .ticket.hl-self { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-wash); }
   .ticket.hl-blocks { border-color: var(--hl-blocks); box-shadow: 0 0 0 2px rgba(235,104,52,0.12); }
   .ticket.hl-blockedby { border-color: var(--hl-blockedby); border-style: dashed; }
   .ticket.is-progress { border-color: var(--status-progress); box-shadow: 0 0 0 2px var(--status-progress-wash); animation: pulse-progress 2.2s ease-in-out infinite; }
 
-  /* ---------- Feedback loop diagram ---------- */
+  /* ---------- Feedback loop diagram (reused for: ticket-level loop, calibration contour, audit-verification loop) ---------- */
   .fb-diagram { display: flex; gap: 24px; align-items: stretch; }
   .fb-main { flex: 1 1 auto; display: flex; flex-direction: column; gap: 0; min-width: 0; }
   .fb-rail { flex: 0 0 46px; position: relative; }
@@ -274,6 +296,8 @@
   .fb-box .tag { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 4px; }
   .fb-box p { margin: 0; font-size: 13.5px; color: var(--ink-secondary); }
   .fb-box p b { color: var(--ink-primary); }
+  .fb-box.wall-box { border-color: var(--wall-ink); background: #fff8f7; }
+  .fb-box.wall-box .tag { color: var(--wall-ink); }
 
   /* ---------- Callouts ---------- */
   .callout {
@@ -286,6 +310,7 @@
     font-size: 13.5px;
   }
   .callout.fresh { border-left-color: var(--status-progress); }
+  .callout.good { border-left-color: var(--status-good); }
   .callout h4 { margin: 0 0 6px; font-size: 13.5px; }
   .callout code { background: rgba(11,11,11,0.05); border-radius: 3px; padding: 0 4px; font-size: 12.5px; }
 
@@ -321,67 +346,63 @@
 
 <div class="wrap">
   <header class="page" id="hero">
-    <h1>Как связаны файлы MADPAC: карта, тикеты и код</h1>
+    <h1>MADPAC: как скиллы и агенты работают друг с другом</h1>
     <p class="lede">
-      Карта уровней абстракции для обучающего эффорта «научиться пользоваться openspec + wayfinder».
-      Показывает, что от чего зависит: от установленных скиллов — к конфигурации репозитория —
-      к карте решений — к спекам — к коду. И отдельно показывает то, о чём чаще всего спрашивают:
-      где здесь петли, кто на кого ссылается назад, и почему процесс иногда возвращается
-      к уже, казалось бы, закрытым решениям.
+      Эта страница объясняет не тикеты сами по себе, а <b>архитектуру процесса</b>: какие скиллы
+      зафиксированы навсегда, какие подключаются позже и почему; какие роли агентов должны сидеть
+      в разных контекстах, чтобы не проверять сами себя; и как решения о калибровке возвращаются
+      обратно в систему, а не тонут. Всё, что здесь описано абстрактно, сегодня же произошло на самом
+      деле — конкретный пример вплетён в каждый раздел.
     </p>
     <div class="meta-row">
       <span>Ветка: <code>madpac-openspec-wayfinder</code></span>
       <span>Эффорт: <code>docs/wayfinder/news-pressure-radar/</code></span>
       <span>Кодовое имя: <code>MADPAC</code></span>
-      <span>Состояние: 10 из 12 тикетов закрыто (01, 02, 03, 04, 05, 06, 07, 09, 10, 11)</span>
-      <span>Обновлено: <code>2026-07-31</code> (восьмая сессия дня — закрыт Тикет 11, последний чисто решенческий тикет)</span>
+      <span>Состояние: 12 из 12 wayfinder-тикетов закрыто + Тикет 08 (OpenSpec Bridge) закрыт</span>
+      <span>Обновлено: <code>2026-08-01</code> (одиннадцатая сессия — компиляция спеки + два независимых аудита)</span>
     </div>
-    <button class="story-cta" id="startStory">▶ Разобрать по шагам (11 шагов, ~5 минут)</button>
+    <button class="story-cta" id="startStory">▶ Разобрать по шагам (12 шагов, ~6 минут)</button>
     <span class="story-hint">Или просто листайте страницу вниз — все объяснения остаются на месте, шаги — просто фонарик поверх них.</span>
   </header>
 
   <section id="pipeline">
-    <h2><span class="num">1</span>Общий цикл (по design.md проекта)</h2>
+    <h2><span class="num">1</span>Общий цикл проекта (по design.md)</h2>
     <p class="section-note">
-      Сам проект уже сформулировал свой методологический цикл в
-      <code>openspec/changes/news-market-coupling-agentic-loop/proposal.md</code>:
+      Проект сам сформулировал свой методологический цикл в <code>openspec/changes/madpac-v0/proposal.md</code>:
       «foggy human intent → wayfinder → spec → spike → audit → synthesis → memory → next cycle».
-      Ниже — тот же цикл, с меткой, где мы сейчас находимся. Мы всё ещё внутри «Wayfinder» —
-      ни один спайк ещё не запускался, — но <em>внутри</em> самого Wayfinder есть свой,
-      меньший цикл. О нём — следующий блок.
+      Сегодня мы впервые прошли дальше «Wayfinder» — спека собрана и уже дважды проверена, — но ни один
+      «Spike» (запуск Runner-агента на реальной гипотезе) ещё не выполнялся. Аудит, который случился
+      сегодня, — это отдельная, более ранняя проверка: проверялась сама спека, а не результат спайка.
     </p>
     <div class="pipeline-wrap">
       <div class="pipeline">
-        <div class="pnode"><div class="dot">💭</div><div class="label">Смутная идея</div><div class="sub">Airat, разговор</div></div>
+        <div class="pnode"><div class="dot">💭</div><div class="label">Смутная идея</div><div class="sub">12/12 карт-тикетов</div></div>
         <div class="parrow">→</div>
-        <div class="pnode current"><div class="dot">🧭</div><div class="label">Wayfinder</div><div class="sub">мы здесь</div></div>
+        <div class="pnode"><div class="dot">🧭</div><div class="label">Wayfinder</div><div class="sub">закрыт целиком</div></div>
         <div class="parrow">→</div>
-        <div class="pnode"><div class="dot">📄</div><div class="label">Mini-spec</div><div class="sub">узкий контракт</div></div>
+        <div class="pnode current"><div class="dot">📐</div><div class="label">Spec</div><div class="sub">собран, проверен ×2 — мы здесь</div></div>
         <div class="parrow">→</div>
-        <div class="pnode"><div class="dot">🧪</div><div class="label">Spike</div><div class="sub">Runner-агент</div></div>
+        <div class="pnode"><div class="dot">🧪</div><div class="label">Spike</div><div class="sub">ещё не запускался</div></div>
         <div class="parrow">→</div>
-        <div class="pnode"><div class="dot">🔍</div><div class="label">Audit</div><div class="sub">Auditor-агент</div></div>
+        <div class="pnode"><div class="dot">🔍</div><div class="label">Audit</div><div class="sub">аудит спайка (другой)</div></div>
         <div class="parrow">→</div>
         <div class="pnode"><div class="dot">🧩</div><div class="label">Synthesis</div><div class="sub">Synthesizer</div></div>
         <div class="parrow">→</div>
-        <div class="pnode"><div class="dot">💾</div><div class="label">Memory</div><div class="sub">docs/knowledge.md</div></div>
+        <div class="pnode"><div class="dot">💾</div><div class="label">Memory</div><div class="sub">memory/ + docs</div></div>
       </div>
       <svg class="loop-svg-strip" viewBox="0 0 100 20" preserveAspectRatio="none">
         <path d="M97,2 C 70,18 30,18 3,2" marker-end="url(#arrow-muted)"></path>
       </svg>
-      <div class="loopback-label">↩ следующий оборот этого большого цикла возвращается к Wayfinder или к новой смутной идее</div>
+      <div class="loopback-label">↩ следующий оборот большого цикла возвращается к Wayfinder — но уже за пределами планирования, из результата реальной работы</div>
     </div>
   </section>
 
   <section id="loop-today">
-    <h2><span class="num">2</span>Внутренний цикл: как мы закрывали тикеты сегодня</h2>
+    <h2><span class="num">2</span>Внутренний цикл: как закрывались все 12 тикетов</h2>
     <p class="section-note">
-      Внутри блока «Wayfinder» из раздела 1 есть свой, куда более короткий цикл — он повторяется
-      один раз на каждый тикет карты. Именно эту петлю мы прошли сегодня (2026-07-31) девять раз
-      целиком, за семь отдельных сессий. Это и есть то самое «зацикливание» и «движение мысли» буквально —
-      не метафора, а то, что реально произошло за день. Восьмой и девятый обороты (07 и 09) — особый
-      случай: 09 был пройден <b>вне очереди</b> формального графа зависимостей, потому что Айрат сам
-      попросил гриллить его раньше, чем разблокировал бы граф — см. врезку ниже и раздел 6.
+      Внутри блока «Wayfinder» из раздела 1 всё это время крутился свой, короткий цикл — по разу на
+      каждый тикет карты. За 11 сессий он прошёл полный круг 12 раз. Тикеты 09 и 12 были пройдены
+      <b>вне формального порядка графа зависимостей</b> — по прямой просьбе Айрата, сознательно, не по ошибке.
     </p>
 
     <div class="mini-loop">
@@ -403,31 +424,24 @@
     </div>
 
     <div class="iteration-strip">
-      <div class="iter-chip done"><div class="n">① оборот</div><div class="tt">01 — Product Contract</div><div class="st" style="color:var(--status-closed)">✓ закрыт</div></div>
+      <div class="iter-chip done"><div class="n">01–03, 05, 10</div><div class="tt">Product Contract → Market Coupling</div><div class="st" style="color:var(--status-closed)">✓ закрыты, сессии 1–3</div></div>
       <div class="iter-arrow">→</div>
-      <div class="iter-chip done"><div class="n">② оборот</div><div class="tt">02 — Signal Ontology</div><div class="st" style="color:var(--status-closed)">✓ закрыт</div></div>
+      <div class="iter-chip done"><div class="n">04, 06, 07</div><div class="tt">Report → Evaluation → Delivery</div><div class="st" style="color:var(--status-closed)">✓ закрыты, сессии 4–6</div></div>
       <div class="iter-arrow">→</div>
-      <div class="iter-chip done"><div class="n">③ оборот</div><div class="tt">03 — Quality Gate</div><div class="st" style="color:var(--status-closed)">✓ закрыт, породил тикет 12</div></div>
+      <div class="iter-chip done"><div class="n">09</div><div class="tt">Repository Boundary</div><div class="st" style="color:var(--status-closed)">✓ закрыт вне очереди, сессия 7</div></div>
       <div class="iter-arrow">→</div>
-      <div class="iter-chip done"><div class="n">④ оборот</div><div class="tt">05 — Source Strategy</div><div class="st" style="color:var(--status-closed)">✓ закрыт, расширил тикет 12</div></div>
+      <div class="iter-chip done"><div class="n">11</div><div class="tt">Agentic Delivery Process</div><div class="st" style="color:var(--status-closed)">✓ закрыт, последний чисто решенческий, сессия 8</div></div>
       <div class="iter-arrow">→</div>
-      <div class="iter-chip done"><div class="n">⑤ оборот</div><div class="tt">10 — Market Coupling</div><div class="st" style="color:var(--status-closed)">✓ закрыт с чистого листа</div></div>
+      <div class="iter-chip done"><div class="n">12</div><div class="tt">Historical Calibration</div><div class="st" style="color:var(--status-closed)">✓ закрыт, первое применение implement, сессия 10</div></div>
       <div class="iter-arrow">→</div>
-      <div class="iter-chip done"><div class="n">⑥ оборот</div><div class="tt">04 — Report Prototype</div><div class="st" style="color:var(--status-closed)">✓ закрыт</div></div>
-      <div class="iter-arrow">→</div>
-      <div class="iter-chip done"><div class="n">⑦ оборот</div><div class="tt">06 — Evaluation Harness</div><div class="st" style="color:var(--status-closed)">✓ закрыт — самая долгая сессия, 9 подвопросов</div></div>
-      <div class="iter-arrow">→</div>
-      <div class="iter-chip done"><div class="n">⑧ оборот</div><div class="tt">07 — Delivery Policy</div><div class="st" style="color:var(--status-closed)">✓ закрыт — 9 вопросов, две вложенные деревьев решений</div></div>
-      <div class="iter-arrow">→</div>
-      <div class="iter-chip now"><div class="n">⑨ оборот</div><div class="tt">09 — Repository Boundary</div><div class="st" style="color:var(--status-closed)">✓ закрыт вне очереди — MADPAC уходит в свой репозиторий</div></div>
+      <div class="iter-chip now"><div class="n">08</div><div class="tt">OpenSpec Bridge</div><div class="st" style="color:var(--status-closed)">✓ закрыт сегодня — компиляция + 2 аудита</div></div>
     </div>
 
     <div class="callout-mini">
       Карта (<code>map.md</code>) — это память между оборотами: без неё каждый следующий тикет
-      начинался бы с чистого листа. Именно map.md несёт вперёд, что уже решено, что стало
-      фронтиром, и почему приоритет поменялся (см. раздел «Current Frontier» в map.md — в разные
-      сессии дня он ставил 10 <em>перед</em> 04 и 06, затем 07 перед 11 и 12, а затем сам Айрат
-      попросил пройти 09 раньше формального графа — вне очереди, но не случайно).
+      начинался бы с чистого листа. Сегодняшний оборот (Тикет 08) отличается от всех предыдущих:
+      впервые это не был живой grilling, а компиляция уже принятого — и именно поэтому цикл
+      проверки для него оказался другим (раздел 5 ниже).
     </div>
   </section>
 
@@ -435,8 +449,7 @@
     <h2><span class="num">3</span>Слои репозитория (кто от кого зависит)</h2>
     <p class="section-note">
       Тот же цикл, но в терминах реальных файлов и папок. Каждый слой читает конфигурацию слоя выше
-      и производит вход для слоя ниже. Стрелка вниз — «производит вход для»; стрелка вверх подразумевается
-      обратной связью через Memory (слой 5 обновляет знания, которые следующий цикл слоя 2 читает заново).
+      и производит вход для слоя ниже.
     </p>
 
     <div class="layer-group" id="layer-01">
@@ -448,12 +461,11 @@
             <code>.agents/skills/*</code>
             <code>.claude/skills/*</code>
             <code>.claude/commands/opsx/*</code>
-            <code>skills-lock.json</code>
           </div>
           <div class="rel">
             Ставится через <b><code>npx skills add mattpocock/skills</code></b> и <b><code>openspec init --tools claude</code></b>.
             <code>.agents/skills/</code> закоммичен и переносится между машинами; <code>.claude/*</code> — локальные
-            симлинки/команды, в git не попадают (<code>.gitignore</code>), их нужно пересоздавать на каждой машине.
+            симлинки/команды, их нужно пересоздавать на каждой машине.
           </div>
         </div>
       </div>
@@ -462,18 +474,15 @@
       <div class="layer">
         <div class="badge">L1</div>
         <div>
-          <h3>Конфигурация репозитория (как обобщённые скиллы ведут себя именно здесь)</h3>
+          <h3>Конфигурация репозитория</h3>
           <div class="paths">
             <code>CLAUDE.md</code>
-            <code>docs/agents/issue-tracker.md</code>
-            <code>docs/agents/triage-labels.md</code>
-            <code>docs/agents/domain.md</code>
+            <code>docs/agents/*.md</code>
             <code>openspec/config.yaml</code>
           </div>
           <div class="rel">
-            Пишется один раз скиллом <b><code>/setup-matt-pocock-skills</code></b> (уже выполнено) и <b><code>openspec init</code></b>.
-            Говорит скиллам <code>to-tickets</code>, <code>to-spec</code>, <code>triage</code>, <code>qa</code>, куда писать тикеты
-            (<code>.scratch/</code>), а <code>/wayfinder</code> — что у этого репозитория уже есть своя карта и её путь другой.
+            Говорит обобщённым скиллам, как вести себя именно здесь: куда писать тикеты, что защищено
+            в <code>db/</code>, какие названия капабилити использовать.
           </div>
         </div>
       </div>
@@ -484,156 +493,221 @@
       <div class="layer">
         <div class="badge">L2</div>
         <div>
-          <h3>Wayfinder-карта (смутная идея → решения)</h3>
+          <h3>Wayfinder-карта (смутная идея → решения) — закрыта целиком</h3>
           <div class="paths">
             <code>docs/wayfinder/news-pressure-radar/map.md</code>
             <code>tickets/01…12-*.md</code>
-            <code>agentic-research-loop-spec.md</code>
-            <code>external-skill-research.md</code>
-            <code>research/05-source-strategy-findings.md</code>
+            <code>idea-buffer.md</code>
+            <code>calibration/findings-report.md</code>
           </div>
           <div class="rel">
-            Пишется/обновляется скиллами <b><code>/wayfinder</code></b> и <b><code>/grill-me</code></b> (или <code>/grilling</code>) —
-            по одному тикету за раз. Сама эта HTML-страница — не часть карты, а её проекция для чтения; каждый раз,
-            когда меняется <code>map.md</code>, эту страницу стоит перегенерировать заново, иначе она начнёт врать.
-            Тикет <b>08 — OpenSpec Bridge</b> — явная точка передачи в L4: он прямо
-            спрашивает «как закрытые решения карты превратить в OpenSpec change».
+            Все 12 тикетов закрыты. Каждый несёт полную стенограмму grilling-сессии
+            (<code>## Working Decision</code> + <code>## Grilling Transcript</code>) — именно её,
+            а не короткий пересказ в <code>map.md</code>, читали агенты-компиляторы на шаге L4.
           </div>
         </div>
       </div>
     </div>
-    <div class="layer-arrow">↓ закрытые тикеты (7 из 12 на сегодня) становятся входом для mini-spec и/или OpenSpec</div>
+    <div class="layer-arrow">↓ все 12 закрытых тикетов стали входом для компиляции OpenSpec (Тикет 08)</div>
 
     <div class="layer-group" id="layer-345">
       <div class="layer">
-        <div class="badge">L3</div>
-        <div>
-          <h3>Mini-specs и runner-briefs (узкие тестируемые срезы)</h3>
-          <div class="paths">
-            <code>docs/wayfinder/news-pressure-radar/mini-specs/*.md</code>
-            <code>runner-briefs/*.md</code>
-          </div>
-          <div class="rel">
-            Не требует закрытия <em>всех</em> 12 тикетов — только тех решений карты, которые нужны для одного
-            узкого цикла. Жизненный цикл (см. <code>mini-specs/README.md</code>):
-            <code>draft → reviewed → runner brief → audit → synthesis → update/archive</code>.
-            Runner-brief — это буквально документ передачи отдельному агенту-исполнителю (L5).
-          </div>
-        </div>
-      </div>
-      <div class="layer-arrow">↓ параллельно карте — формальный durable-контракт для всего эффорта целиком</div>
-
-      <div class="layer">
         <div class="badge">L4</div>
         <div>
-          <h3>OpenSpec change (версионируемый контракт)</h3>
+          <h3>OpenSpec change — собран и дважды проверен сегодня</h3>
           <div class="paths">
-            <code>openspec/changes/news-market-coupling-agentic-loop/proposal.md</code>
+            <code>openspec/changes/madpac-v0/proposal.md</code>
             <code>design.md</code>
             <code>tasks.md</code>
-            <code>specs/agentic-research-loop/spec.md</code>
+            <code>specs/{collection,analysis,quality-gate,report,delivery,evaluation,agentic-research-loop}/spec.md</code>
           </div>
           <div class="rel">
-            Создаётся через <b><code>/opsx:propose</code></b> (здесь — написан вручную, раньше срока, см. раздел 6).
-            <code>proposal.md</code> — зачем и что меняется; <code>design.md</code> — принципы и роли агентов;
-            <code>tasks.md</code> — чек-лист реализации; <code>specs/…/spec.md</code> — формальные MUST/SHOULD-требования
-            со сценариями Given/When/Then. Тикет 10 закрылся с чистого листа (старый черновик <code>tasks.md</code>
-            намеренно проигнорирован как источник ответов, только сверен постфактум) — но новые механизмы Тикета 06
-            (Metric Card, Decision Block, champion/challenger) в этот спек ещё не попали. Подробнее в разделе 6.
+            Переименован из узкого <code>news-market-coupling-agentic-loop</code> в <code>madpac-v0</code> —
+            одна спека на весь MVP, не 7 отдельных. Каждое требование внутри — это MUST/SHALL плюс
+            хотя бы один <code>#### Scenario:</code>, и прослеживается к конкретному тикету.
+            <code>openspec validate --strict</code> проходит, но это проверяет только формат —
+            содержательные ошибки ловил не валидатор, а раздел 5 ниже.
           </div>
         </div>
       </div>
-      <div class="layer-arrow">↓ tasks.md становится работой; после review — /opsx:archive</div>
+      <div class="layer-arrow">↓ tasks.md теперь существует — впервые открывает L5-скиллы (раздел 4)</div>
 
       <div class="layer">
         <div class="badge">L5</div>
         <div>
-          <h3>Реализация (пока не существует)</h3>
+          <h3>Реализация — пока не начата</h3>
           <div class="paths">
             <code>src/…</code> <span style="color:var(--ink-muted)">(ещё не создано для этого эффорта)</span>
           </div>
           <div class="rel">
-            Появится через <b><code>/opsx:apply</code></b>, разбирающий <code>tasks.md</code>, или через отдельного
-            Runner-агента, выполняющего runner-brief. После независимого аудита и синтеза —
-            <b><code>/opsx:archive</code></b> переносит спек-дельту в постоянные <code>openspec/specs/</code> (пока пусто),
-            а вывод синтеза уходит в <code>memory/</code> и <code>docs/knowledge.md</code> — замыкая цикл на разделе 1.
+            Появится через <b><code>/opsx:apply</code></b>, разбирающий <code>tasks.md</code>. После
+            независимого code-review — <b><code>/opsx:archive</code></b> переносит спек-дельту в постоянные
+            <code>openspec/specs/</code> (пока пусто), замыкая цикл на разделе 1.
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="tickets">
-    <h2><span class="num">4</span>Граф зависимостей 12 тикетов MADPAC</h2>
+  <section id="skills">
+    <h2><span class="num">4</span>Скиллы: неизменное ядро + спутники, открывающиеся по условию</h2>
     <p class="section-note">
-      Столбцы — топологические уровни (сколько шагов решений нужно пройти, прежде чем тикет разблокируется).
-      Наведите курсор на тикет: оранжевая рамка — что он разблокирует, серая пунктирная — от чего сам зависит.
-      Тикет с фиолетовой пульсирующей рамкой — тот, над которым идёт работа прямо сейчас.
+      Это прямой ответ на вопрос «какие скиллы и как применяются». Ядро — три скилла, вокруг которых
+      построен весь проект. Все остальные — спутники: они физически существуют, но <b>не используются
+      для принятия решений</b>, пока не выполнено одно условие.
     </p>
-    <div class="legend">
-      <span class="item"><span class="swatch" style="background:var(--status-closed)"></span>✓ closed — решение принято</span>
-      <span class="item"><span class="swatch" style="background:var(--status-good)"></span>● open — можно брать сейчас (фронтир)</span>
-      <span class="item"><span class="swatch" style="background:var(--status-progress)"></span>◐ in progress — в работе сейчас</span>
-      <span class="item"><span class="swatch" style="background:var(--status-blocked)"></span>○ blocked — ждёт другие тикеты</span>
+
+    <div class="pipeline-wrap">
+      <div class="pipeline">
+        <div class="pnode"><div class="dot">🧭</div><div class="label">wayfinder</div><div class="sub">карта решений</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">❓</div><div class="label">grilling</div><div class="sub">по одному вопросу</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode current"><div class="dot">📐</div><div class="label">openspec</div><div class="sub">компиляция в контракт</div></div>
+      </div>
     </div>
-    <div class="legend row2">
-      <span class="item"><span class="ring" style="border-color:var(--hl-blocks)"></span>при наведении: разблокирует</span>
-      <span class="item"><span class="ring" style="border-color:var(--hl-blockedby); border-style:dashed"></span>при наведении: блокирующие</span>
-      <span class="item"><span class="today-sample">сегодня</span>изменилось в сессии 2026-07-31</span>
-      <span class="item"><span class="swatch" style="background:var(--type-grilling)"></span>grilling</span>
-      <span class="item"><span class="swatch" style="background:var(--type-task)"></span>task</span>
-      <span class="item"><span class="swatch" style="background:var(--type-research)"></span>research</span>
-      <span class="item"><span class="swatch" style="background:var(--type-prototype)"></span>prototype</span>
+    <div class="callout-mini">
+      Это ядро <b>не расширяется и не подменяется</b> ничем другим, пока идёт планирование/решение —
+      Айрат сам зафиксировал это явно при закрытии Тикета 11: «наши основные скиллы должны остаться
+      wayfinder grill openspec, мы на них почти весь проект написали».
     </div>
 
-    <div class="levels" id="levels"></div>
+    <div class="gate-box">
+      <div class="gate-title">
+        Гейт: спутники активируются только когда <code>tasks.md</code> реально существует
+        <span class="lockstate open">🔓 открыт сегодня — впервые за весь проект</span>
+      </div>
+      <div class="satellite-grid">
+        <div class="sat-chip"><b>implement</b><span class="lens">разбирает tasks.md → пишет код</span></div>
+        <div class="sat-chip"><b>tdd</b><span class="lens">тесты в том же (генерация) контексте</span></div>
+        <div class="sat-chip"><b>code-review</b><span class="lens">отдельный контекст — проверка</span></div>
+        <div class="sat-chip"><b>simplify / security-review</b><span class="lens">по требованию, после review</span></div>
+        <div class="sat-chip"><b>diagnosing-bugs</b><span class="lens">только фазы 1–4, без авто-фикса</span></div>
+        <div class="sat-chip"><b>handoff</b><span class="lens">формат передачи между контекстами</span></div>
+      </div>
+    </div>
+
+    <div class="callout good">
+      <h4>✓ Сегодня это не абстракция — гейт реально был пройден в первый раз</h4>
+      <p>
+        До этой сессии <code>tasks.md</code> для MADPAC не существовало по-настоящему (был лишь черновик
+        от 2026-07-28, который сами тикеты просили не считать источником ответов). Сегодня, при закрытии
+        Тикета 08, <code>openspec/changes/madpac-v0/tasks.md</code> появился как реальный, выверенный
+        чек-лист — то есть спутниковые скиллы теоретически можно включать уже сейчас, впервые за проект.
+        Практически это ещё не произошло: раздел 9 ниже показывает, что вместо <code>implement</code>
+        сначала был использован ровно один спутник — независимая проверка, до всякого кода.
+      </p>
+    </div>
   </section>
 
-  <section id="feedback-loop">
-    <h2><span class="num">5</span>Живой пример петли: тикет 03 → тикет 12 → назад в 02/03/05/10</h2>
+  <section id="altitudes">
+    <h2><span class="num">5</span>Роли агентов: три «высоты», одно и то же правило разделения</h2>
     <p class="section-note">
-      Раздел 2 показал общую форму цикла. Здесь — конкретный, уже произошедший пример того самого
-      «зацикливания», о котором вы спрашивали: не абстракция, а реальная ветка внутри сегодняшней сессии.
+      В проекте есть три разных набора ролей — их <b>нельзя путать между собой</b> (это отдельное явное
+      правило Тикета 11). Но во всех трёх работает одна и та же граница: этап <i>генерации</i> может идти
+      в одном непрерывном контексте, этап <i>верификации</i> обязан идти в отдельном — иначе проверяющий
+      «прикрывает» автора, а не проверяет его.
+    </p>
+
+    <div class="lane">
+      <div class="lane-label">Высота (a) — мета-процесс разработки самого MADPAC <span class="lchip">этот проект, прямо сейчас</span></div>
+      <div class="pipeline">
+        <div class="pnode"><div class="dot">🧭</div><div class="label">Wayfinder</div><div class="sub">генерация</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">❓</div><div class="label">Grilling</div><div class="sub">генерация</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">📐</div><div class="label">Spec-writing</div><div class="sub">генерация, тот же контекст</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode wall"><div class="dot">🧱</div><div class="label">граница контекста</div><div class="sub">обязательна</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">🔍</div><div class="label">Review / Audit</div><div class="sub">верификация, новая сессия</div></div>
+      </div>
+    </div>
+
+    <div class="lane">
+      <div class="lane-label">Высота (b) — производственный цикл market-coupling <span class="lchip">Тикет 10, ещё не запускался</span></div>
+      <div class="pipeline">
+        <div class="pnode"><div class="dot">🏃</div><div class="label">Runner</div><div class="sub">генерация: гипотеза + метрики</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">📦</div><div class="label">handoff</div><div class="sub">компактный артефакт</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode wall"><div class="dot">🧱</div><div class="label">граница контекста</div><div class="sub">обязательна</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">🕵️</div><div class="label">Auditor</div><div class="sub">верификация, отдельный агент</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">🧩</div><div class="label">Synthesizer</div><div class="sub">закрывает цикл</div></div>
+      </div>
+    </div>
+
+    <div class="lane">
+      <div class="lane-label">Высота (c) — оценка качества отчётов <span class="lchip">Тикет 06, ещё не запускался</span></div>
+      <div class="pipeline">
+        <div class="pnode"><div class="dot">⚙️</div><div class="label">Generator</div><div class="sub">генерация: существующий пайплайн</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode wall"><div class="dot">🧱</div><div class="label">граница контекста</div><div class="sub">обязательна</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">📊</div><div class="label">Evaluator</div><div class="sub">верификация, отдельный агент</div></div>
+        <div class="parrow">→</div>
+        <div class="pnode"><div class="dot">🙋</div><div class="label">Airat-аудит</div><div class="sub">еженедельный выборочный</div></div>
+      </div>
+    </div>
+
+    <div class="callout fresh">
+      <h4>🧱 Живой пример сегодня: та же стена, но на четвёртой, ещё не названной высоте</h4>
+      <p>
+        Компиляция спеки (этот разговор) сама прошла через генерацию → стену → верификацию — только
+        роль была не Runner/Auditor и не Generator/Evaluator, а «Компилятор → независимый Аудитор
+        спеки». Подробная механика и цифры — в разделе 9. Это значит, что правило разделения ролей
+        в MADPAC применяется даже к работе, которую само это правило не называло явно — оно устроено
+        достаточно общо, чтобы переноситься само.
+      </p>
+    </div>
+  </section>
+
+  <section id="feedback-contour">
+    <h2><span class="num">6</span>Обратный контур калибровки: Metric Card → Decision Block</h2>
+    <p class="section-note">
+      Это единственный механизм во всём проекте, через который проходит <b>любое</b> решение о
+      подстройке порога или метрики — champion/challenger, порог доставки <code>K</code>,
+      несовпадение классификации. Раньше это были три раздельные идеи; Тикет 11 явно свёл их в одну.
     </p>
 
     <div class="fb-diagram">
       <div class="fb-main">
         <div class="fb-target-row">
-          <div class="cap">Уже принятые решения, которые эта петля будет донастраивать позже</div>
-          <span class="chip">Тикет 02 — Signal Ontology (closed)</span>
-          <span class="chip">Тикет 03 — Quality Gate (closed)</span>
-          <span class="chip">Тикет 05 — Source Strategy (closed)</span>
-          <span class="chip">Тикет 10 — Market Coupling (closed)</span>
-          <span class="chip">Тикет 06 — Evaluation Harness (closed)</span>
+          <div class="cap">Входы в контур — три разных повода, один и тот же механизм ниже</div>
+          <span class="chip">Персистентное несовпадение классификации</span>
+          <span class="chip">Персистентный блок quality-gate (7д / 30д)</span>
+          <span class="chip">Champion/challenger готов к решению о продвижении</span>
         </div>
         <div class="fb-arrow-down">↓</div>
         <div class="fb-box">
-          <div class="tag">Шаг 1 · во время grilling тикета 03</div>
-          <p>Тикеты 02 и 03 ввели числовые пороги на глаз: квартиль скорости для «Rising impulse»,
-          <code>persistence&gt;=14d</code>, <code>source_spread&gt;=3/4</code>, деление отчёта 30%/50% по исключениям.
-          <b>Айрат отказался утверждать очередные проценты вслепую</b> и попросил отдельное, разовое
-          эмпирическое исследование архива вместо спора внутри самого тикета 03.</p>
+          <div class="tag">Шаг 1 · Metric Card</div>
+          <p>Каждая метрика — версионированный объект: <code>purpose</code>, <code>computation</code>,
+          <code>observed_distribution</code> (медиана/среднее — чисто описательно) и отдельно
+          <code>interpretation_bands</code> (нормативная оценка «хорошо/плохо»).</p>
         </div>
         <div class="fb-arrow-down">↓</div>
         <div class="fb-box">
-          <div class="tag">Шаг 2 · ответвление</div>
-          <p>Рождается <b>Тикет 12 — Historical Cluster Calibration Study</b>: разовый «скелет» аналитики,
-          который проходит по 2–3+ годам архива и выводит обоснованные, а не угаданные, границы кластеров.</p>
+          <div class="tag">Шаг 2 · сравнение</div>
+          <p><code>observed_distribution</code> сверяется с <code>interpretation_bands</code> —
+          это чисто механическое сравнение, ещё не решение.</p>
         </div>
         <div class="fb-arrow-down">↓</div>
         <div class="fb-box">
-          <div class="tag">Шаг 3 · сегодня, при закрытии тикета 05</div>
-          <p>Активный набор источников вырос с 5 до 14. Это меняет объём и состав данных, которые тикет 12
-          должен покрыть — не только англоязычный архив <code>hf_news.db</code>, но и новый набор из 14
-          русскоязычных источников, глубиной около года. <b>Тикет 12 расширен</b> прямо в тексте тикета 05.</p>
+          <div class="tag">Шаг 3 · Decision Block</div>
+          <p>Прежде чем что-либо предлагать, Decision Block обязан задокументировать три вещи:
+          назначение метрики, алгоритм, который дал исходную метку, и как именно разошлось суждение
+          Evaluator'а. Затем — явно решает, что калибруется: <b>метка</b> или <b>сама метрика</b>.
+          Проверяет свою же историю калибровок: если тот же сбой уже пытались чинить, нужен
+          <b>принципиально другой</b> подход, не повтор — и не более 3 разных попыток, иначе эскалация
+          Айрату (максимум 3 варианта с обоснованием, никогда открытый вопрос).</p>
         </div>
         <div class="fb-arrow-down">↓</div>
         <div class="fb-box" style="border-style:dashed; border-color:var(--status-progress);">
-          <div class="tag" style="color:var(--status-progress)">Шаг 4 · ещё не произошло</div>
-          <p>Когда тикет 12 будет выполнен, его результат вернётся короткими «addenda»
-          в уже <b>закрытые</b> тикеты 02, 03, 05, 10 — и теперь ещё и в 06, где сессия
-          2026-07-31 явно оставила ту же зацепку: если исторической глубины не хватит для честной
-          проверки известных календарных якорей (ставка ЦБ и подобное), это тоже возвращается сюда же.</p>
+          <div class="tag" style="color:var(--status-progress)">Шаг 4 · решение + история</div>
+          <p>Решение и его обоснование сохраняются в <code>regimen_runs</code> и становятся входом
+          для следующей итерации — контур замкнут.</p>
         </div>
       </div>
       <div class="fb-rail" aria-hidden="true">
@@ -644,85 +718,174 @@
     </div>
 
     <div class="callout-mini">
-      Обратите внимание: <code>closed</code> здесь не значит «никогда больше не тронем». Это значит
-      «достаточно решено, чтобы двигаться дальше» — и петля сознательно оставляет крючок для возврата,
-      когда появятся эмпирические данные. Это не сбой процесса, а его задуманная часть.
+      Этот контур пока не запускался ни разу «вживую» — ни одна метрика ещё не прошла реальную
+      калибровку, потому что живых операционных данных ещё нет. Но именно поэтому важно, что схема
+      уже прописана как спека (раздел <code>evaluation</code>), а не только как идея в чьей-то голове.
     </div>
   </section>
 
-  <section id="gaps">
-    <h2><span class="num">6</span>Что до сих пор не сходится (полезно для обучения)</h2>
-
-    <div class="callout fresh">
-      <h4>🔀 Тикет 09 пройден вне очереди формального графа — сознательно, не по ошибке</h4>
-      <p>
-        Формально <code>09 — Repository Boundary</code> был <code>blocked</code> Тикетом 08
-        (OpenSpec Bridge, всё ещё открыт). В шестой сессии Айрат сам поднял вопрос границы
-        репозитория раньше графа и явно отложил выбор на следующую сессию, не выбрав ни один из
-        трёх предложенных вариантов. В седьмой сессии выбор был переспрошен заново (не додуман
-        за него) — Айрат выбрал «гриллить сейчас». Итог: MADPAC уходит в собственный репозиторий;
-        по пути обнаружился ключевой архитектурный принцип — <b>граница git-репозитория и связность
-        с источником данных — разные оси</b> (перепроверено grep'ом, а не принято на слово: код MADPAC
-        уже не обращается к внутренностям <code>signal-mind</code>). Это второй раз в проекте, когда
-        тикет решён раньше формального графа — стоит помнить, что граф зависимостей — это порядок
-        по умолчанию, а не абсолютный запрет, когда у Айрата есть на то реальная причина.
-      </p>
+  <section id="tickets">
+    <h2><span class="num">7</span>Граф зависимостей 12 тикетов MADPAC — все закрыты</h2>
+    <p class="section-note">
+      Столбцы — исторические топологические уровни (сколько решений нужно было закрыть, прежде чем
+      тикет разблокируется). Наведите курсор на тикет: оранжевая рамка — что он разблокировал, серая
+      пунктирная — от чего сам зависел.
+    </p>
+    <div class="legend">
+      <span class="item"><span class="swatch" style="background:var(--status-closed)"></span>✓ closed — решение принято</span>
+      <span class="item"><span class="swatch" style="background:var(--status-progress)"></span>◐ closed сегодня — самое свежее</span>
+    </div>
+    <div class="legend row2">
+      <span class="item"><span class="ring" style="border-color:var(--hl-blocks)"></span>при наведении: разблокировал</span>
+      <span class="item"><span class="ring" style="border-color:var(--hl-blockedby); border-style:dashed"></span>при наведении: блокирующие</span>
+      <span class="item"><span class="today-sample">сегодня</span>закрыто 2026-08-01</span>
+      <span class="item"><span class="swatch" style="background:var(--type-grilling)"></span>grilling</span>
+      <span class="item"><span class="swatch" style="background:var(--type-task)"></span>task</span>
+      <span class="item"><span class="swatch" style="background:var(--type-research)"></span>research</span>
+      <span class="item"><span class="swatch" style="background:var(--type-prototype)"></span>prototype</span>
     </div>
 
-    <div class="callout">
-      <h4>⚠ Спек отстаёт всё сильнее — уже от трёх тикетов подряд (06, 07, 09)</h4>
-      <p>
-        Тикет 10 закрылся ещё в третьей сессии дня, и его расхождения с черновиком
-        <code>openspec/changes/news-market-coupling-agentic-loop/</code> уже сверены (статус-заметки
-        добавлены в <code>design.md</code>/mini-spec/runner-brief, список инструментов поправлен;
-        нерешённые чекбоксы <code>tasks.md</code> — размер пула метрик, метод контрольного окна,
-        глубина калибровки — намеренно <b>оставлены неотмеченными</b>, так как это были предложения
-        старого черновика, а не то, что реально проговорили с Айратом). Пятая сессия закрыла тикет 06
-        с тремя крупными новыми механизмами — <b>Metric Card, Decision Block, champion/challenger</b> —
-        шестая закрыла тикет 07 (три delivery-поверхности, 3-уровневая функция доставки), седьмая —
-        тикет 09 (решение об отделении репозитория) — и ни один из этих трёх пока не попал в спек вообще.
-        Чем дольше карта опережает спек, тем больше объём работы у будущего Тикета 08 (OpenSpec Bridge).
-      </p>
+    <div class="levels" id="levels"></div>
+  </section>
+
+  <section id="feedback-loop">
+    <h2><span class="num">8</span>Петля уровня решений: тикет 03 → тикет 12 → назад в 02/03/05/10</h2>
+    <p class="section-note">
+      Пример того, как ещё до всякого OpenSpec решения на карте сами возвращались к себе, когда
+      не хватало эмпирики. Это петля <i>на уровне тикетов</i> — раздел 9 ниже показывает петлю
+      на уровне <i>уже собранной спеки</i>, это разные механизмы.
+    </p>
+
+    <div class="fb-diagram">
+      <div class="fb-main">
+        <div class="fb-target-row">
+          <div class="cap">Уже принятые решения, которые эта петля донастраивала позже</div>
+          <span class="chip">Тикет 02 — Signal Ontology</span>
+          <span class="chip">Тикет 03 — Quality Gate</span>
+          <span class="chip">Тикет 05 — Source Strategy</span>
+          <span class="chip">Тикет 10 — Market Coupling</span>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Шаг 1 · во время grilling тикета 03</div>
+          <p>Тикеты 02 и 03 ввели числовые пороги на глаз: квартиль скорости, <code>persistence&gt;=14d</code>,
+          <code>source_spread&gt;=3/4</code>, деление отчёта 30%/50%. <b>Айрат отказался утверждать
+          проценты вслепую</b> и попросил отдельное эмпирическое исследование.</p>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Шаг 2 · ответвление</div>
+          <p>Рождается <b>Тикет 12</b> — разовое исследование архива, выводящее обоснованные,
+          а не угаданные, границы.</p>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Шаг 3 · Тикет 12 выполнен (2026-08-01)</div>
+          <p><code>persistence&gt;=14d</code> оказался около p95, а не медианой. <code>source_spread</code>
+          не поддаётся калибровке по английскому архиву вообще (56% корпуса — общий домен-агрегатор
+          без реального авторства). Обе находки — реальные, не угаданные — вернулись addenda в тикеты
+          02, 03, 05, 10.</p>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Шаг 4 · попало в спеку как есть</div>
+          <p>Сегодняшняя компиляция (раздел 4 карты слоёв) перенесла оба вывода в
+          <code>specs/analysis/spec.md</code> дословно, с пометкой «provisional» — не как решённые числа.</p>
+        </div>
+      </div>
+      <div class="fb-rail" aria-hidden="true">
+        <svg viewBox="0 0 46 100" preserveAspectRatio="none">
+          <path d="M4,98 C 46,70 46,25 20,4" marker-end="url(#arrow-progress)"></path>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section id="verification-loop">
+    <h2><span class="num">9</span>Петля уровня верификации: компиляция → 2 независимых аудита → чисто</h2>
+    <p class="section-note">
+      Это произошло сегодня, буквально в этом разговоре, и это лучший конкретный пример раздела 5:
+      генерация и верификация в разных, по-настоящему холодных сессиях — без единой общей памяти.
+    </p>
+
+    <div class="fb-diagram">
+      <div class="fb-main">
+        <div class="fb-target-row">
+          <div class="cap">Что проверялось — не код, а сама спека против исходных тикетов</div>
+          <span class="chip">openspec/changes/madpac-v0/*.md</span>
+          <span class="chip">против 12 тикетов + calibration/findings-report.md</span>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Генерация · эта сессия</div>
+          <p>Компиляция всех 12 тикетов в 7 spec-дельт через параллельных агентов-дайджестеров,
+          синтез оставлен в этой же сессии. <code>openspec validate --strict</code> прошёл — но это
+          проверяет только формат, не содержание.</p>
+        </div>
+        <div class="fb-box wall-box">
+          <div class="tag">🧱 граница контекста · холодная сессия №1</div>
+          <p>Отдельная сессия без доступа к рассуждениям компилятора, с явным заданием: «не верь
+          пересказу map.md, читай сам тикет».</p>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Верификация · раунд 1</div>
+          <p><b>23 реальные находки:</b> 1 содержательное противоречие (design.md против собственного
+          proposal.md), 10 выдумок (например, конкретное число «3 из 5» там, где тикет прямо отказался
+          его фиксировать), 12 потерянных решений (включая числа — 14 дней / 75 у severity-b флагов
+          пропали вместе со своим provisional-статусом).</p>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Исправление · эта сессия</div>
+          <p>Все 23 находки исправлены точечно, каждая — со сверкой обратно на исходный тикет.</p>
+        </div>
+        <div class="fb-box wall-box">
+          <div class="tag">🧱 граница контекста · холодная сессия №2</div>
+          <p>Новая, снова независимая сессия — в том числе впервые проверила <code>proposal.md</code>
+          и <code>tasks.md</code>, которые раунд 1 не касался вообще.</p>
+        </div>
+        <div class="fb-arrow-down">↓</div>
+        <div class="fb-box">
+          <div class="tag">Верификация · раунд 2</div>
+          <p>Все 23 фикса подтверждены корректными без откатов. Найдено ещё 3 мелких пробела —
+          тоже исправлены. Дальше — чисто.</p>
+        </div>
+      </div>
+      <div class="fb-rail" aria-hidden="true">
+        <svg viewBox="0 0 46 100" preserveAspectRatio="none">
+          <path d="M4,98 C 46,70 46,25 20,4" marker-end="url(#arrow-progress)"></path>
+        </svg>
+      </div>
     </div>
 
-    <div class="callout">
-      <h4>✓ Несимметричные рёбра в заголовках тикетов — три из трёх исправлены этой сессией</h4>
+    <div class="callout good">
+      <h4>✓ Почему это сработало — три условия, а не «независимость» сама по себе</h4>
       <p>
-        Три несостыковки, которые эта страница фиксировала предыдущие две сессии подряд, наконец
-        поправлены в файлах тикетов (не только здесь, на странице):
-      </p>
-      <ul style="margin:6px 0 0 18px; padding:0;">
-        <li><code>06</code>, <code>10</code> объявляли «Blocks: 08», заголовок <code>08</code> их не перечислял — <b>исправлено</b>, оба добавлены в <code>Blocked By</code> тикета 08 (заодно добавлен и сам 10).</li>
-        <li><code>11</code> объявлял «Blocks: 08, 09», но ни один из них не признавал 11 как блокирующий, а сам <code>map.md</code> прямо писал «nothing blocks on it» — <b>исправлено</b>: заголовок тикета 11 переписан, чтобы не противоречить карте.</li>
-        <li><code>07</code> держал <code>Status: blocked</code>, хотя все три его блокера (01, 03, 04) давно закрыты — <b>исправлено</b> на <code>open</code>.</li>
-      </ul>
-      <p style="margin-top:8px;">
-        Урок остаётся тем же, что и в прошлых сессиях: <b>закрытие тикета не чинит ссылки на него в
-        других файлах само по себе</b>. Три сессии подряд одна и та же категория ошибки всплывала заново —
-        стоит решить, входит ли такая сверка в обязательный чек-лист закрытия тикета, а не полагаться
-        на то, что кто-то однажды снова перечитает эту страницу.
+        (1) Был устойчивый письменный источник истины — сами тикеты — до которого могли дотянуться
+        обе стороны отдельно. (2) Интерфейс между компилятором и аудитором был явно задан: конкретный
+        список «капабилити → тикет» плюс правило «не верь сводке». (3) Холодный старт был настоящим —
+        именно это ловит выдумки вроде «3 из 5», в которые сам автор при перечитывании своего же текста
+        продолжает верить. Раунд 2 нашёл только 3 находки против 23 в раунде 1 — это сигнал схождения,
+        третий раунд сознательно не запускался.
       </p>
     </div>
   </section>
 
   <footer class="page" id="footer">
-    Порядок из <a href="map.md">map.md → Suggested Session Order</a>, обновлённый на сегодня:
-    <del>01 Product Contract</del>, <del>02 Signal Ontology</del>, <del>03 Quality Gate Contract</del>,
-    <del>05 Source Strategy</del>, <del>10 Market Coupling Model</del>, <del>04 Report Prototype</del>,
-    <del>06 Evaluation Harness</del>, <del>07 Delivery Policy</del>, <del>09 Repository Boundary</del>,
-    <del>11 Agentic Delivery Process</del> — десять закрыты 2026-07-31. Тикет 11 — последний чисто
-    решенческий тикет: <b>wayfinder → grilling → openspec остаются неизменным ядром</b> проекта; все
-    остальные навыки (<code>implement</code>, <code>tdd</code>, <code>code-review</code>,
-    <code>diagnosing-bugs</code>, <code>handoff</code>) подключаются только после того, как OpenSpec
-    выдаст реальный <code>tasks.md</code>. Модельный сплит — временной, не по типу вызова: Claude Code
-    строит и расширяет систему всегда, DeepSeek подключается как дежурная модель только когда часть
-    системы уже работает. Осталось <b>только 12 — Historical Cluster Calibration</b> (без живого grilling,
-    первое реальное применение <code>implement</code>) — затем физический перенос Тикета 09 в
-    <code>github.com/iRatG/madpac</code>, затем 08 (OpenSpec Bridge).
+    Порядок из <a href="map.md">map.md → Suggested Session Order</a>: все 12 wayfinder-тикетов и
+    Тикет 08 (OpenSpec Bridge) закрыты 2026-08-01. <b>Единственное, что осталось</b> — физический
+    перенос Тикета 09 в <code>github.com/iRatG/madpac</code> через <code>git filter-repo</code> на
+    зеркальном клоне; это git-операция, переписывающая историю, поэтому она намеренно не выполняется
+    автоматически — нужен отдельный явный запрос. wayfinder → grilling → openspec остаются неизменным
+    ядром; все остальные скиллы подключаются только теперь, когда реальный <code>tasks.md</code>
+    наконец существует (раздел 4). Модельный сплит — временной: Claude Code строит и расширяет систему
+    всегда, DeepSeek подключается как дежурная модель только когда часть системы уже работает.
     Ход и причины решений сохранены в памяти сессии
     (<code>project_madpac_wayfinder_openspec</code>, <code>reference_wayfinder_openspec_tooling</code>,
     <code>feedback_repo_tool_wiring</code>, <code>feedback_grilling_full_transcript</code>,
-    <code>user_role_madpac_collaboration</code>, <code>feedback_decision_trees_grounded_in_mechanism</code>).
+    <code>user_role_madpac_collaboration</code>, <code>feedback_decision_trees_grounded_in_mechanism</code>,
+    <code>feedback_judgment_calls_vs_decision_forks</code>, <code>feedback_independent_audit_pattern_validated</code>).
   </footer>
 </div>
 
@@ -758,21 +921,22 @@
     blocked:  { icon: '○', label: 'blocked' }
   };
 
-  // Edges reconciled from both "Blocks" and "Blocked By" headers across all 12 ticket files
-  // (see section 6 — some ticket headers are missing the reverse edge).
+  // All 12 tickets + Ticket 08 are closed as of 2026-08-01. Levels kept as historical
+  // topological depth (how many decision-steps a ticket needed before it unblocked),
+  // not a live dependency state anymore.
   const TICKETS = [
-    { id: '01', title: 'Product Contract',            type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['04','07','08'] },
-    { id: '02', title: 'Signal Ontology',              type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['04','06','08'] },
-    { id: '03', title: 'Quality Gate Contract',        type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['06','07','08'] },
-    { id: '05', title: 'Source Strategy',              type: 'research',  status: 'closed',   today: true,  level: 0, blocks: ['06','08'] },
-    { id: '10', title: 'Market Coupling Model',        type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: ['06','08'] },
-    { id: '11', title: 'Agentic Delivery Process',     type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: [] },
-    { id: '12', title: 'Historical Cluster Calibration',type: 'prototype',status: 'open',     today: true,  level: 0, blocks: ['08'] },
-    { id: '04', title: 'Report Prototype',             type: 'prototype', status: 'closed',   today: false, level: 1, blocks: ['07','08'] },
-    { id: '06', title: 'Evaluation Harness',           type: 'task',      status: 'closed',   today: false, level: 1, blocks: ['08'] },
-    { id: '07', title: 'Delivery Policy',              type: 'grilling',  status: 'closed',   today: false, level: 2, blocks: ['08'] },
-    { id: '08', title: 'OpenSpec Bridge',              type: 'task',      status: 'blocked',  today: false, level: 3, blocks: [] },
-    { id: '09', title: 'Repository Boundary',          type: 'grilling',  status: 'closed',   today: true,  level: 0, blocks: [] },
+    { id: '01', title: 'Product Contract',              type: 'grilling',  status: 'closed', today: false, level: 0, blocks: ['04','07','08'] },
+    { id: '02', title: 'Signal Ontology',                type: 'grilling',  status: 'closed', today: false, level: 0, blocks: ['04','06','08'] },
+    { id: '03', title: 'Quality Gate Contract',          type: 'grilling',  status: 'closed', today: false, level: 0, blocks: ['06','07','08'] },
+    { id: '05', title: 'Source Strategy',                type: 'research',  status: 'closed', today: false, level: 0, blocks: ['06','08'] },
+    { id: '10', title: 'Market Coupling Model',          type: 'grilling',  status: 'closed', today: false, level: 0, blocks: ['06','08'] },
+    { id: '09', title: 'Repository Boundary',            type: 'grilling',  status: 'closed', today: false, level: 0, blocks: [], note: '⏳ решение закрыто; физический git-перенос ещё не выполнен' },
+    { id: '11', title: 'Agentic Delivery Process',       type: 'grilling',  status: 'closed', today: false, level: 0, blocks: ['08'] },
+    { id: '12', title: 'Historical Cluster Calibration', type: 'prototype', status: 'closed', today: false, level: 0, blocks: ['08','09'] },
+    { id: '04', title: 'Report Prototype',               type: 'prototype', status: 'closed', today: false, level: 1, blocks: ['07','08'] },
+    { id: '06', title: 'Evaluation Harness',             type: 'task',      status: 'closed', today: false, level: 1, blocks: ['08'] },
+    { id: '07', title: 'Delivery Policy',                type: 'grilling',  status: 'closed', today: false, level: 2, blocks: ['08'] },
+    { id: '08', title: 'OpenSpec Bridge',                type: 'task',      status: 'progress', today: true, level: 3, blocks: ['09'], note: '✓ закрыт сегодня — madpac-v0 собран и проверен дважды' },
   ];
 
   // derive blockedBy from blocks (reconciled, union of both directions)
@@ -783,10 +947,10 @@
   const byLevel = {};
   TICKETS.forEach(t => { (byLevel[t.level] ??= []).push(t); });
 
-  for (let lvl = 0; lvl <= 4; lvl++) {
+  for (let lvl = 0; lvl <= 3; lvl++) {
     const col = document.createElement('div');
     col.className = 'level-col';
-    const label = lvl === 0 ? 'Уровень 0 — фронтир' : `Уровень ${lvl}`;
+    const label = lvl === 0 ? 'Уровень 0 — старт' : `Уровень ${lvl}`;
     col.innerHTML = `<h4>${label}</h4><div class="cards"></div>`;
     const cardsEl = col.querySelector('.cards');
 
@@ -810,9 +974,10 @@
           ${t.today ? '<span class="badge-today">сегодня</span>' : ''}
         </div>
         <div class="edges">
-          ${t.blocks.length ? `<b>разблокирует:</b> ${t.blocks.map(id => `<span class="chip">${id}</span>`).join('')}<br>` : ''}
-          ${bl.length ? `<b>ждёт:</b> ${bl.map(id => `<span class="chip">${id}</span>`).join('')}` : '<span style="color:var(--status-good)">ничего не ждёт</span>'}
+          ${t.blocks.length ? `<b>разблокировал:</b> ${t.blocks.map(id => `<span class="chip">${id}</span>`).join('')}<br>` : ''}
+          ${bl.length ? `<b>ждал:</b> ${bl.map(id => `<span class="chip">${id}</span>`).join('')}` : '<span style="color:var(--status-good)">ничего не ждал</span>'}
         </div>
+        ${t.note ? `<div class="note">${t.note}</div>` : ''}
       `;
       cardsEl.appendChild(card);
     });
@@ -836,56 +1001,52 @@
   });
 
   // ---------- Story mode: guided step-through, teacher voice ----------
-  const BLOCK_IDS = ['hero', 'pipeline', 'loop-today', 'layers', 'tickets', 'feedback-loop', 'gaps', 'footer'];
+  const BLOCK_IDS = ['hero', 'pipeline', 'loop-today', 'layers', 'skills', 'altitudes', 'feedback-contour', 'tickets', 'feedback-loop', 'verification-loop', 'footer'];
 
   const STEPS = [
     { block: 'hero', title: 'Что это за страница', text:
-      'Эта карта — не тикеты сами по себе, а слепок того, как устроено мышление вокруг проекта MADPAC: ' +
-      'смутная идея → карта решений → спека → код — и как эти слои сегодня выглядят на самом деле. ' +
-      'Идём по шагам, я объясню каждый блок.' },
+      'Это карта архитектуры MADPAC, а не просто список тикетов: какие скиллы зафиксированы, какие ' +
+      'роли агентов должны сидеть отдельно друг от друга, и как решения о калибровке возвращаются ' +
+      'обратно в систему. Каждая идея — с живым примером из сегодняшней сессии.' },
     { block: 'pipeline', title: 'Общий цикл проекта', text:
-      'Это макро-цикл всего проекта из его собственного design.md. Мы всё ещё на стадии Wayfinder — ' +
-      'ни один спайк ещё не запускался. Пунктирная дуга внизу — это возврат в начало после Memory: ' +
-      'следующий большой оборот снова начинается со смутной идеи или с Wayfinder.' },
-    { block: 'loop-today', title: 'Меньший цикл, спрятанный внутри Wayfinder', text:
-      'Вот конкретное "зацикливание": для каждого тикета мы проходим один и тот же малый цикл — ' +
-      'открыть → расспросить → записать решение → закрыть и обновить карту → выбрать следующий. ' +
-      'Сегодня мы прошли его 9 раз целиком за семь сессий: 01, 02, 03, 05, 10, 04, 06, 07 и, наконец, ' +
-      '09 — единственный из всех пройденный вне очереди формального графа, по прямой просьбе Айрата.' },
-    { block: 'layers', focus: '#layer-01', title: 'Слои 0–1: инструменты и настройка репозитория', text:
-      'Самый нижний слой почти не меняется день ото дня: скиллы устанавливаются один раз на машину (L0), ' +
-      'а CLAUDE.md и конфиги openspec говорят этим скиллам, как вести себя именно в этом репозитории (L1).' },
-    { block: 'layers', focus: '#layer-2', title: 'Слой 2 — сама карта, и эта страница внутри неё', text:
-      'map.md и файлы тикетов — это единственное место, где реально принимаются решения. ' +
-      'Эта HTML-страница не часть карты, а её проекция для чтения: если map.md меняется, ' +
-      'страницу нужно перегенерировать заново, иначе она начнёт врать.' },
-    { block: 'layers', focus: '#layer-345', title: 'Слои 3–5: спека и код — местами уже забежали вперёд', text:
-      'Mini-specs и OpenSpec-change живут параллельно карте. Тикет 10 закрылся с чистого листа, и его расхождения ' +
-      'со старым черновиком уже сверены. Но пятая сессия закрыла тикет 06 с тремя новыми механизмами ' +
-      '(Metric Card, Decision Block, champion/challenger), и ни один из них пока не попал в спек. Подробности — в шаге про раздел 6.' },
-    { block: 'tickets', title: '12 тикетов, кто кого ждёт', text:
-      'Столбцы — уровни: сколько решений нужно закрыть, прежде чем тикет разблокируется. ' +
-      'Семь тикетов (01, 02, 03, 04, 05, 06, 10) уже закрыты сегодня; 07 стал доступен как побочный эффект их закрытия. ' +
-      'Наведите курсор на любой тикет — увидите его связи.' },
-    { block: 'tickets', focus: '#ticket-07', title: 'Почему следующий именно тикет 07', text:
-      'Формальный граф разблокировал тикет 07 ещё когда закрылся тикет 04 (третий из его блокеров, вместе с 01 и 03) — ' +
-      'но заголовок самого тикета 07 при этом продолжал ошибочно называть себя "blocked", пока эта сессия его не поправила. ' +
-      'Урок тот же, что и в разделе 6: формальная разблокировка и то, что написано в заголовке файла, — две разные вещи, ' +
-      'которые легко расходятся, если их не сверять при каждом закрытии.' },
-    { block: 'feedback-loop', title: 'Живая петля: тикет 03 родил тикет 12', text:
-      'Вот пример настоящего "зацикливания" в этом проекте: во время grilling тикета 03 Айрат отказался ' +
-      'утверждать очередные проценты на глаз — это породило тикет 12. Закрытие тикета 05 расширило его охват, ' +
-      'а закрытие тикета 06 добавило ещё одну зацепку — известные календарные якоря (ставка ЦБ и подобное) тоже ' +
-      'нуждаются в достаточной исторической глубине, которую как раз и должен обеспечить тикет 12.' },
-    { block: 'gaps', title: 'Что до сих пор не сходится (и что произошло по-новому сегодня)', text:
-      'Три несостыковки Blocks/Blocked By, пойманные ранее, давно исправлены в самих файлах тикетов. Новое: ' +
-      'тикет 09 был решён вне очереди формального графа — сознательно, по прямому запросу Айрата, не по ошибке. ' +
-      'А OpenSpec-черновик тем временем отстаёт всё сильнее — уже от тикетов 06, 07 и 09 разом.' },
+      'Макро-цикл из design.md. Мы впервые прошли дальше Wayfinder: спека собрана и уже проверена ' +
+      'дважды, но ни один Spike (запуск Runner-агента) ещё не выполнялся — сегодняшний аудит проверял ' +
+      'саму спеку, а не результат спайка. Это два разных вида "Audit" в этом проекте, не один.' },
+    { block: 'loop-today', title: 'Малый цикл, повторённый 12 раз', text:
+      'Внутри Wayfinder крутился один и тот же малый цикл — по разу на тикет. За 11 сессий он прошёл ' +
+      'полный круг на всех 12 тикетах. Тикеты 09 и 12 прошли вне формального порядка графа — сознательно, ' +
+      'по просьбе Айрата, не по ошибке.' },
+    { block: 'layers', focus: '#layer-345', title: 'Слои спеки: сегодня L4 закрылся, L5 открылся', text:
+      'openspec/changes/madpac-v0/ — переименован из узкой рыночной спеки в одну спеку на весь MVP. ' +
+      'tasks.md теперь реален — это открывает L5, впервые за весь проект.' },
+    { block: 'skills', title: 'Ядро из трёх скиллов + спутники под замком', text:
+      'wayfinder → grilling → openspec — неизменное ядро, не разбавляется ничем во время планирования. ' +
+      'Все остальные скиллы (implement, tdd, code-review...) — спутники, включаются только когда tasks.md ' +
+      'реально существует. Этот гейт открылся именно сегодня, впервые за весь проект.' },
+    { block: 'altitudes', title: 'Три высоты ролей — одна и та же стена', text:
+      'Мета-процесс разработки, цикл Runner/Auditor/Synthesizer и цикл Generator/Evaluator — три разных ' +
+      'набора ролей, которые нельзя путать. Но во всех трёх работает одно правило: генерация может делиться ' +
+      'контекстом, верификация — никогда. Сегодняшняя компиляция спеки сама прошла через ту же стену, хотя ' +
+      'формально не называется ни одной из этих трёх высот.' },
+    { block: 'feedback-contour', title: 'Metric Card → Decision Block: один контур на все калибровки', text:
+      'Champion/challenger, порог доставки K, несовпадение классификации — три разных повода, но один ' +
+      'механизм: Metric Card фиксирует факты, Decision Block решает, что чинить, и не позволяет повторять ' +
+      'один и тот же провальный фикс дважды. Этот контур пока не запускался вживую — операционных данных ещё нет.' },
+    { block: 'tickets', title: '12 тикетов — теперь все закрыты', text:
+      'Столбцы — исторические уровни зависимости. Наведите курсор на любой тикет, чтобы увидеть его связи. ' +
+      'Тикет 08 отмечен как самый свежий — закрыт сегодня.' },
+    { block: 'feedback-loop', title: 'Петля уровня решений: тикет 03 родил тикет 12', text:
+      'Ещё на уровне тикетов, до всякой спеки: Айрат отказался утверждать пороги на глаз — родился ' +
+      'Тикет 12. Он выполнился 2026-08-01 и вернул реальные, не угаданные, находки обратно в тикеты 02, 03, 05, 10.' },
+    { block: 'verification-loop', title: 'Живой пример: компиляция спеки прошла тот же путь, что и раздел 5', text:
+      'Сегодня: компиляция (генерация) → холодная сессия-аудитор (23 находки) → фикс → снова холодная ' +
+      'сессия (3 находки, всё чисто). Это тот же принцип "проверяющий не проверяет свою же работу", ' +
+      'который проект и так требует от Runner/Auditor и Generator/Evaluator — только применённый к самому ' +
+      'процессу разработки, а не к продукту.' },
     { block: 'footer', title: 'Что дальше', text:
-      'Девять тикетов закрыты: 01, 02, 03, 04, 05, 06, 07, 09, 10. Тикет 09 (граница репозитория) решён ' +
-      'вне очереди — MADPAC уходит в свой репозиторий, но физически переносится только после тикета 12. ' +
-      'Дальше по очереди: 11 — Agentic Delivery Process, тикет 12 — параллельно в любой удобный момент ' +
-      '(и теперь ещё и прямой триггер переноса), а затем 08 — OpenSpec Bridge.' },
+      'Все 12 wayfinder-тикетов и Тикет 08 закрыты. Единственное оставшееся — физический перенос Тикета 09 ' +
+      'в отдельный репозиторий через git filter-repo. Это необратимая git-операция, поэтому она ждёт ' +
+      'отдельного явного запроса, а не выполняется по инерции.' },
   ];
 
   let storyIndex = 0;
